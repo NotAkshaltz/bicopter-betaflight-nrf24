@@ -1,0 +1,4 @@
+103f0000 R __config_start
+10400000 R __config_end
+20018114 T failsafeOnReceiverReset
+200216e8 T nrf24BicopterDataReceived

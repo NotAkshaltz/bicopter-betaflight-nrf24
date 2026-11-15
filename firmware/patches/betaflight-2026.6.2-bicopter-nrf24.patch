@@ -1,0 +1,1315 @@
+diff --git a/mk/source.mk b/mk/source.mk
+index 5dd11e1..dffb21d 100644
+--- a/mk/source.mk
++++ b/mk/source.mk
+@@ -203,6 +203,8 @@ COMMON_SRC = \
+             rx/rx_bind.c \
+             rx/rx_spi.c \
+             rx/rx_spi_common.c \
++            rx/nrf24_bicopter.c \
++            rx/nrf24_bicopter_link.c \
+             rx/crsf.c \
+             rx/ghst.c \
+             rx/sbus.c \
+diff --git a/src/main/build/debug.c b/src/main/build/debug.c
+index f923309..7709729 100644
+--- a/src/main/build/debug.c
++++ b/src/main/build/debug.c
+@@ -128,4 +128,5 @@ const char * const debugModeNames[DEBUG_COUNT] = {
+     [DEBUG_MAVLINK_TELEMETRY] = "MAVLINK_TELEMETRY",
+     [DEBUG_AUTOPILOT_PID] = "AUTOPILOT_PID",
+     [DEBUG_AUTOPILOT_STOP] = "AUTOPILOT_STOP",
++    [DEBUG_RX_NRF24_BICOPTER] = "RX_NRF24_BICOPTER",
+ };
+diff --git a/src/main/build/debug.h b/src/main/build/debug.h
+index dd6985f..ac8475c 100644
+--- a/src/main/build/debug.h
++++ b/src/main/build/debug.h
+@@ -131,6 +131,7 @@ typedef enum {
+     DEBUG_AUTOPILOT_PID,
+     DEBUG_POSITION_NAV,
+     DEBUG_AUTOPILOT_STOP,
++    DEBUG_RX_NRF24_BICOPTER,
+     DEBUG_COUNT
+ } debugType_e;
+ 
+diff --git a/src/main/cli/settings.c b/src/main/cli/settings.c
+index 489d254..0ffec7a 100644
+--- a/src/main/cli/settings.c
++++ b/src/main/cli/settings.c
+@@ -292,6 +292,7 @@ static const char * const lookupTableRxSpi[] = {
+     "FRSKY_X_V2",
+     "FRSKY_X_LBT_V2",
+     "EXPRESSLRS",
++    "NRF24_BICOPTER",
+ };
+ #endif
+ 
+diff --git a/src/main/drivers/rx/rx_nrf24l01.c b/src/main/drivers/rx/rx_nrf24l01.c
+index 9e14fc3..515aafa 100644
+--- a/src/main/drivers/rx/rx_nrf24l01.c
++++ b/src/main/drivers/rx/rx_nrf24l01.c
+@@ -35,6 +35,7 @@
+ 
+ #include "drivers/bus_spi.h"
+ #include "drivers/io.h"
++#include "drivers/io_impl.h"    // DEFIO_IO() needs ioRecs (not pulled in indirectly on PICO)
+ #include "drivers/rx/rx_spi.h"
+ #include "drivers/time.h"
+ 
+@@ -43,6 +44,16 @@
+ #define NRF24_CE_HI()   {IOHi(DEFIO_IO(RX_CE_PIN));}
+ #define NRF24_CE_LO()   {IOLo(DEFIO_IO(RX_CE_PIN));}
+ 
++// nRF24L01+ product specification: SPI clock 0..10 MHz. The generic RX SPI driver
++// defaults to 13.5 MHz, which is out of specification for this radio. A board config
++// may lower this further (e.g. for bring-up with long jumper wires).
++#ifndef NRF24L01_MAX_SPI_CLK_HZ
++#define NRF24L01_MAX_SPI_CLK_HZ 8000000
++#endif
++#if NRF24L01_MAX_SPI_CLK_HZ > 10000000
++#error "NRF24L01_MAX_SPI_CLK_HZ exceeds the nRF24L01+ 10 MHz SPI limit"
++#endif
++
+ // Instruction Mnemonics
+ // nRF24L01:  Table 16. Command set for the nRF24L01 SPI. Product Specification, p46
+ // nRF24L01+: Table 20. Command set for the nRF24L01+ SPI. Product Specification, p51
+@@ -138,6 +149,9 @@ static uint8_t standbyConfig;
+ void NRF24L01_Initialize(uint8_t baseConfig)
+ {
+     standbyConfig = BIT(NRF24L01_00_CONFIG_PWR_UP) | baseConfig;
++    // Limit the SPI clock before the first transfer to the radio (all NRF24 protocols use this path)
++    rxSpiSetNormalSpeedMhz(NRF24L01_MAX_SPI_CLK_HZ);
++    rxSpiNormalSpeed();
+     NRF24L01_InitGpio();
+     // nRF24L01+ needs 100 milliseconds settling time from PowerOnReset to PowerDown mode
+     static const uint32_t settlingTimeUs = 100000;
+@@ -214,6 +228,26 @@ void NRF24L01_SetChannel(uint8_t channel)
+     NRF24L01_WriteReg(NRF24L01_05_RF_CH, channel);
+ }
+ 
++/*
++ * Retune while receiving: drop to standby (CE low), change RF_CH, re-enter RX mode.
++ * The radio needs 130us settling before it can receive on the new channel.
++ */
++void NRF24L01_SetChannelRxMode(uint8_t channel)
++{
++    NRF24_CE_LO();
++    NRF24L01_WriteReg(NRF24L01_05_RF_CH, channel);
++    NRF24_CE_HI();
++}
++
++/*
++ * Width of the payload at the top of the RX FIFO (dynamic payload length).
++ * A value above 32 indicates a corrupt packet and the RX FIFO must be flushed.
++ */
++uint8_t NRF24L01_ReadPayloadWidth(void)
++{
++    return rxSpiReadCommand(R_RX_PL_WID, NOP);
++}
++
+ bool NRF24L01_ReadPayloadIfAvailable(uint8_t *data, uint8_t length)
+ {
+     if (NRF24L01_ReadReg(NRF24L01_17_FIFO_STATUS) & BIT(NRF24L01_17_FIFO_STATUS_RX_EMPTY)) {
+diff --git a/src/main/drivers/rx/rx_nrf24l01.h b/src/main/drivers/rx/rx_nrf24l01.h
+index 9db0ce2..0c5e1cb 100644
+--- a/src/main/drivers/rx/rx_nrf24l01.h
++++ b/src/main/drivers/rx/rx_nrf24l01.h
+@@ -196,4 +196,6 @@ void NRF24L01_SetRxMode(void);
+ void NRF24L01_SetTxMode(void);
+ void NRF24L01_ClearAllInterrupts(void);
+ void NRF24L01_SetChannel(uint8_t channel);
++void NRF24L01_SetChannelRxMode(uint8_t channel);
++uint8_t NRF24L01_ReadPayloadWidth(void);
+ bool NRF24L01_ReadPayloadIfAvailable(uint8_t *data, uint8_t length);
+diff --git a/src/main/flight/failsafe.c b/src/main/flight/failsafe.c
+index d00284b..1af3c9a 100644
+--- a/src/main/flight/failsafe.c
++++ b/src/main/flight/failsafe.c
+@@ -154,6 +154,25 @@ void failsafeStartMonitoring(void)
+     failsafeState.monitoring = true;
+ }
+ 
++void failsafeOnReceiverReset(void)
++{
++    // A detected transmitter restart is not an ordinary short RF dropout. Do not
++    // wait for RXLOSS or the configurable Stage 1 delay before stopping motors.
++    if (ARMING_FLAG(ARMED)) {
++        failsafeState.events++;
++    }
++    disarm(DISARM_REASON_FAILSAFE);
++    setArmingDisabled(ARMING_DISABLED_FAILSAFE);
++    setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
++    ENABLE_FLIGHT_MODE(FAILSAFE_MODE);
++    failsafeState.active = true;
++    failsafeState.rxLinkState = FAILSAFE_RXLINK_DOWN;
++    failsafeState.validRxDataFailedAt = millis();
++    failsafeState.receivingRxDataPeriodPreset = failsafeState.rxDataRecoveryPeriod;
++    failsafeState.receivingRxDataPeriod = millis() + failsafeState.rxDataRecoveryPeriod;
++    failsafeState.phase = FAILSAFE_RX_LOSS_MONITORING;
++}
++
+ static bool failsafeShouldHaveCausedLandingByNow(void)
+ {
+     return (millis() > failsafeState.landingShouldBeFinishedAt);
+diff --git a/src/main/flight/failsafe.h b/src/main/flight/failsafe.h
+index 7763608..190d164 100644
+--- a/src/main/flight/failsafe.h
++++ b/src/main/flight/failsafe.h
+@@ -112,3 +112,5 @@ void failsafeOnRxSuspend(uint32_t suspendPeriod);
+ void failsafeOnRxResume(void);
+ void failsafeOnValidDataReceived(void);
+ void failsafeOnValidDataFailed(void);
++// Explicit receiver/handset restart: disarm now, then use normal failsafe recovery.
++void failsafeOnReceiverReset(void);
+diff --git a/src/main/rx/nrf24_bicopter.c b/src/main/rx/nrf24_bicopter.c
+new file mode 100644
+index 0000000..ff6a352
+--- /dev/null
++++ b/src/main/rx/nrf24_bicopter.c
+@@ -0,0 +1,405 @@
++/*
++ * This file is part of Betaflight.
++ *
++ * Betaflight is free software. You can redistribute this software
++ * and/or modify this software under the terms of the GNU General
++ * Public License as published by the Free Software Foundation,
++ * either version 3 of the License, or (at your option) any later
++ * version.
++ *
++ * Betaflight is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ *
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this software.
++ *
++ * If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * NRF24_BICOPTER receiver: Betaflight RX_SPI protocol adapter for an nRF24L01+.
++ *
++ * Derived in spirit from rx/nrf24_inav.c (same radio settings: 250 kbps, 5-byte
++ * address, 2-byte CRC, dynamic payload, auto-ACK) but with a project specific
++ * packet format and link state machine; see rx/nrf24_bicopter_link.h.
++ *
++ * Runtime behaviour (called from rxFrameCheck() once per scheduler loop):
++ *  - Idle cost: one GPIO read (IRQ wired) or one STATUS read every
++ *    BICOPTER_NRF24_POLL_INTERVAL_US (IRQ not wired), plus a time comparison.
++ *  - At most ONE payload is read per call (bounded SPI traffic); if more are
++ *    waiting in the RX FIFO they are read on following calls.
++ *  - At most one retune per call.
++ *  - Only fresh, valid control samples return RX_SPI_RECEIVED_DATA, which is the
++ *    only thing that refreshes Betaflight's RX signal watchdog.
++ */
++
++#include <stdbool.h>
++#include <stdint.h>
++#include <string.h>
++
++#include "platform.h"
++
++#ifdef USE_RX_NRF24_BICOPTER
++
++#include "build/debug.h"
++
++#include "common/utils.h"
++
++#include "drivers/io.h"
++#include "drivers/rx/rx_nrf24l01.h"
++#include "drivers/rx/rx_spi.h"
++#include "drivers/time.h"
++#include "flight/failsafe.h"
++
++#include "rx/rx.h"
++#include "rx/rx_spi.h"
++#include "rx/nrf24_bicopter_link.h"
++#include "rx/nrf24_bicopter.h"
++
++#ifndef BICOPTER_NRF24_LINK_ID
++#error "BICOPTER_NRF24_LINK_ID must be defined in the board config (same value as the handset firmware)"
++#endif
++
++#ifndef BICOPTER_NRF24_RX_RF_PWR
++// Only used for the auto-ACK transmitted by the receiver.
++#define BICOPTER_NRF24_RX_RF_PWR NRF24L01_06_RF_SETUP_RF_PWR_n12dbm
++#endif
++
++#ifndef BICOPTER_NRF24_POLL_INTERVAL_US
++#define BICOPTER_NRF24_POLL_INTERVAL_US 500     // STATUS poll period when no IRQ pin is configured
++#endif
++
++#define BICOPTER_NRF24_SPURIOUS_BACKOFF_US 1000 // IRQ low but FIFO empty: re-check the level after this
++
++STATIC_ASSERT(BL_PAYLOAD_LEN <= RX_SPI_MAX_PAYLOAD_SIZE, bicopter_payload_too_large);
++STATIC_ASSERT(BL_CHANNEL_COUNT <= MAX_SUPPORTED_RC_CHANNEL_COUNT, bicopter_too_many_channels);
++
++#define NRF24_STATUS_RX_P_NO_SHIFT  1
++#define NRF24_STATUS_RX_P_NO_MASK   0x07
++#define NRF24_RX_P_NO_FIFO_EMPTY    7
++#define NRF24_ACTIVATE_FEATURES     0x73
++
++typedef enum {
++    INIT_OK = 0,
++    INIT_FAIL_SETUP_AW = 1,
++    INIT_FAIL_FEATURE = 2,
++    INIT_FAIL_REGISTERS = 3,
++    INIT_FAIL_ADDRESS = 4,
++    INIT_FAIL_CONFIG = 5,
++} initStatus_e;
++
++static uint32_t linkId;
++static uint8_t rfChannels[BL_RF_CHANNEL_COUNT];
++static uint8_t rxAddr[BL_ADDR_LEN];
++
++static blFreshness_t freshness;
++static blHop_t hop;
++static nrf24BicopterStats_t stats;
++
++static bool irqConfigured;
++static bool fifoPending;
++static bool havePendingExtiTime;
++static timeUs_t pendingExtiTimeUs;
++static timeUs_t nextPollUs;
++static timeUs_t nextLevelCheckUs;
++static timeUs_t lastFrameTimeUs;
++static initStatus_e initStatus;
++static bool haveSession;
++static uint8_t observedSession;
++static bool restartAnnounced;
++static bool armInterlockReleased;
++
++static void tuneToHopChannel(void)
++{
++    NRF24L01_SetChannelRxMode(rfChannels[hop.idx]);
++}
++
++static bool writeRegVerify(uint8_t reg, uint8_t value)
++{
++    NRF24L01_WriteReg(reg, value);
++    return NRF24L01_ReadReg(reg) == value;
++}
++
++static void updateDebug(void)
++{
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 0, (int16_t)stats.accepted);
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 1, (int16_t)(stats.malformed + stats.fifoFlush));
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 2, (int16_t)(stats.duplicate + stats.stale));
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 3, (int16_t)(stats.resyncPending + stats.txFault));
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 4, (int16_t)((hop.state << 8) | rfChannels[hop.idx]));
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 5, (int16_t)hop.missedSlots);
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 6, (int16_t)stats.spurious);
++    DEBUG_SET(DEBUG_RX_NRF24_BICOPTER, 7, (int16_t)initStatus);
++}
++
++static rx_spi_received_e serviceRadio(uint8_t *payload, timeUs_t nowUs)
++{
++    const uint8_t status = NRF24L01_ReadReg(NRF24L01_07_STATUS);
++    const uint8_t pipe = (status >> NRF24_STATUS_RX_P_NO_SHIFT) & NRF24_STATUS_RX_P_NO_MASK;
++
++    if (pipe == NRF24_RX_P_NO_FIFO_EMPTY) {
++        if (status & BIT(NRF24L01_07_STATUS_RX_DR)) {
++            NRF24L01_WriteReg(NRF24L01_07_STATUS, BIT(NRF24L01_07_STATUS_RX_DR));
++        }
++        fifoPending = false;
++        havePendingExtiTime = false;
++        nextLevelCheckUs = nowUs + BICOPTER_NRF24_SPURIOUS_BACKOFF_US;
++        stats.spurious++;
++        return RX_SPI_RECEIVED_NONE;
++    }
++
++    uint8_t buf[NRF24L01_MAX_PAYLOAD_SIZE];
++    const uint8_t width = NRF24L01_ReadPayloadWidth();
++    const bool widthOk = (width >= 1) && (width <= NRF24L01_MAX_PAYLOAD_SIZE);
++    if (widthOk) {
++        NRF24L01_ReadPayload(buf, width);
++    } else {
++        // nRF24L01+ product specification: a width above 32 means a corrupt packet; flush RX FIFO
++        NRF24L01_FlushRx();
++        stats.fifoFlush++;
++    }
++    // Clear RX_DR only after the payload has been read, then look at what is left
++    NRF24L01_WriteReg(NRF24L01_07_STATUS, BIT(NRF24L01_07_STATUS_RX_DR));
++    fifoPending = widthOk && !(NRF24L01_ReadReg(NRF24L01_17_FIFO_STATUS) & BIT(NRF24L01_17_FIFO_STATUS_RX_EMPTY));
++
++    if (!widthOk) {
++        havePendingExtiTime = false;
++        return RX_SPI_RECEIVED_NONE;
++    }
++
++    // The EXTI timestamp belongs to the most recently received packet, so it is only
++    // attributed to the packet that empties the FIFO.
++    bool timeReliable = false;
++    timeUs_t packetTimeUs = nowUs;
++    if (!fifoPending) {
++        if (irqConfigured) {
++            timeReliable = havePendingExtiTime;
++            if (havePendingExtiTime) {
++                packetTimeUs = pendingExtiTimeUs;
++            }
++        } else {
++            timeReliable = true;    // polled: error bounded by the poll interval
++        }
++        havePendingExtiTime = false;
++    }
++
++    blControl_t control;
++    if (pipe != NRF24L01_PIPE0 || blDecode(linkId, buf, width, &control) != BL_DECODE_OK) {
++        stats.malformed++;
++        return RX_SPI_RECEIVED_NONE;
++    }
++
++    // Authentic packet from our handset: it keeps the hop timing aligned even if the
++    // sample itself is not fresh.
++    blHopOnPacket(&hop, packetTimeUs, timeReliable);
++
++    const bool newSession = haveSession && observedSession != control.session;
++    const bool restart = (control.flags & BL_FLAG_TX_RESTART) != 0;
++    if (newSession || (restart && !restartAnnounced)) {
++        if (stats.accepted) {
++            failsafeOnReceiverReset();
++        }
++        armInterlockReleased = false;
++        blFreshnessInit(&freshness);
++    }
++    haveSession = true;
++    observedSession = control.session;
++    restartAnnounced = restart;
++    if (restart) {
++        // Repeated announcements must not refresh the watchdog or repeatedly disarm.
++        stats.txFault++;
++        return RX_SPI_RECEIVED_NONE;
++    }
++    if (control.flags & BL_FLAG_TX_INPUT_FAULT) {
++        armInterlockReleased = false;
++    }
++
++    switch (blFreshnessCheck(&freshness, control.session, control.sampleSeq, control.flags)) {
++    case BL_FRESH_ACCEPT:
++        break;
++    case BL_FRESH_DUPLICATE:
++        stats.duplicate++;
++        return RX_SPI_RECEIVED_NONE;
++    case BL_FRESH_STALE:
++        stats.stale++;
++        return RX_SPI_RECEIVED_NONE;
++    case BL_FRESH_TX_FAULT:
++        stats.txFault++;
++        return RX_SPI_RECEIVED_NONE;
++    case BL_FRESH_RESYNC_PENDING:
++    default:
++        stats.resyncPending++;
++        return RX_SPI_RECEIVED_NONE;
++    }
++
++    // Copy into the shared RX payload buffer only once the packet is accepted, so a
++    // later rejected packet can never overwrite data that is waiting to be decoded.
++    if (!armInterlockReleased) {
++        if (control.channelUs[BL_ARM_CHANNEL] <= BL_ARM_LOW_US &&
++            control.channelUs[BL_THROTTLE_CHANNEL] <= BL_THROTTLE_LOW_US) {
++            armInterlockReleased = true;
++        } else {
++            control.channelUs[BL_ARM_CHANNEL] = BL_CHANNEL_US_MIN;
++            control.channelUs[BL_THROTTLE_CHANNEL] = BL_CHANNEL_US_MIN;
++        }
++    }
++    // Re-encode after safety overrides, so the deferred decoder sees a valid CRC.
++    if (!blEncode(linkId, &control, payload)) {
++        return RX_SPI_RECEIVED_NONE;
++    }
++    lastFrameTimeUs = packetTimeUs;
++    stats.accepted++;
++    return RX_SPI_RECEIVED_DATA;
++}
++
++rx_spi_received_e nrf24BicopterDataReceived(uint8_t *payload)
++{
++    rx_spi_received_e ret = RX_SPI_RECEIVED_NONE;
++    const timeUs_t nowUs = micros();
++    if (stats.accepted && cmpTimeUs(nowUs, lastFrameTimeUs) > 150000) {
++        armInterlockReleased = false;
++    }
++    bool service = fifoPending;
++
++    if (irqConfigured) {
++        if (rxSpiPollExti()) {
++            // Falling edge on IRQ (RX_DR asserted)
++            rxSpiResetExti();
++            pendingExtiTimeUs = rxSpiGetLastExtiTimeUs();
++            havePendingExtiTime = true;
++            service = true;
++        } else if (!rxSpiGetExtiState() && cmpTimeUs(nowUs, nextLevelCheckUs) >= 0) {
++            // IRQ is active-low and still asserted without a new edge (missed edge)
++            service = true;
++        }
++    } else if (cmpTimeUs(nowUs, nextPollUs) >= 0) {
++        nextPollUs = nowUs + BICOPTER_NRF24_POLL_INTERVAL_US;
++        service = true;
++    }
++
++    if (service) {
++        ret = serviceRadio(payload, nowUs);
++    }
++
++    if (blHopTick(&hop, micros())) {
++        tuneToHopChannel();
++    }
++
++    updateDebug();
++    return ret;
++}
++
++void nrf24BicopterSetRcDataFromPayload(uint16_t *rcData, const uint8_t *payload)
++{
++    blControl_t control;
++    // payload was validated before it was accepted; decode again to unpack it
++    if (blDecode(linkId, payload, BL_PAYLOAD_LEN, &control) != BL_DECODE_OK) {
++        return;
++    }
++    for (int ch = 0; ch < BL_CHANNEL_COUNT; ch++) {
++        rcData[ch] = control.channelUs[ch];
++    }
++}
++
++timeUs_t nrf24BicopterFrameTimeUs(void)
++{
++    return lastFrameTimeUs;
++}
++
++const nrf24BicopterStats_t *nrf24BicopterGetStats(void)
++{
++    return &stats;
++}
++
++static initStatus_e nrf24BicopterSetup(void)
++{
++    // PWR_UP, 2-byte CRC; IRQ pin reports RX_DR only
++    NRF24L01_Initialize(BIT(NRF24L01_00_CONFIG_EN_CRC) | BIT(NRF24L01_00_CONFIG_CRCO) |
++                        BIT(NRF24L01_00_CONFIG_MASK_MAX_RT) | BIT(NRF24L01_00_CONFIG_MASK_TX_DS));
++
++    // A wrong value here usually means SPI wiring, clock or radio power is wrong
++    if (!writeRegVerify(NRF24L01_03_SETUP_AW, NRF24L01_03_SETUP_AW_5BYTES)) {
++        return INIT_FAIL_SETUP_AW;
++    }
++
++    // nRF24L01+ has FEATURE always accessible; original nRF24L01 and some clones need ACTIVATE
++    if (!writeRegVerify(NRF24L01_1D_FEATURE, BIT(NRF24L01_1D_FEATURE_EN_DPL))) {
++        NRF24L01_Activate(NRF24_ACTIVATE_FEATURES);
++        if (!writeRegVerify(NRF24L01_1D_FEATURE, BIT(NRF24L01_1D_FEATURE_EN_DPL))) {
++            return INIT_FAIL_FEATURE;
++        }
++    }
++
++    bool ok = true;
++    ok &= writeRegVerify(NRF24L01_01_EN_AA, BIT(NRF24L01_01_EN_AA_ENAA_P0));
++    ok &= writeRegVerify(NRF24L01_02_EN_RXADDR, BIT(NRF24L01_02_EN_RXADDR_ERX_P0));
++    ok &= writeRegVerify(NRF24L01_04_SETUP_RETR, 0);
++    ok &= writeRegVerify(NRF24L01_06_RF_SETUP, NRF24L01_06_RF_SETUP_RF_DR_250Kbps | BICOPTER_NRF24_RX_RF_PWR);
++    ok &= writeRegVerify(NRF24L01_1C_DYNPD, BIT(NRF24L01_1C_DYNPD_DPL_P0));
++    ok &= writeRegVerify(NRF24L01_11_RX_PW_P0, NRF24L01_MAX_PAYLOAD_SIZE);  // ignored with DPL
++    ok &= writeRegVerify(NRF24L01_05_RF_CH, rfChannels[hop.idx]);
++    if (!ok) {
++        return INIT_FAIL_REGISTERS;
++    }
++
++    uint8_t readBack[BL_ADDR_LEN];
++    NRF24L01_WriteRegisterMulti(NRF24L01_0A_RX_ADDR_P0, rxAddr, BL_ADDR_LEN);
++    NRF24L01_WriteRegisterMulti(NRF24L01_10_TX_ADDR, rxAddr, BL_ADDR_LEN);  // ACKs use pipe 0 address
++    NRF24L01_ReadRegisterMulti(NRF24L01_0A_RX_ADDR_P0, readBack, BL_ADDR_LEN);
++    if (memcmp(readBack, rxAddr, BL_ADDR_LEN) != 0) {
++        return INIT_FAIL_ADDRESS;
++    }
++
++    NRF24L01_FlushTx();
++    NRF24L01_FlushRx();
++    NRF24L01_SetRxMode();   // clears interrupts, CE high
++
++    const uint8_t expectedConfig = BIT(NRF24L01_00_CONFIG_EN_CRC) | BIT(NRF24L01_00_CONFIG_CRCO) |
++        BIT(NRF24L01_00_CONFIG_MASK_MAX_RT) | BIT(NRF24L01_00_CONFIG_MASK_TX_DS) |
++        BIT(NRF24L01_00_CONFIG_PWR_UP) | BIT(NRF24L01_00_CONFIG_PRIM_RX);
++    if (NRF24L01_ReadReg(NRF24L01_00_CONFIG) != expectedConfig) {
++        return INIT_FAIL_CONFIG;
++    }
++    return INIT_OK;
++}
++
++bool nrf24BicopterInit(const rxSpiConfig_t *rxSpiConfig, rxRuntimeState_t *rxRuntimeState, rxSpiExtiConfig_t *extiConfig)
++{
++    UNUSED(rxSpiConfig);    // the link ID is fixed at build time, rx_spi_id is not used
++
++    linkId = BICOPTER_NRF24_LINK_ID;
++    blDeriveAddress(linkId, rxAddr);
++    blDeriveRfChannels(linkId, rfChannels);
++    blFreshnessInit(&freshness);
++    memset(&stats, 0, sizeof(stats));
++    fifoPending = false;
++    havePendingExtiTime = false;
++    lastFrameTimeUs = 0;
++    haveSession = false;
++    restartAnnounced = false;
++    armInterlockReleased = false;
++
++    rxRuntimeState->channelCount = BL_CHANNEL_COUNT;
++
++    // nRF24L01+ IRQ is active low. rxSpiExtiInit() is called by rxSpiInit() after this.
++    extiConfig->ioConfig = IOCFG_IPU;
++    extiConfig->trigger = BETAFLIGHT_EXTI_TRIGGER_FALLING;
++    irqConfigured = rxSpiExtiConfigured();
++
++    blHopInit(&hop, micros());
++    initStatus = nrf24BicopterSetup();
++    // The search dwell starts once the radio is actually listening
++    blHopInit(&hop, micros());
++
++    const timeUs_t nowUs = micros();
++    nextPollUs = nowUs;
++    nextLevelCheckUs = nowUs;
++
++    updateDebug();
++    return initStatus == INIT_OK;
++}
++
++#endif // USE_RX_NRF24_BICOPTER
+diff --git a/src/main/rx/nrf24_bicopter.h b/src/main/rx/nrf24_bicopter.h
+new file mode 100644
+index 0000000..e5c2fe8
+--- /dev/null
++++ b/src/main/rx/nrf24_bicopter.h
+@@ -0,0 +1,45 @@
++/*
++ * This file is part of Betaflight.
++ *
++ * Betaflight is free software. You can redistribute this software
++ * and/or modify this software under the terms of the GNU General
++ * Public License as published by the Free Software Foundation,
++ * either version 3 of the License, or (at your option) any later
++ * version.
++ *
++ * Betaflight is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ *
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this software.
++ *
++ * If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#pragma once
++
++#include <stdint.h>
++
++#include "common/time.h"
++
++#include "rx/rx_spi.h"
++
++typedef struct nrf24BicopterStats_s {
++    uint32_t accepted;      // fresh control samples handed to the RX layer
++    uint32_t malformed;     // bad width/length/type/version/tag/CRC/flags/range/session
++    uint32_t duplicate;
++    uint32_t stale;
++    uint32_t resyncPending;
++    uint32_t txFault;
++    uint32_t spurious;      // IRQ/poll found an empty RX FIFO
++    uint32_t fifoFlush;     // invalid payload width -> RX FIFO flushed
++} nrf24BicopterStats_t;
++
++bool nrf24BicopterInit(const rxSpiConfig_t *rxSpiConfig, rxRuntimeState_t *rxRuntimeState, rxSpiExtiConfig_t *extiConfig);
++rx_spi_received_e nrf24BicopterDataReceived(uint8_t *payload);
++void nrf24BicopterSetRcDataFromPayload(uint16_t *rcData, const uint8_t *payload);
++timeUs_t nrf24BicopterFrameTimeUs(void);
++const nrf24BicopterStats_t *nrf24BicopterGetStats(void);
+diff --git a/src/main/rx/nrf24_bicopter_link.c b/src/main/rx/nrf24_bicopter_link.c
+new file mode 100644
+index 0000000..4c02640
+--- /dev/null
++++ b/src/main/rx/nrf24_bicopter_link.c
+@@ -0,0 +1,318 @@
++/*
++ * This file is part of Betaflight.
++ *
++ * Betaflight is free software. You can redistribute this software
++ * and/or modify this software under the terms of the GNU General
++ * Public License as published by the Free Software Foundation,
++ * either version 3 of the License, or (at your option) any later
++ * version.
++ *
++ * Betaflight is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ *
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this software.
++ *
++ * If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * NRF24_BICOPTER link protocol v2 - hardware independent core.
++ * Shared verbatim with the handset firmware; see nrf24_bicopter_link.h.
++ */
++
++#include <string.h>
++
++#include "nrf24_bicopter_link.h"
++
++#define BL_OFFSET_TAG       2
++#define BL_OFFSET_SESSION   4
++#define BL_OFFSET_SEQ       5
++#define BL_OFFSET_CHANNELS  7
++#define BL_OFFSET_FLAGS     17
++#define BL_OFFSET_CRC       18
++#define BL_CHANNEL_BITS     10
++
++uint32_t blMix32(uint32_t x)
++{
++    // "lowbias32" integer hash: good avalanche, identical on every 32-bit C target
++    x ^= x >> 16;
++    x *= 0x7feb352dU;
++    x ^= x >> 15;
++    x *= 0x846ca68bU;
++    x ^= x >> 16;
++    return x;
++}
++
++uint16_t blLinkTag(uint32_t linkId)
++{
++    return (uint16_t)(blMix32(linkId) >> 16);
++}
++
++uint16_t blCrcSeed(uint32_t linkId)
++{
++    uint16_t seed = (uint16_t)(blMix32(linkId ^ 0xC0FFEE11U) & 0xFFFFU);
++    if (seed == 0) {
++        seed = 0x1D0F;
++    }
++    return seed;
++}
++
++uint16_t blCrc16(uint16_t crc, const uint8_t *data, size_t len)
++{
++    // CRC-16/CCITT, polynomial 0x1021, MSB first, no reflection, no final xor
++    for (size_t i = 0; i < len; i++) {
++        crc ^= (uint16_t)data[i] << 8;
++        for (int bit = 0; bit < 8; bit++) {
++            if (crc & 0x8000) {
++                crc = (uint16_t)((crc << 1) ^ 0x1021);
++            } else {
++                crc = (uint16_t)(crc << 1);
++            }
++        }
++    }
++    return crc;
++}
++
++static uint8_t blFixAddressByte(uint8_t b)
++{
++    // Avoid address bytes with no or only regular bit transitions; 0x55/0xAA also
++    // resemble the radio preamble.
++    if (b == 0x00 || b == 0xFF || b == 0x55 || b == 0xAA) {
++        b ^= 0x3C;
++    }
++    return b;
++}
++
++void blDeriveAddress(uint32_t linkId, uint8_t addr[BL_ADDR_LEN])
++{
++    const uint32_t a = blMix32(linkId ^ 0xA5C3B1E7U);
++    const uint32_t b = blMix32(a ^ linkId);
++    addr[0] = blFixAddressByte((uint8_t)(a & 0xFF));
++    addr[1] = blFixAddressByte((uint8_t)((a >> 8) & 0xFF));
++    addr[2] = blFixAddressByte((uint8_t)((a >> 16) & 0xFF));
++    addr[3] = blFixAddressByte((uint8_t)((a >> 24) & 0xFF));
++    addr[4] = blFixAddressByte((uint8_t)(b & 0xFF));
++}
++
++void blDeriveRfChannels(uint32_t linkId, uint8_t channels[BL_RF_CHANNEL_COUNT])
++{
++    const uint8_t offset = (uint8_t)(blMix32(linkId ^ 0x5EED5EEDU) % BL_RF_CHANNEL_OFFSET_SPAN);
++    for (int i = 0; i < BL_RF_CHANNEL_COUNT; i++) {
++        channels[i] = (uint8_t)(BL_RF_CHANNEL_FIRST + offset + i * BL_RF_CHANNEL_SPACING);
++    }
++}
++
++bool blEncode(uint32_t linkId, const blControl_t *control, uint8_t out[BL_PAYLOAD_LEN])
++{
++    if (control->session == 0 || (control->flags & (uint8_t)~BL_FLAGS_DEFINED_MASK)) {
++        return false;
++    }
++    for (int ch = 0; ch < BL_CHANNEL_COUNT; ch++) {
++        if (control->channelUs[ch] < BL_CHANNEL_US_MIN || control->channelUs[ch] > BL_CHANNEL_US_MAX) {
++            return false;
++        }
++    }
++
++    memset(out, 0, BL_PAYLOAD_LEN);
++    const uint16_t tag = blLinkTag(linkId);
++    out[0] = BL_PKT_TYPE_CONTROL;
++    out[1] = BL_PROTO_VERSION;
++    out[BL_OFFSET_TAG] = (uint8_t)(tag & 0xFF);
++    out[BL_OFFSET_TAG + 1] = (uint8_t)(tag >> 8);
++    out[BL_OFFSET_SESSION] = control->session;
++    out[BL_OFFSET_SEQ] = (uint8_t)(control->sampleSeq & 0xFF);
++    out[BL_OFFSET_SEQ + 1] = (uint8_t)(control->sampleSeq >> 8);
++
++    unsigned bitPos = 0;
++    for (int ch = 0; ch < BL_CHANNEL_COUNT; ch++) {
++        const uint16_t value = (uint16_t)(control->channelUs[ch] - BL_CHANNEL_US_MIN);
++        for (int bit = 0; bit < BL_CHANNEL_BITS; bit++, bitPos++) {
++            if (value & (1U << bit)) {
++                out[BL_OFFSET_CHANNELS + (bitPos >> 3)] |= (uint8_t)(1U << (bitPos & 7));
++            }
++        }
++    }
++
++    out[BL_OFFSET_FLAGS] = control->flags;
++    const uint16_t crc = blCrc16(blCrcSeed(linkId), out, BL_OFFSET_CRC);
++    out[BL_OFFSET_CRC] = (uint8_t)(crc & 0xFF);
++    out[BL_OFFSET_CRC + 1] = (uint8_t)(crc >> 8);
++    return true;
++}
++
++blDecodeResult_e blDecode(uint32_t linkId, const uint8_t *buf, uint8_t len, blControl_t *out)
++{
++    if (len != BL_PAYLOAD_LEN) {
++        return BL_DECODE_BAD_LENGTH;
++    }
++    if (buf[0] != BL_PKT_TYPE_CONTROL) {
++        return BL_DECODE_BAD_TYPE;
++    }
++    if (buf[1] != BL_PROTO_VERSION) {
++        return BL_DECODE_BAD_VERSION;
++    }
++    const uint16_t tag = (uint16_t)(buf[BL_OFFSET_TAG] | (buf[BL_OFFSET_TAG + 1] << 8));
++    if (tag != blLinkTag(linkId)) {
++        return BL_DECODE_BAD_TAG;
++    }
++    const uint16_t crc = (uint16_t)(buf[BL_OFFSET_CRC] | (buf[BL_OFFSET_CRC + 1] << 8));
++    if (crc != blCrc16(blCrcSeed(linkId), buf, BL_OFFSET_CRC)) {
++        return BL_DECODE_BAD_CRC;
++    }
++    const uint8_t flags = buf[BL_OFFSET_FLAGS];
++    if (flags & (uint8_t)~BL_FLAGS_DEFINED_MASK) {
++        return BL_DECODE_BAD_FLAGS;
++    }
++    const uint8_t session = buf[BL_OFFSET_SESSION];
++    if (session == 0) {
++        return BL_DECODE_BAD_SESSION;
++    }
++
++    blControl_t decoded;
++    unsigned bitPos = 0;
++    for (int ch = 0; ch < BL_CHANNEL_COUNT; ch++) {
++        uint16_t value = 0;
++        for (int bit = 0; bit < BL_CHANNEL_BITS; bit++, bitPos++) {
++            if (buf[BL_OFFSET_CHANNELS + (bitPos >> 3)] & (1U << (bitPos & 7))) {
++                value |= (uint16_t)(1U << bit);
++            }
++        }
++        if (value > BL_CHANNEL_VALUE_MAX) {
++            return BL_DECODE_BAD_RANGE;
++        }
++        decoded.channelUs[ch] = (uint16_t)(BL_CHANNEL_US_MIN + value);
++    }
++    decoded.session = session;
++    decoded.sampleSeq = (uint16_t)(buf[BL_OFFSET_SEQ] | (buf[BL_OFFSET_SEQ + 1] << 8));
++    decoded.flags = flags;
++
++    if (out) {
++        *out = decoded;
++    }
++    return BL_DECODE_OK;
++}
++
++void blFreshnessInit(blFreshness_t *f)
++{
++    memset(f, 0, sizeof(*f));
++}
++
++/*
++ * Freshness rules:
++ *  - A packet flagged BL_FLAG_TX_INPUT_FAULT is never accepted.
++ *  - Same session as the reference and sequence advanced by 1..BL_SEQ_ACCEPT_WINDOW: accept.
++ *    (The handset only advances the sequence when a new input sample exists, so a frozen
++ *    acquisition produces duplicates, never acceptances.)
++ *  - Sequence unchanged: duplicate.
++ *  - Backward movement in an established session is always stale. It cannot re-anchor.
++ *  - A new session needs two forward-moving samples. ADC acquisition and radio rates
++ *    are independent, so confirmation permits any positive step in the forward half.
++ *  - Restart announcements and input faults never count as valid control samples.
++ *  - Sequence numbers are 16-bit and compared modulo 2^16, so wrap-around is seamless.
++ */
++blFreshResult_e blFreshnessCheck(blFreshness_t *f, uint8_t session, uint16_t seq, uint8_t flags)
++{
++    if (flags & (BL_FLAG_TX_INPUT_FAULT | BL_FLAG_TX_RESTART)) {
++        return BL_FRESH_TX_FAULT;
++    }
++
++    const bool sameSession = f->haveRef && session == f->session;
++    if (sameSession) {
++        const uint16_t step = (uint16_t)(seq - f->lastSeq);
++        if (step == 0) {
++            return BL_FRESH_DUPLICATE;
++        }
++        if (step <= BL_SEQ_ACCEPT_WINDOW) {
++            f->lastSeq = seq;
++            f->haveCandidate = false;
++            return BL_FRESH_ACCEPT;
++        }
++        return BL_FRESH_STALE;
++    }
++
++    const uint16_t candidateStep = (uint16_t)(seq - f->candSeq);
++    if (f->haveCandidate && f->candSession == session && candidateStep > 0 && candidateStep <= BL_SEQ_ACCEPT_WINDOW) {
++        f->haveRef = true;
++        f->session = session;
++        f->lastSeq = seq;
++        f->haveCandidate = false;
++        return BL_FRESH_ACCEPT;
++    }
++
++    f->haveCandidate = true;
++    f->candSession = session;
++    f->candSeq = seq;
++    return BL_FRESH_RESYNC_PENDING;
++}
++
++void blHopInit(blHop_t *h, uint32_t nowUs)
++{
++    memset(h, 0, sizeof(*h));
++    h->state = BL_HOP_SEARCH;
++    h->idx = 0;
++    h->lastHopUs = nowUs;
++    h->nextHopUs = nowUs + BL_SEARCH_DWELL_US;
++}
++
++/*
++ * Slot timing. The handset transmits packet k at T0 + k*P on channel k mod N.
++ * The receiver retunes half way between expected packets, so every packet arrives
++ * in the middle of its listening window with +/- P/2 tolerance, and the retune never
++ * interrupts the auto-ACK that follows a packet.
++ */
++void blHopOnPacket(blHop_t *h, uint32_t packetTimeUs, bool timeReliable)
++{
++    h->heardThisSlot = true;
++    h->missedSlots = 0;
++
++    if (h->state == BL_HOP_SYNCED && !timeReliable) {
++        return;  // keep the existing slot timing
++    }
++
++    uint32_t next = packetTimeUs + BL_FRAME_PERIOD_US / 2;
++    if ((int32_t)(packetTimeUs - h->lastHopUs) < 0) {
++        // The packet arrived before the last retune (it waited in the FIFO), so it belongs
++        // to the previous channel; the channel tuned now carries the following packet.
++        next += BL_FRAME_PERIOD_US;
++    }
++    h->nextHopUs = next;
++    h->state = BL_HOP_SYNCED;
++}
++
++bool blHopTick(blHop_t *h, uint32_t nowUs)
++{
++    const int32_t late = (int32_t)(nowUs - h->nextHopUs);
++    if (late < 0) {
++        return false;
++    }
++
++    if (h->state == BL_HOP_SEARCH) {
++        // Dwell on each channel for longer than one full hop cycle of the handset.
++        h->idx = (uint8_t)((h->idx + 1) % BL_RF_CHANNEL_COUNT);
++        h->nextHopUs = nowUs + BL_SEARCH_DWELL_US;
++        h->lastHopUs = nowUs;
++        h->heardThisSlot = false;
++        return true;
++    }
++
++    // Number of slot boundaries passed (normally 1; more if this call was delayed).
++    const uint32_t slots = 1U + (uint32_t)late / BL_FRAME_PERIOD_US;
++    const uint32_t missedNow = slots - (h->heardThisSlot ? 1U : 0U);
++    const uint32_t missed = (uint32_t)h->missedSlots + missedNow;
++    h->missedSlots = (uint16_t)(missed > 0xFFFFU ? 0xFFFFU : missed);
++    h->heardThisSlot = false;
++    h->idx = (uint8_t)((h->idx + slots) % BL_RF_CHANNEL_COUNT);
++    h->nextHopUs += slots * BL_FRAME_PERIOD_US;
++    h->lastHopUs = nowUs;
++
++    if (h->missedSlots > BL_SYNC_MAX_MISSED_SLOTS) {
++        h->state = BL_HOP_SEARCH;
++        h->missedSlots = 0;
++        h->nextHopUs = nowUs + BL_SEARCH_DWELL_US;
++    }
++    return true;
++}
+diff --git a/src/main/rx/nrf24_bicopter_link.h b/src/main/rx/nrf24_bicopter_link.h
+new file mode 100644
+index 0000000..3d207c3
+--- /dev/null
++++ b/src/main/rx/nrf24_bicopter_link.h
+@@ -0,0 +1,160 @@
++/*
++ * This file is part of Betaflight.
++ *
++ * Betaflight is free software. You can redistribute this software
++ * and/or modify this software under the terms of the GNU General
++ * Public License as published by the Free Software Foundation,
++ * either version 3 of the License, or (at your option) any later
++ * version.
++ *
++ * Betaflight is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ *
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public
++ * License along with this software.
++ *
++ * If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * NRF24_BICOPTER link protocol, version 2 - hardware independent core.
++ *
++ * This file (and nrf24_bicopter_link.c) is shared VERBATIM between the
++ * Betaflight receiver and the STM32F103 handset firmware. It has no
++ * dependency on Betaflight or on any MCU so it can also be unit tested on a PC.
++ *
++ * Radio layer (both ends):
++ *   nRF24L01+, 250 kbps, 2-byte radio CRC, 5-byte address, auto-acknowledge
++ *   on pipe 0 with dynamic payload length, no ACK payload, no retransmits.
++ *   The 5 address bytes are written to RX_ADDR_P0 / TX_ADDR in array order
++ *   (addr[0] first, i.e. addr[0] is the least significant address byte).
++ *
++ * Pairing: there is no over-the-air bind. Both ends are built with the same
++ * 32-bit link ID; it determines the radio address, the hop channels, the
++ * packet identity tag and the CRC seed.
++ *
++ * Control packet (BL_PAYLOAD_LEN = 20 bytes, multi-byte fields little-endian):
++ *   [0]      type      = BL_PKT_TYPE_CONTROL (0xB1)
++ *   [1]      version   = BL_PROTO_VERSION (2)
++ *   [2..3]   link tag  = blLinkTag(linkId)
++ *   [4]      session   = random non-zero value chosen at handset boot
++ *   [5..6]   sampleSeq = incremented ONLY when a new joystick/switch sample set
++ *                        has been acquired (not per transmission)
++ *   [7..16]  8 channels x 10 bits, packed LSB-first; value v in 0..1000 means
++ *            (1000 + v) microseconds. Values 1001..1023 are invalid.
++ *   [17]     flags: bit0 = input fault, bit1 = restart/interlock, bits 2..7 zero
++ *   [18..19] CRC-16/CCITT (poly 0x1021, MSB first) over bytes 0..17,
++ *            initial value blCrcSeed(linkId)
++ *
++ * Timing: the handset sends one packet every BL_FRAME_PERIOD_US, packet k on
++ * hop channel (k mod BL_RF_CHANNEL_COUNT). See blHop* below for the receiver.
++ */
++
++#pragma once
++
++#include <stdbool.h>
++#include <stddef.h>
++#include <stdint.h>
++
++#define BL_PROTO_VERSION            2
++#define BL_PKT_TYPE_CONTROL         0xB1
++#define BL_PAYLOAD_LEN              20
++#define BL_ADDR_LEN                 5
++#define BL_CHANNEL_COUNT            8
++#define BL_CHANNEL_VALUE_MAX        1000
++#define BL_CHANNEL_US_MIN           1000
++#define BL_CHANNEL_US_MAX           (BL_CHANNEL_US_MIN + BL_CHANNEL_VALUE_MAX)
++
++#define BL_RF_CHANNEL_COUNT         4
++#define BL_RF_CHANNEL_FIRST         4      // lowest nRF24 RF_CH used (2404 MHz)
++#define BL_RF_CHANNEL_SPACING       19     // MHz between hop channels
++#define BL_RF_CHANNEL_OFFSET_SPAN   20     // per-link offset 0..19 -> highest RF_CH = 80
++
++#define BL_FRAME_PERIOD_US          5000   // 200 packets per second
++#define BL_SEQ_ACCEPT_WINDOW        32767  // forward half of the 16-bit sample counter
++#define BL_SYNC_MAX_MISSED_SLOTS    8      // consecutive empty slots before searching again (40 ms)
++#define BL_SEARCH_DWELL_US          ((BL_RF_CHANNEL_COUNT + 1) * BL_FRAME_PERIOD_US)
++
++#define BL_FLAG_TX_INPUT_FAULT      0x01
++#define BL_FLAG_TX_RESTART          0x02   // startup/input recovery interlock; never a valid control sample
++#define BL_FLAGS_DEFINED_MASK       (BL_FLAG_TX_INPUT_FAULT | BL_FLAG_TX_RESTART)
++#define BL_ARM_CHANNEL             4
++#define BL_THROTTLE_CHANNEL        2
++#define BL_ARM_LOW_US              1250
++#define BL_THROTTLE_LOW_US         1050
++
++typedef struct blControl_s {
++    uint8_t session;
++    uint16_t sampleSeq;
++    uint8_t flags;
++    uint16_t channelUs[BL_CHANNEL_COUNT];   // 1000..2000
++} blControl_t;
++
++typedef enum {
++    BL_DECODE_OK = 0,
++    BL_DECODE_BAD_LENGTH,
++    BL_DECODE_BAD_TYPE,
++    BL_DECODE_BAD_VERSION,
++    BL_DECODE_BAD_TAG,
++    BL_DECODE_BAD_CRC,
++    BL_DECODE_BAD_FLAGS,
++    BL_DECODE_BAD_RANGE,
++    BL_DECODE_BAD_SESSION,
++} blDecodeResult_e;
++
++typedef enum {
++    BL_FRESH_ACCEPT = 0,        // new control sample: may refresh the RX watchdog
++    BL_FRESH_DUPLICATE,         // same sample as the last accepted one
++    BL_FRESH_STALE,             // older than the last accepted sample (same session)
++    BL_FRESH_RESYNC_PENDING,    // waiting for a forward-moving confirmation, not necessarily seq+1
++    BL_FRESH_TX_FAULT,          // handset reported its own input acquisition fault
++} blFreshResult_e;
++
++typedef struct blFreshness_s {
++    bool haveRef;
++    uint8_t session;
++    uint16_t lastSeq;
++    bool haveCandidate;
++    uint8_t candSession;
++    uint16_t candSeq;
++} blFreshness_t;
++
++typedef enum {
++    BL_HOP_SEARCH = 0,
++    BL_HOP_SYNCED = 1,
++} blHopState_e;
++
++typedef struct blHop_s {
++    blHopState_e state;
++    uint8_t idx;                // index into the hop channel table currently tuned
++    uint32_t nextHopUs;         // time of the next retune
++    uint32_t lastHopUs;         // time of the last retune
++    uint16_t missedSlots;       // consecutive slots without an authentic packet
++    bool heardThisSlot;
++} blHop_t;
++
++uint32_t blMix32(uint32_t x);
++uint16_t blLinkTag(uint32_t linkId);
++uint16_t blCrcSeed(uint32_t linkId);
++uint16_t blCrc16(uint16_t crc, const uint8_t *data, size_t len);
++void blDeriveAddress(uint32_t linkId, uint8_t addr[BL_ADDR_LEN]);
++void blDeriveRfChannels(uint32_t linkId, uint8_t channels[BL_RF_CHANNEL_COUNT]);
++
++// Returns false (and leaves out unspecified) if any channel is outside 1000..2000us,
++// session is zero, or undefined flag bits are set.
++bool blEncode(uint32_t linkId, const blControl_t *control, uint8_t out[BL_PAYLOAD_LEN]);
++blDecodeResult_e blDecode(uint32_t linkId, const uint8_t *buf, uint8_t len, blControl_t *out);
++
++void blFreshnessInit(blFreshness_t *f);
++blFreshResult_e blFreshnessCheck(blFreshness_t *f, uint8_t session, uint16_t seq, uint8_t flags);
++
++void blHopInit(blHop_t *h, uint32_t nowUs);
++// An authentic (decoded OK) packet was read. If timeReliable is false the
++// timestamp is only approximate (e.g. a packet left over in the RX FIFO) and the
++// slot timing is not re-anchored while synchronised.
++void blHopOnPacket(blHop_t *h, uint32_t packetTimeUs, bool timeReliable);
++// Returns true if h->idx changed and the radio must be retuned. Bounded: never loops.
++bool blHopTick(blHop_t *h, uint32_t nowUs);
+diff --git a/src/main/rx/rx_spi.c b/src/main/rx/rx_spi.c
+index e7c86e6..733c99c 100644
+--- a/src/main/rx/rx_spi.c
++++ b/src/main/rx/rx_spi.c
+@@ -49,6 +49,7 @@
+ #include "rx/nrf24_h8_3d.h"
+ #include "rx/nrf24_inav.h"
+ #include "rx/nrf24_kn.h"
++#include "rx/nrf24_bicopter.h"
+ #include "rx/a7105_flysky.h"
+ #include "rx/cc2500_sfhss.h"
+ #include "rx/cyrf6936_spektrum.h"
+@@ -65,12 +66,15 @@ typedef rx_spi_received_e (*protocolDataReceivedFnPtr)(uint8_t *payload);
+ typedef rx_spi_received_e (*protocolProcessFrameFnPtr)(uint8_t *payload);
+ typedef void (*protocolSetRcDataFromPayloadFnPtr)(uint16_t *rcData, const uint8_t *payload);
+ typedef void (*protocolStopFnPtr)(void);
++typedef timeUs_t (*protocolFrameTimeUsFnPtr)(void);
+ 
+ static protocolInitFnPtr protocolInit;
+ static protocolDataReceivedFnPtr protocolDataReceived;
+ static protocolProcessFrameFnPtr protocolProcessFrame;
+ static protocolSetRcDataFromPayloadFnPtr protocolSetRcDataFromPayload;
+ static protocolStopFnPtr protocolStop = nullProtocolStop;
++// Optional: protocols that timestamp frames themselves (e.g. when polling without EXTI)
++static protocolFrameTimeUsFnPtr protocolFrameTimeUs;
+ 
+ static rxSpiExtiConfig_t extiConfig = {
+     .ioConfig = IOCFG_IN_FLOATING,
+@@ -139,6 +143,14 @@ STATIC_UNIT_TESTED bool rxSpiSetProtocol(rx_spi_protocol_e protocol)
+         protocolSetRcDataFromPayload = inavNrf24SetRcDataFromPayload;
+         break;
+ #endif
++#ifdef USE_RX_NRF24_BICOPTER
++    case RX_SPI_NRF24_BICOPTER:
++        protocolInit = nrf24BicopterInit;
++        protocolDataReceived = nrf24BicopterDataReceived;
++        protocolSetRcDataFromPayload = nrf24BicopterSetRcDataFromPayload;
++        protocolFrameTimeUs = nrf24BicopterFrameTimeUs;
++        break;
++#endif
+ #if defined(USE_RX_FRSKY_SPI)
+ #if defined(USE_RX_FRSKY_SPI_D)
+     case RX_SPI_FRSKY_D:
+@@ -211,9 +223,14 @@ static uint8_t rxSpiFrameStatus(rxRuntimeState_t *rxRuntimeState)
+ 
+     if (result & RX_SPI_RECEIVED_DATA) {
+         rxSpiNewPacketAvailable = true;
+-        // use SPI EXTI time as frame time
+-        // note that there is not rx time without EXTI
+-        rxRuntimeState->lastRcFrameTimeUs = rxSpiGetLastExtiTimeUs();
++        if (protocolFrameTimeUs) {
++            // protocol provides the time of the accepted frame
++            rxRuntimeState->lastRcFrameTimeUs = protocolFrameTimeUs();
++        } else {
++            // use SPI EXTI time as frame time
++            // note that there is not rx time without EXTI
++            rxRuntimeState->lastRcFrameTimeUs = rxSpiGetLastExtiTimeUs();
++        }
+         status = RX_FRAME_COMPLETE;
+     }
+ 
+diff --git a/src/main/rx/rx_spi.h b/src/main/rx/rx_spi.h
+index 5f1cd30..e0a88c4 100644
+--- a/src/main/rx/rx_spi.h
++++ b/src/main/rx/rx_spi.h
+@@ -49,6 +49,7 @@ typedef enum {
+     RX_SPI_FRSKY_X_V2,
+     RX_SPI_FRSKY_X_LBT_V2,
+     RX_SPI_EXPRESSLRS,
++    RX_SPI_NRF24_BICOPTER,
+     RX_SPI_PROTOCOL_COUNT
+ } rx_spi_protocol_e;
+ 
+diff --git a/src/platform/PICO/target/common/target_RP2350.h b/src/platform/PICO/target/common/target_RP2350.h
+index 5a6adf5..0075078 100644
+--- a/src/platform/PICO/target/common/target_RP2350.h
++++ b/src/platform/PICO/target/common/target_RP2350.h
+@@ -111,7 +111,12 @@
+ 
+ // Various untested or unsupported elements are undefined below
+ 
++// RX_SPI is untested on PICO. A board config can opt in to the NRF24 SPI receiver
++// path only, by defining PICO_ENABLE_RX_SPI_NRF24 together with USE_RX_SPI and
++// USE_RX_NRF24. Other SPI receivers (CC2500, ExpressLRS, SX127x/SX1280) stay disabled.
++#if !defined(PICO_ENABLE_RX_SPI_NRF24)
+ #undef USE_RX_SPI
++#endif
+ #undef USE_RX_PWM
+ #undef USE_RX_PPM
+ #undef USE_RX_CC2500
+diff --git a/src/platform/PICO/usb/usb_msc_pico.c b/src/platform/PICO/usb/usb_msc_pico.c
+index 60578b4..292fa9e 100644
+--- a/src/platform/PICO/usb/usb_msc_pico.c
++++ b/src/platform/PICO/usb/usb_msc_pico.c
+@@ -326,6 +326,65 @@ void mscTask(void)
+ {
+     tud_task();
+ }
++
++#else // !USE_USB_MSC
++
++// The TinyUSB MSC class driver is always compiled for PICO (CFG_TUD_MSC=1 in tusb_config.h)
++// and usb_descriptors.c always references pico_msc_active. When a board has no blackbox
++// storage, common_post.h undefines USE_USB_MSC and none of the symbols above exist, so the
++// link fails. Provide inert definitions: pico_msc_active stays false, so the MSC
++// configuration descriptor is never offered and these callbacks are never invoked.
++
++#include <string.h>
++
++#include "tusb_config.h"
++
++#define _STDIO_H_
++#include "tusb.h"
++
++#include "common/utils.h"
++
++bool pico_msc_active = false;
++
++int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buffer, uint32_t bufsize)
++{
++    UNUSED(lun); UNUSED(lba); UNUSED(offset); UNUSED(buffer); UNUSED(bufsize);
++    return -1;
++}
++
++int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *buffer, uint32_t bufsize)
++{
++    UNUSED(lun); UNUSED(lba); UNUSED(offset); UNUSED(buffer); UNUSED(bufsize);
++    return -1;
++}
++
++void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4])
++{
++    UNUSED(lun);
++    memset(vendor_id, ' ', 8);
++    memset(product_id, ' ', 16);
++    memset(product_rev, ' ', 4);
++}
++
++bool tud_msc_test_unit_ready_cb(uint8_t lun)
++{
++    UNUSED(lun);
++    return false;
++}
++
++void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_size)
++{
++    UNUSED(lun);
++    *block_count = 0;
++    *block_size = 512;
++}
++
++int32_t tud_msc_scsi_cb(uint8_t lun, const uint8_t scsi_cmd[16], void *buffer, uint16_t bufsize)
++{
++    UNUSED(lun); UNUSED(scsi_cmd); UNUSED(buffer); UNUSED(bufsize);
++    return -1;
++}
++
+ #endif // USE_USB_MSC
+ 
+ 
+diff --git a/src/test/unit/flight_failsafe_unittest.cc b/src/test/unit/flight_failsafe_unittest.cc
+index 49c84ca..27ff55f 100644
+--- a/src/test/unit/flight_failsafe_unittest.cc
++++ b/src/test/unit/flight_failsafe_unittest.cc
+@@ -886,6 +886,34 @@ TEST_F(FlightFailsafeAutopilotTest, AutopilotPhaseRecoversWithRxAndSticks)
+     EXPECT_EQ(FAILSAFE_IDLE, failsafePhase());
+ }
+ 
++TEST(FlightFailsafeTest, ReceiverRestartDisarmsWithoutWaitingForRxLoss)
++{
++    configureFailsafe();
++    failsafeInit();
++    failsafeReset();
++    failsafeStartMonitoring();
++    resetCallCounters();
++    sysTickUptime = 1000;
++    ENABLE_ARMING_FLAG(ARMED);
++    failsafeOnReceiverReset();
++    EXPECT_EQ(1, CALL_COUNTER(COUNTER_MW_DISARM));
++    EXPECT_TRUE(failsafeIsActive());
++    EXPECT_FALSE(failsafeIsReceivingRxData());
++    EXPECT_EQ(FAILSAFE_RX_LOSS_MONITORING, failsafePhase());
++    EXPECT_TRUE(getArmingDisableFlags() & ARMING_DISABLED_FAILSAFE);
++    EXPECT_TRUE(getArmingDisableFlags() & ARMING_DISABLED_ARM_SWITCH);
++    // This happens immediately, not after the configured one-second Stage 1 delay.
++    sysTickUptime += PERIOD_RXDATA_RECOVERY + 1;
++    failsafeOnValidDataReceived();
++    failsafeUpdateState();
++    EXPECT_FALSE(failsafeIsActive());
++    EXPECT_EQ(FAILSAFE_IDLE, failsafePhase());
++    EXPECT_TRUE(getArmingDisableFlags() & ARMING_DISABLED_ARM_SWITCH);
++    DISABLE_ARMING_FLAG(ARMED);
++    unsetArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
++    unsetArmingDisabled(ARMING_DISABLED_RX_FAILSAFE);
++}
++
+ // STUBS
+ 
+ extern "C" {

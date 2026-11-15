@@ -1,0 +1,6 @@
+# Host test binaries
+*.exe
+*.o
+tests/test_link
+tests/test_rx_adapter
+handset/test/test_handset

@@ -1,0 +1,2442 @@
+cd src/test && make --no-print-directory test
+CC version: Ubuntu clang version 18.1.3 (1ubuntu1) Target: x86_64-pc-linux-gnu Thread model: posix InstalledDir: /usr/bin
+CXX version: Ubuntu clang version 18.1.3 (1ubuntu1) Target: x86_64-pc-linux-gnu Thread model: posix InstalledDir: /usr/bin
+compiling ../main/drivers/accgyro/accgyro_spi_icm426xx.c 
+compiling unit/accgyro_spi_icm426xx_unittest.cc 
+compiling ../../obj/test/gtest-all.o 
+compiling ../../obj/test/gtest_main.o 
+compiling ../main/sensors/boardalignment.c 
+compiling ../main/common/sensor_alignment.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling unit/alignsensor_unittest.cc 
+compiling ../main/flight/alt_hold_multirotor.c 
+compiling ../main/flight/autopilot_multirotor.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling ../main/common/filter.c 
+compiling ../main/pg/rx.c 
+compiling unit/althold_unittest.cc 
+compiling ../main/common/bitarray.c 
+compiling ../main/common/filter.c 
+compiling ../main/common/vector.c 
+compiling ../main/fc/core.c 
+compiling ../main/fc/dispatch.c 
+compiling ../main/fc/rc_controls.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/flight/autopilot_multirotor.c 
+compiling ../main/flight/gps_rescue_multirotor.c 
+compiling unit/arming_prevention_unittest.cc 
+compiling ../main/build/atomic.c 
+compiling test c file: unit/atomic_unittest_c.c 
+compiling unit/atomic_unittest.cc 
+compiling ../main/drivers/barometer/barometer_bmp085.c 
+compiling unit/baro_bmp085_unittest.cc 
+compiling ../main/drivers/barometer/barometer_bmp280.c 
+compiling unit/baro_bmp280_unittest.cc 
+compiling ../main/common/maths.c 
+compiling ../main/drivers/barometer/barometer_bmp388.c 
+compiling unit/baro_bmp388_unittest.cc 
+compiling ../main/drivers/barometer/barometer_ms5611.c 
+compiling unit/baro_ms5611_unittest.cc 
+compiling ../main/sensors/battery.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/filter.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/pg/pg.c 
+compiling unit/battery_profile_unittest.cc 
+compiling ../main/io/beeper.c 
+compiling unit/beeper_unittest.cc 
+compiling ../main/blackbox/blackbox_encoding.c 
+compiling ../main/common/encoding.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/typeconversion.c 
+compiling unit/blackbox_encoding_unittest.cc 
+compiling ../main/blackbox/blackbox.c 
+compiling ../main/blackbox/blackbox_encoding.c 
+compiling ../main/blackbox/blackbox_io.c 
+compiling ../main/common/encoding.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/drivers/accgyro/gyro_sync.c 
+compiling ../main/pg/gps.c 
+compiling unit/blackbox_unittest.cc 
+compiling ../main/cli/cli.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/gps_conversion.c 
+compiling ../main/config/feature.c 
+compiling ../main/io/gps.c 
+compiling ../main/io/serial_resource.c 
+compiling ../main/pg/pg.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/drivers/serial.c 
+compiling ../main/drivers/serial_impl.c 
+compiling ../main/common/typeconversion.c 
+compiling unit/cli_unittest.cc 
+compiling ../main/cms/cms.c 
+compiling ../main/cms/cms_menu_saveexit.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/drivers/display.c 
+compiling unit/cms_unittest.cc 
+compiling ../main/common/filter.c 
+compiling ../main/common/maths.c 
+compiling unit/common_filter_unittest.cc 
+compiling ../main/drivers/compass/compass_ist8310.c 
+compiling unit/compass_ist8310_unittest.cc 
+git -C ../.. submodule update --init -- lib/modules/dronecan/libcanard
+Submodule 'lib/modules/dronecan/libcanard' (https://github.com/dronecan/libcanard.git) registered for path 'lib/modules/dronecan/libcanard'
+Cloning into '/opt/betaflight/lib/modules/dronecan/libcanard'...
+compiling ../main/common/encoding.c 
+compiling unit/encoding_unittest.cc 
+compiling ../main/common/bitarray.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/flight/failsafe.c 
+compiling ../main/pg/autopilot.c 
+compiling unit/flight_failsafe_rescue_unittest.cc 
+compiling ../main/common/bitarray.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/flight/failsafe.c 
+compiling ../main/pg/autopilot.c 
+compiling unit/flight_failsafe_unittest.cc 
+compiling ../main/common/bitarray.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling ../main/common/filter.c 
+compiling ../main/config/feature.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/flight/position.c 
+compiling ../main/flight/imu.c 
+compiling unit/flight_imu_unittest.cc 
+compiling ../main/flight/flight_plan_capture.c 
+compiling ../main/pg/flight_plan.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/typeconversion.c 
+compiling unit/flight_plan_capture_unittest.cc 
+compiling ../main/flight/flight_plan_nav.c 
+compiling ../main/pg/autopilot.c 
+compiling ../main/pg/flight_plan.c 
+compiling ../main/pg/gps_rescue_multirotor.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling unit/flight_plan_nav_unittest.cc 
+compiling ../main/flight/flight_plan_nav.c 
+compiling ../main/pg/autopilot.c 
+compiling ../main/pg/flight_plan.c 
+compiling ../main/pg/gps_rescue_multirotor.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling unit/flight_plan_rescue_unittest.cc 
+compiling ../main/common/gps_conversion.c 
+compiling unit/gps_conversion_unittest.cc 
+compiling ../main/common/huffman.c 
+compiling ../main/common/huffman_table.c 
+compiling unit/huffman_unittest.cc 
+compiling ../main/io/serial.c 
+compiling ../main/io/serial_resource.c 
+compiling unit/io_serial_unittest.cc 
+compiling ../main/common/bitarray.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/io/ledstrip.c 
+compiling unit/ledstrip_unittest.cc 
+compiling ../main/osd/osd.c 
+compiling ../main/osd/osd_elements.c 
+compiling ../main/osd/osd_warnings.c 
+compiling ../main/common/bitarray.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/time.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/common/vector.c 
+compiling ../main/drivers/display.c 
+compiling ../main/drivers/serial.c 
+compiling ../main/drivers/serial_impl.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/pg/pg.c 
+compiling ../main/pg/rx.c 
+compiling ../main/rx/rx.c 
+compiling ../main/rx/crsf.c 
+compiling unit/link_quality_unittest.cc 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling unit/maths_unittest.cc 
+compiling ../main/build/atomic.c 
+compiling ../main/drivers/dshot.c 
+compiling unit/motor_output_unittest.cc 
+compiling ../main/msp/msp_serial.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling unit/msp_serial_unittest.cc 
+compiling ../main/osd/osd_nav_map.c 
+compiling ../main/flight/nav_trail.c 
+compiling ../main/pg/osd_nav_map.c 
+compiling ../main/pg/flight_plan.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/common/vector.c 
+compiling unit/osd_nav_map_unittest.cc 
+compiling ../main/osd/osd.c 
+Submodule path 'lib/modules/dronecan/libcanard': checked out '601ed35467e0ac38819df17cd7c918de19f62d58'
+compiling ../main/osd/osd_elements.c 
+compiling ../main/osd/osd_warnings.c 
+compiling ../main/common/filter.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/time.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/common/vector.c 
+compiling ../main/drivers/display.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/common/crc.c 
+compiling unit/osd_unittest.cc 
+compiling ../main/common/streambuf.c 
+compiling ../main/pg/pg.c 
+compiling unit/pg_unittest.cc 
+compiling ../main/common/crc.c 
+compiling ../main/common/filter.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/pwl.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/drivers/accgyro/gyro_sync.c 
+compiling ../main/fc/controlrate_profile.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/flight/pid.c 
+compiling ../main/flight/pid_init.c 
+compiling ../main/pg/pg.c 
+compiling unit/pid_unittest.cc 
+compiling ../main/flight/autopilot_multirotor.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling ../main/common/filter.c 
+compiling ../main/pg/rx.c 
+compiling unit/poshold_unittest.cc 
+compiling ../main/flight/position_estimator.c 
+compiling ../main/flight/position_filter.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling unit/position_estimator_unittest.cc 
+compiling ../main/flight/position_nav.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/vector.c 
+compiling unit/position_nav_unittest.cc 
+compiling ../main/common/maths.c 
+compiling unit/position_rescue_geometry_unittest.cc 
+compiling ../main/common/pwl.c 
+compiling unit/pwl_unittest.cc 
+compiling ../main/fc/rc_controls.c 
+compiling ../main/pg/pg.c 
+compiling ../main/common/bitarray.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/fc/rc_adjustments.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/config/simplified_tuning.c 
+compiling unit/rc_controls_unittest.cc 
+compiling ../main/fc/rc.c 
+compiling ../main/fc/controlrate_profile.c 
+compiling ../main/pg/pg.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/maths.c 
+compiling unit/rc_unittest.cc 
+compiling ../main/common/crc.c 
+compiling ../main/common/bitarray.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/io/rcdevice.c 
+compiling ../main/io/rcdevice_cam.c 
+compiling ../main/pg/pg.c 
+compiling unit/rcdevice_unittest.cc 
+compiling ../main/rx/crsf.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/drivers/serial.c 
+compiling ../main/drivers/serial_impl.c 
+compiling unit/rx_crsf_unittest.cc 
+compiling ../main/rx/ibus.c 
+compiling unit/rx_ibus_unittest.cc 
+compiling ../main/rx/msp.c 
+compiling unit/rx_msp_override_unittest.cc 
+compiling ../main/common/bitarray.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/rx/rx.c 
+compiling ../main/pg/pg.c 
+compiling ../main/pg/rx.c 
+compiling unit/rx_ranges_unittest.cc 
+compiling ../main/rx/rx.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/common/bitarray.c 
+compiling ../main/common/maths.c 
+compiling ../main/config/feature.c 
+compiling ../main/pg/rx.c 
+compiling unit/rx_rx_unittest.cc 
+compiling ../main/rx/crsf.c 
+compiling ../main/telemetry/crsf.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/gps_conversion.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/rx/expresslrs_telemetry.c 
+compiling ../main/build/atomic.c 
+compiling ../main/telemetry/msp_shared.c 
+compiling unit/rx_spi_expresslrs_telemetry_unittest.cc 
+compiling ../main/pg/rx_spi_expresslrs.c 
+compiling ../main/rx/expresslrs_common.c 
+compiling ../main/rx/expresslrs.c 
+compiling ../main/build/atomic.c 
+compiling unit/rx_spi_expresslrs_unittest.cc 
+compiling ../main/pg/rx_spi_expresslrs.c 
+compiling ../main/rx/expresslrs.c 
+compiling ../main/rx/expresslrs_common.c 
+compiling ../main/build/atomic.c 
+compiling unit/rx_spi_expresslrs_v4_unittest.cc 
+compiling ../main/rx/cyrf6936_spektrum.c 
+compiling unit/rx_spi_spektrum_unittest.cc 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/rx/sumd.c 
+compiling unit/rx_sumd_unittest.cc 
+compiling ../main/scheduler/scheduler.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling test c file: unit/scheduler_stubs.c 
+compiling unit/scheduler_unittest.cc 
+compiling ../main/sensors/gyro.c 
+compiling ../main/sensors/gyro_init.c 
+compiling ../main/sensors/boardalignment.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/filter.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/sensor_alignment.c 
+compiling ../main/common/vector.c 
+compiling ../main/drivers/accgyro/accgyro_virtual.c 
+compiling ../main/drivers/accgyro/gyro_sync.c 
+compiling ../main/pg/pg.c 
+compiling ../main/pg/gyrodev.c 
+compiling unit/sensor_gyro_unittest.cc 
+compiling test c file: unit/sitl_gyro_unittest_c.c 
+compiling unit/sitl_gyro_unittest.cc 
+compiling ../main/rx/crsf.c 
+compiling ../main/build/atomic.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/printf.c 
+compiling ../main/drivers/serial.c 
+compiling ../main/drivers/serial_impl.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/telemetry/crsf.c 
+compiling ../main/common/gps_conversion.c 
+compiling ../main/telemetry/msp_shared.c 
+compiling ../main/fc/runtime_config.c 
+compiling unit/telemetry_crsf_msp_unittest.cc 
+compiling ../main/rx/crsf.c 
+compiling ../main/telemetry/crsf.c 
+compiling ../main/common/crc.c 
+compiling ../main/common/maths.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/common/gps_conversion.c 
+compiling ../main/common/printf.c 
+compiling ../main/common/typeconversion.c 
+compiling ../main/fc/runtime_config.c 
+compiling unit/telemetry_crsf_unittest.cc 
+compiling ../main/telemetry/hott.c 
+compiling ../main/io/serial_resource.c 
+compiling ../main/common/gps_conversion.c 
+compiling unit/telemetry_hott_unittest.cc 
+compiling ../main/telemetry/ibus_shared.c 
+compiling ../main/telemetry/ibus.c 
+compiling unit/telemetry_ibus_unittest.cc 
+compiling ../main/telemetry/mavlink_mission.c 
+compiling ../main/pg/flight_plan.c 
+compiling ../main/pg/autopilot.c 
+compiling unit/telemetry_mavlink_mission_unittest.cc 
+compiling ../main/drivers/transponder_ir_ilap.c 
+compiling ../main/drivers/transponder_ir_arcitimer.c 
+compiling unit/transponder_ir_unittest.cc 
+compiling ../main/common/crc.c 
+compiling ../main/common/streambuf.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/drivers/vtx_common.c 
+compiling ../main/drivers/vtx_table.c 
+compiling ../main/pg/vtx_table.c 
+compiling ../main/io/vtx_control.c 
+compiling ../main/io/vtx.c 
+compiling ../main/io/vtx_msp.c 
+compiling unit/vtx_msp_unittest.cc 
+compiling ../main/fc/core.c 
+compiling ../main/fc/dispatch.c 
+compiling ../main/fc/rc_controls.c 
+compiling ../main/fc/rc_modes.c 
+compiling ../main/fc/runtime_config.c 
+compiling ../main/drivers/vtx_common.c 
+compiling ../main/drivers/vtx_table.c 
+compiling ../main/io/vtx_control.c 
+compiling ../main/io/vtx.c 
+compiling ../main/common/bitarray.c 
+compiling unit/vtx_unittest.cc 
+linking ../../obj/test/gtest_main.a 
+ar: creating ../../obj/test/gtest_main.a
+compiling test c file: unit/dronecan_gnss_libcanard.c 
+a - ../../obj/test/gtest-all.o
+a - ../../obj/test/gtest_main.o
+compiling unit/dronecan_gnss_unittest.cc 
+compiling ../main/io/dronecan/dronecan_mag.c 
+compiling test c file: unit/dronecan_mag_canard.c 
+compiling unit/dronecan_mag_unittest.cc 
+linking ../../obj/test/encoding_unittest/encoding_unittest 
+linking ../../obj/test/flight_failsafe_rescue_unittest/flight_failsafe_rescue_unittest 
+linking ../../obj/test/flight_failsafe_unittest/flight_failsafe_unittest 
+linking ../../obj/test/flight_imu_unittest/flight_imu_unittest 
+linking ../../obj/test/flight_plan_capture_unittest/flight_plan_capture_unittest 
+linking ../../obj/test/flight_plan_nav_unittest/flight_plan_nav_unittest 
+linking ../../obj/test/flight_plan_rescue_unittest/flight_plan_rescue_unittest 
+linking ../../obj/test/gps_conversion_unittest/gps_conversion_unittest 
+linking ../../obj/test/huffman_unittest/huffman_unittest 
+linking ../../obj/test/io_serial_unittest/io_serial_unittest 
+linking ../../obj/test/ledstrip_unittest/ledstrip_unittest 
+linking ../../obj/test/link_quality_unittest/link_quality_unittest 
+linking ../../obj/test/maths_unittest/maths_unittest 
+linking ../../obj/test/motor_output_unittest/motor_output_unittest 
+linking ../../obj/test/msp_serial_unittest/msp_serial_unittest 
+linking ../../obj/test/osd_nav_map_unittest/osd_nav_map_unittest 
+linking ../../obj/test/osd_unittest/osd_unittest 
+linking ../../obj/test/pg_unittest/pg_unittest 
+linking ../../obj/test/pid_unittest/pid_unittest 
+linking ../../obj/test/poshold_unittest/poshold_unittest 
+linking ../../obj/test/position_estimator_unittest/position_estimator_unittest 
+linking ../../obj/test/position_nav_unittest/position_nav_unittest 
+linking ../../obj/test/position_rescue_geometry_unittest/position_rescue_geometry_unittest 
+linking ../../obj/test/pwl_unittest/pwl_unittest 
+linking ../../obj/test/rc_controls_unittest/rc_controls_unittest 
+linking ../../obj/test/rc_unittest/rc_unittest 
+linking ../../obj/test/rcdevice_unittest/rcdevice_unittest 
+linking ../../obj/test/rx_crsf_unittest/rx_crsf_unittest 
+linking ../../obj/test/rx_ibus_unittest/rx_ibus_unittest 
+linking ../../obj/test/rx_msp_override_unittest/rx_msp_override_unittest 
+linking ../../obj/test/rx_ranges_unittest/rx_ranges_unittest 
+linking ../../obj/test/rx_rx_unittest/rx_rx_unittest 
+linking ../../obj/test/rx_spi_expresslrs_telemetry_unittest/rx_spi_expresslrs_telemetry_unittest 
+linking ../../obj/test/rx_spi_expresslrs_unittest/rx_spi_expresslrs_unittest 
+linking ../../obj/test/rx_spi_expresslrs_v4_unittest/rx_spi_expresslrs_v4_unittest 
+linking ../../obj/test/rx_spi_spektrum_unittest/rx_spi_spektrum_unittest 
+linking ../../obj/test/rx_sumd_unittest/rx_sumd_unittest 
+linking ../../obj/test/scheduler_unittest/scheduler_unittest 
+linking ../../obj/test/sensor_gyro_unittest/sensor_gyro_unittest 
+linking ../../obj/test/sitl_gyro_unittest/sitl_gyro_unittest 
+linking ../../obj/test/telemetry_crsf_msp_unittest/telemetry_crsf_msp_unittest 
+linking ../../obj/test/telemetry_crsf_unittest/telemetry_crsf_unittest 
+linking ../../obj/test/telemetry_hott_unittest/telemetry_hott_unittest 
+linking ../../obj/test/telemetry_ibus_unittest/telemetry_ibus_unittest 
+linking ../../obj/test/telemetry_mavlink_mission_unittest/telemetry_mavlink_mission_unittest 
+linking ../../obj/test/transponder_ir_unittest/transponder_ir_unittest 
+linking ../../obj/test/vtx_msp_unittest/vtx_msp_unittest 
+linking ../../obj/test/vtx_unittest/vtx_unittest 
+linking ../../obj/test/accgyro_spi_icm426xx_unittest/accgyro_spi_icm426xx_unittest 
+linking ../../obj/test/alignsensor_unittest/alignsensor_unittest 
+linking ../../obj/test/althold_unittest/althold_unittest 
+linking ../../obj/test/arming_prevention_unittest/arming_prevention_unittest 
+linking ../../obj/test/atomic_unittest/atomic_unittest 
+linking ../../obj/test/baro_bmp085_unittest/baro_bmp085_unittest 
+linking ../../obj/test/baro_bmp280_unittest/baro_bmp280_unittest 
+linking ../../obj/test/baro_bmp388_unittest/baro_bmp388_unittest 
+linking ../../obj/test/baro_ms5611_unittest/baro_ms5611_unittest 
+linking ../../obj/test/battery_profile_unittest/battery_profile_unittest 
+linking ../../obj/test/beeper_unittest/beeper_unittest 
+linking ../../obj/test/blackbox_encoding_unittest/blackbox_encoding_unittest 
+linking ../../obj/test/blackbox_unittest/blackbox_unittest 
+linking ../../obj/test/cli_unittest/cli_unittest 
+linking ../../obj/test/cms_unittest/cms_unittest 
+linking ../../obj/test/common_filter_unittest/common_filter_unittest 
+linking ../../obj/test/compass_ist8310_unittest/compass_ist8310_unittest 
+linking ../../obj/test/dronecan_gnss_unittest/dronecan_gnss_unittest 
+linking ../../obj/test/dronecan_mag_unittest/dronecan_mag_unittest 
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 2 tests from EncodingTest
+[ RUN      ] EncodingTest.ZigzagEncodingTest
+[       OK ] EncodingTest.ZigzagEncodingTest (0 ms)
+[ RUN      ] EncodingTest.FloatToIntEncodingTest
+[       OK ] EncodingTest.FloatToIntEncodingTest (0 ms)
+[----------] 2 tests from EncodingTest (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 tests from 1 test suite ran. (5 ms total)
+[  PASSED  ] 2 tests.
+running test_encoding_unittest: PASS
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 5 tests from FlightFailsafeRescueTest
+[ RUN      ] FlightFailsafeRescueTest.GpsRescueProcedureStagesAndEntersAutopilotPhase
+[       OK ] FlightFailsafeRescueTest.GpsRescueProcedureStagesAndEntersAutopilotPhase (0 ms)
+[ RUN      ] FlightFailsafeRescueTest.StageFailureFallsBackToAutoLanding
+[       OK ] FlightFailsafeRescueTest.StageFailureFallsBackToAutoLanding (0 ms)
+[ RUN      ] FlightFailsafeRescueTest.EngageGraceHonoured
+[       OK ] FlightFailsafeRescueTest.EngageGraceHonoured (0 ms)
+[ RUN      ] FlightFailsafeRescueTest.AbortFallsBackToAutoLandingNotRescue
+[       OK ] FlightFailsafeRescueTest.AbortFallsBackToAutoLandingNotRescue (0 ms)
+[ RUN      ] FlightFailsafeRescueTest.MissionCompleteFallsBackToConfiguredProcedure
+[       OK ] FlightFailsafeRescueTest.MissionCompleteFallsBackToConfiguredProcedure (0 ms)
+[----------] 5 tests from FlightFailsafeRescueTest (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 5 tests from 1 test suite ran. (7 ms total)
+[  PASSED  ] 5 tests.
+running test_flight_failsafe_rescue_unittest: PASS
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 20 tests from 2 test suites.
+[----------] Global test environment set-up.
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 17 tests from 2 test suites.
+[----------] Global test environment set-up.
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 10 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from FlightFailsafeTest
+[----------] 3 tests from FlightImuTest
+[----------] 10 tests from FlightPlanCaptureTest
+[ RUN      ] FlightFailsafeTest.TestFailsafeInitialState
+[ RUN      ] FlightImuTest.TestCalculateRotationMatrix
+[ RUN      ] FlightPlanCaptureTest.TapAppendsWaypointSampledAtThePress
+[       OK ] FlightFailsafeTest.TestFailsafeInitialState (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 69 tests from 4 test suites.
+[----------] Global test environment set-up.
+[       OK ] FlightImuTest.TestCalculateRotationMatrix (0 ms)
+[ RUN      ] FlightImuTest.TestUpdateEulerAngles
+[       OK ] FlightPlanCaptureTest.TapAppendsWaypointSampledAtThePress (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 14 tests from 1 test suite.
+[ RUN      ] FlightFailsafeTest.TestFailsafeStartMonitoring
+[----------] 34 tests from FlightPlanNavTest
+[       OK ] FlightImuTest.TestUpdateEulerAngles (0 ms)
+[ RUN      ] FlightPlanCaptureTest.HoldDeletesTheLastWaypointAndTheReleaseDropsNothing
+[----------] Global test environment set-up.
+[----------] 14 tests from FlightPlanRescueTest
+[       OK ] FlightFailsafeTest.TestFailsafeStartMonitoring (0 ms)
+[ RUN      ] FlightPlanNavTest.EmptyPlanGoesStraightToComplete
+[       OK ] FlightPlanNavTest.EmptyPlanGoesStraightToComplete (0 ms)
+[ RUN      ] FlightImuTest.TestSmallAngle
+[       OK ] FlightPlanCaptureTest.HoldDeletesTheLastWaypointAndTheReleaseDropsNothing (0 ms)
+[ RUN      ] FlightPlanRescueTest.StageThenEngageDispatchesRescuePlan
+[       OK ] FlightPlanRescueTest.StageThenEngageDispatchesRescuePlan (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeFirstArmedCycle
+[       OK ] FlightFailsafeTest.TestFailsafeFirstArmedCycle (0 ms)
+[ RUN      ] FlightPlanNavTest.NoGpsOriginLeavesStateIdle
+[       OK ] FlightImuTest.TestSmallAngle (0 ms)
+[ RUN      ] FlightPlanCaptureTest.HoldDeleteStillWorksOnAFullPlan
+[       OK ] FlightPlanCaptureTest.HoldDeleteStillWorksOnAFullPlan (0 ms)
+[ RUN      ] FlightPlanRescueTest.StageFailsWithoutHomeFix
+[       OK ] FlightPlanRescueTest.StageFailsWithoutHomeFix (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeNotActivatedWhenReceivingData
+[       OK ] FlightPlanNavTest.NoGpsOriginLeavesStateIdle (0 ms)
+[ RUN      ] FlightPlanNavTest.EngageSetsFirstWaypointTarget
+[----------] 3 tests from FlightImuTest (27 ms total)
+
+[ RUN      ] FlightPlanCaptureTest.TapOnAFullPlanAddsNothingAndSaysSo
+[ RUN      ] FlightPlanRescueTest.StageFailsWithoutGpsFix
+[       OK ] FlightFailsafeTest.TestFailsafeNotActivatedWhenReceivingData (0 ms)
+[       OK ] FlightPlanNavTest.EngageSetsFirstWaypointTarget (0 ms)
+[----------] 14 tests from TestAngles/YawTest
+[       OK ] FlightPlanCaptureTest.TapOnAFullPlanAddsNothingAndSaysSo (0 ms)
+[       OK ] FlightPlanRescueTest.StageFailsWithoutGpsFix (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeDetectsRxLossAndStartsLanding
+[ RUN      ] FlightPlanNavTest.FallsBackToMaxVelocityWhenWaypointSpeedZero
+[       OK ] FlightPlanNavTest.FallsBackToMaxVelocityWhenWaypointSpeedZero (0 ms)
+[ RUN      ] TestAngles/YawTest.TestCogAlign/0
+[ RUN      ] FlightPlanCaptureTest.NoFixMeansNoWaypoint
+[ RUN      ] FlightPlanRescueTest.ReturnAltPerMode
+[       OK ] FlightFailsafeTest.TestFailsafeDetectsRxLossAndStartsLanding (0 ms)
+[ RUN      ] FlightPlanNavTest.LegsCompleteOnRadiusEntryAtAnySpeed
+[          ] Aligned to 0 deg in 0.00s
+[       OK ] TestAngles/YawTest.TestCogAlign/0 (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[       OK ] FlightPlanCaptureTest.NoFixMeansNoWaypoint (0 ms)
+[ RUN      ] FlightPlanCaptureTest.SwitchIsIgnoredWhileTheMissionFlies
+[       OK ] FlightPlanRescueTest.ReturnAltPerMode (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeCausesLanding
+[       OK ] FlightFailsafeTest.TestFailsafeCausesLanding (0 ms)
+[       OK ] FlightPlanNavTest.LegsCompleteOnRadiusEntryAtAnySpeed (0 ms)
+[ RUN      ] FlightPlanNavTest.WaypointReachedAdvancesToNext
+[ RUN      ] TestAngles/YawTest.TestCogAlign/1
+[----------] Global test environment set-up.
+[       OK ] FlightPlanCaptureTest.SwitchIsIgnoredWhileTheMissionFlies (0 ms)
+[ RUN      ] FlightPlanCaptureTest.SignalLossMidHoldFreezesTheGestureNotCommitsIt
+[ RUN      ] FlightPlanRescueTest.CloseRangeReturnAltitudeUsesModestHeadroom
+[ RUN      ] FlightFailsafeTest.TestFailsafeDetectsRxLossAndJustDisarms
+[       OK ] FlightPlanNavTest.WaypointReachedAdvancesToNext (0 ms)
+[ RUN      ] FlightPlanNavTest.ReachingLastWaypointCompletes
+[----------] 2 tests from GpsConversionTest
+[ RUN      ] GpsConversionTest.GPSCoordToDegrees_BadString
+[          ] Aligned to 45 deg in 15.62s
+[       OK ] TestAngles/YawTest.TestCogAlign/1 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestCogAlign/2
+[       OK ] FlightPlanCaptureTest.SignalLossMidHoldFreezesTheGestureNotCommitsIt (0 ms)
+[ RUN      ] FlightPlanCaptureTest.MissionEngagingBetweenPressAndReleaseCancelsTheDrop
+[       OK ] FlightPlanRescueTest.CloseRangeReturnAltitudeUsesModestHeadroom (0 ms)
+[ RUN      ] FlightPlanRescueTest.StageWhileActiveInjectsImmediately
+[       OK ] FlightFailsafeTest.TestFailsafeDetectsRxLossAndJustDisarms (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeSwitchModeKill
+[       OK ] FlightPlanNavTest.ReachingLastWaypointCompletes (0 ms)
+[ RUN      ] FlightPlanNavTest.HoldWithDurationEntersHoldingThenAdvances
+[       OK ] GpsConversionTest.GPSCoordToDegrees_BadString (0 ms)
+[          ] Aligned to -45 deg in 15.62s
+[       OK ] TestAngles/YawTest.TestCogAlign/2 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestCogAlign/3
+[       OK ] FlightPlanCaptureTest.MissionEngagingBetweenPressAndReleaseCancelsTheDrop (0 ms)
+[ RUN      ] FlightPlanCaptureTest.ConsecutiveTapsNumberTheWaypoints
+[       OK ] FlightPlanRescueTest.StageWhileActiveInjectsImmediately (0 ms)
+[ RUN      ] FlightPlanRescueTest.ClimbLegAltitudeGated
+[       OK ] FlightFailsafeTest.TestFailsafeSwitchModeKill (0 ms)
+[       OK ] FlightPlanNavTest.HoldWithDurationEntersHoldingThenAdvances (0 ms)
+[ RUN      ] FlightPlanNavTest.HoldWithZeroDurationAdvancesImmediately
+[ RUN      ] GpsConversionTest.GPSCoordToDegrees_NMEA_Values
+[          ] Aligned to 90 deg in 19.15s
+[       OK ] TestAngles/YawTest.TestCogAlign/3 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestCogAlign/4
+[       OK ] FlightPlanCaptureTest.ConsecutiveTapsNumberTheWaypoints (0 ms)
+[       OK ] FlightPlanRescueTest.ClimbLegAltitudeGated (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeSwitchModeStage1OrStage2Drop
+[       OK ] FlightFailsafeTest.TestFailsafeSwitchModeStage1OrStage2Drop (0 ms)
+[       OK ] FlightPlanNavTest.HoldWithZeroDurationAdvancesImmediately (0 ms)
+[ RUN      ] FlightPlanNavTest.TakeoffDispatchClimbsInPlace
+[       OK ] GpsConversionTest.GPSCoordToDegrees_NMEA_Values (0 ms)
+[          ] Aligned to 180 deg in 25.43s
+[       OK ] TestAngles/YawTest.TestCogAlign/4 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestCogAlign/5
+[ RUN      ] FlightPlanCaptureTest.OsdMessageExpires
+[ RUN      ] FlightPlanRescueTest.HeadingGateHoldsAndRecovers
+[ RUN      ] FlightFailsafeTest.TestFailsafeSwitchModeStage2Land
+[       OK ] FlightPlanNavTest.TakeoffDispatchClimbsInPlace (0 ms)
+[ RUN      ] FlightPlanNavTest.TakeoffAdvancesOnArrival
+[----------] 2 tests from GpsConversionTest (29 ms total)
+
+[       OK ] FlightPlanCaptureTest.OsdMessageExpires (0 ms)
+[          ] Aligned to 270 deg in 19.15s
+[       OK ] TestAngles/YawTest.TestCogAlign/5 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestCogAlign/6
+[       OK ] FlightPlanRescueTest.HeadingGateHoldsAndRecovers (0 ms)
+[ RUN      ] FlightPlanRescueTest.HeadingGateTimesOutToAbort
+[       OK ] FlightFailsafeTest.TestFailsafeSwitchModeStage2Land (0 ms)
+[ RUN      ] FlightFailsafeTest.TestFailsafeNotActivatedWhenDisarmedAndRXLossIsDetected
+[       OK ] FlightPlanNavTest.TakeoffAdvancesOnArrival (0 ms)
+[----------] Global test environment tear-down
+[----------] 10 tests from FlightPlanCaptureTest (100 ms total)
+
+[----------] Global test environment tear-down
+[          ] Aligned to 765 deg in 15.62s
+[       OK ] TestAngles/YawTest.TestCogAlign/6 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestMagAlign/0
+[       OK ] FlightPlanRescueTest.HeadingGateTimesOutToAbort (0 ms)
+[ RUN      ] FlightPlanRescueTest.DisengageDuringHeadingHoldReleasesPitch
+[       OK ] FlightFailsafeTest.TestFailsafeNotActivatedWhenDisarmedAndRXLossIsDetected (0 ms)
+[ RUN      ] FlightFailsafeTest.ReceiverRestartDisarmsWithoutWaitingForRxLoss
+[ RUN      ] FlightPlanNavTest.TakeoffWithDurationLoitersThenAdvancesWithoutPattern
+[       OK ] FlightPlanNavTest.TakeoffWithDurationLoitersThenAdvancesWithoutPattern (0 ms)
+[==========] 2 tests from 1 test suite ran. (59 ms total)
+[  PASSED  ] 2 tests.
+[==========] 10 tests from 1 test suite ran. (117 ms total)
+[  PASSED  ] 10 tests.
+[          ] Aligned from 0 deg in 0.00s
+[       OK ] TestAngles/YawTest.TestMagAlign/0 (0 ms)
+[ RUN      ] TestAngles/YawTest.TestMagAlign/1
+[       OK ] FlightPlanRescueTest.DisengageDuringHeadingHoldReleasesPitch (0 ms)
+[       OK ] FlightFailsafeTest.ReceiverRestartDisarmsWithoutWaitingForRxLoss (0 ms)
+[ RUN      ] FlightPlanNavTest.HoldPatternNoneKeepsStationTarget
+running test_gps_conversion_unittest: PASS
+running test_flight_plan_capture_unittest: PASS
+[          ] Aligned from 45 deg in 17.47s
+[       OK ] TestAngles/YawTest.TestMagAlign/1 (0 ms)
+[ RUN      ] FlightPlanRescueTest.FullRescueRunToLanding
+[       OK ] FlightPlanRescueTest.FullRescueRunToLanding (0 ms)
+[----------] 12 tests from FlightFailsafeTest (123 ms total)
+
+[       OK ] FlightPlanNavTest.HoldPatternNoneKeepsStationTarget (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[ RUN      ] TestAngles/YawTest.TestMagAlign/2
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] FlightPlanRescueTest.RescueDescentDrivesLandingAndDisarms
+[----------] 8 tests from FlightFailsafeAutopilotTest
+[ RUN      ] FlightPlanNavTest.OrbitPeriodMatchesRateCapAndCruiseLimit
+[       OK ] FlightPlanNavTest.OrbitPeriodMatchesRateCapAndCruiseLimit (0 ms)
+[----------] Global test environment set-up.
+[          ] Aligned from -45 deg in 17.47s
+[       OK ] TestAngles/YawTest.TestMagAlign/2 (0 ms)
+[----------] 2 tests from IoSerialTest
+[       OK ] FlightPlanRescueTest.RescueDescentDrivesLandingAndDisarms (0 ms)
+[ RUN      ] FlightFailsafeAutopilotTest.ContinuePolicyEntersAutopilotPhase
+[ RUN      ] FlightPlanNavTest.SetCurrentIndexReTargetsWhileActive
+[----------] 3 tests from HuffmanUnittest
+[ RUN      ] TestAngles/YawTest.TestMagAlign/3
+[ RUN      ] IoSerialTest.TestFindPortConfig
+[ RUN      ] FlightPlanRescueTest.RescueDescentReleaseClears
+[       OK ] FlightFailsafeAutopilotTest.ContinuePolicyEntersAutopilotPhase (0 ms)
+[       OK ] FlightPlanNavTest.SetCurrentIndexReTargetsWhileActive (0 ms)
+[ RUN      ] HuffmanUnittest.TestHuffmanEncode
+[       OK ] IoSerialTest.TestFindPortConfig (0 ms)
+[          ] Aligned from 90 deg in 21.41s
+[       OK ] TestAngles/YawTest.TestMagAlign/3 (0 ms)
+[       OK ] FlightPlanRescueTest.RescueDescentReleaseClears (0 ms)
+[ RUN      ] FlightPlanRescueTest.EngageWithoutStagedRunsPgMission
+[ RUN      ] FlightFailsafeAutopilotTest.LandPolicyForcesAutoLandingOverConfiguredProcedure
+[ RUN      ] FlightPlanNavTest.SetCurrentIndexStoresStartIndexWhileIdle
+[       OK ] HuffmanUnittest.TestHuffmanEncode (0 ms)
+[ RUN      ] IoSerialTest.TestPassthroughEscape
+[ RUN      ] TestAngles/YawTest.TestMagAlign/4
+[       OK ] FlightPlanRescueTest.EngageWithoutStagedRunsPgMission (0 ms)
+[       OK ] FlightFailsafeAutopilotTest.LandPolicyForcesAutoLandingOverConfiguredProcedure (0 ms)
+[ RUN      ] FlightFailsafeAutopilotTest.DisablePolicyRunsConfiguredProcedure
+[       OK ] FlightPlanNavTest.SetCurrentIndexStoresStartIndexWhileIdle (0 ms)
+[ RUN      ] FlightPlanNavTest.SetCurrentIndexIgnoresOutOfRange
+[ RUN      ] HuffmanUnittest.TestHuffmanEncodeStreaming
+[       OK ] HuffmanUnittest.TestHuffmanEncodeStreaming (0 ms)
+[       OK ] IoSerialTest.TestPassthroughEscape (0 ms)
+[          ] Aligned from 180 deg in 28.43s
+[       OK ] TestAngles/YawTest.TestMagAlign/4 (0 ms)
+[----------] 14 tests from FlightPlanRescueTest (137 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] FlightFailsafeAutopilotTest.DisablePolicyRunsConfiguredProcedure (0 ms)
+[ RUN      ] FlightFailsafeAutopilotTest.ContinuePolicyWithCompletedMissionFallsThrough
+[       OK ] FlightPlanNavTest.SetCurrentIndexIgnoresOutOfRange (0 ms)
+[ RUN      ] HuffmanUnittest.TestHuffmanDecode
+[----------] 2 tests from IoSerialTest (18 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] TestAngles/YawTest.TestMagAlign/5
+[==========] 14 tests from 1 test suite ran. (158 ms total)
+[  PASSED  ] 14 tests.
+[       OK ] FlightFailsafeAutopilotTest.ContinuePolicyWithCompletedMissionFallsThrough (0 ms)
+[ RUN      ] FlightPlanNavTest.GeometryAccessorsSentinelWhenIdle
+[       OK ] HuffmanUnittest.TestHuffmanDecode (0 ms)
+[==========] 2 tests from 1 test suite ran. (40 ms total)
+[  PASSED  ] 2 tests.
+[          ] Aligned from 270 deg in 21.41s
+[       OK ] TestAngles/YawTest.TestMagAlign/5 (0 ms)
+[ RUN      ] FlightFailsafeAutopilotTest.AutopilotPhaseFallsBackWhenMissionAborts
+running test_flight_plan_rescue_unittest: PASS
+[       OK ] FlightPlanNavTest.GeometryAccessorsSentinelWhenIdle (0 ms)
+[ RUN      ] FlightPlanNavTest.GeometryAccessorsReflectActiveTarget
+[----------] 3 tests from HuffmanUnittest (26 ms total)
+
+running test_io_serial_unittest: PASS
+[ RUN      ] TestAngles/YawTest.TestMagAlign/6
+[       OK ] FlightFailsafeAutopilotTest.AutopilotPhaseFallsBackWhenMissionAborts (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 2 test suites.
+[       OK ] FlightPlanNavTest.GeometryAccessorsReflectActiveTarget (0 ms)
+[ RUN      ] FlightPlanNavTest.DisengageClearsTargetAndResetsState
+[----------] Global test environment tear-down
+[          ] Aligned from 765 deg in 17.47s
+[       OK ] TestAngles/YawTest.TestMagAlign/6 (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] FlightFailsafeAutopilotTest.AutopilotPhaseFallsBackWhenModeDisengages
+[----------] Global test environment set-up.
+[----------] 3 tests from LedStripTest
+[       OK ] FlightPlanNavTest.DisengageClearsTargetAndResetsState (0 ms)
+[==========] 3 tests from 1 test suite ran. (64 ms total)
+[  PASSED  ] 3 tests.
+[----------] 14 tests from TestAngles/YawTest (151 ms total)
+
+[----------] 5 tests from LQTest
+[       OK ] FlightFailsafeAutopilotTest.AutopilotPhaseFallsBackWhenModeDisengages (0 ms)
+[ RUN      ] FlightFailsafeAutopilotTest.AutopilotPhaseGoesToLandedOnDisarm
+[ RUN      ] LedStripTest.parseLedStripConfig
+[ RUN      ] FlightPlanNavTest.DisengagedUpdateIsNoOp
+[       OK ] FlightPlanNavTest.DisengagedUpdateIsNoOp (0 ms)
+running test_huffman_unittest: PASS
+[----------] Global test environment tear-down
+[ RUN      ] LQTest.TestInit
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[       OK ] FlightFailsafeAutopilotTest.AutopilotPhaseGoesToLandedOnDisarm (0 ms)
+[ RUN      ] FlightFailsafeAutopilotTest.AutopilotPhaseRecoversWithRxAndSticks
+[       OK ] LedStripTest.parseLedStripConfig (0 ms)
+[ RUN      ] FlightPlanNavTest.ReEngageRestartsAtFirstWaypoint
+[==========] 17 tests from 2 test suites ran. (213 ms total)
+[  PASSED  ] 17 tests.
+[       OK ] LQTest.TestInit (0 ms)
+[ RUN      ] LQTest.TestElement_LQ_SOURCE_NONE_SAMPLES
+[----------] Global test environment set-up.
+[----------] 12 tests from MathsUnittest
+[       OK ] FlightFailsafeAutopilotTest.AutopilotPhaseRecoversWithRxAndSticks (0 ms)
+[----------] 8 tests from FlightFailsafeAutopilotTest (79 ms total)
+
+[ RUN      ] LedStripTest.smallestGridWithCenter
+[       OK ] LedStripTest.smallestGridWithCenter (0 ms)
+[       OK ] FlightPlanNavTest.ReEngageRestartsAtFirstWaypoint (0 ms)
+[ RUN      ] FlightPlanNavTest.EngageClampsBelowMinCruiseSpeed
+running test_flight_imu_unittest: PASS
+[       OK ] LQTest.TestElement_LQ_SOURCE_NONE_SAMPLES (0 ms)
+[ RUN      ] LQTest.TestElement_LQ_SOURCE_NONE_VALUES
+[ RUN      ] MathsUnittest.TestScaleRange
+[       OK ] MathsUnittest.TestScaleRange (0 ms)
+[----------] Global test environment tear-down
+[ RUN      ] LedStripTest.smallestGrid
+[       OK ] LedStripTest.smallestGrid (0 ms)
+[       OK ] FlightPlanNavTest.EngageClampsBelowMinCruiseSpeed (0 ms)
+[ RUN      ] FlightPlanNavTest.YawRateModifierCapsAutopilotYawAndPersists
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] LQTest.TestElement_LQ_SOURCE_NONE_VALUES (0 ms)
+[ RUN      ] MathsUnittest.TestScaleRangeNegatives
+[       OK ] MathsUnittest.TestScaleRangeNegatives (0 ms)
+[==========] 20 tests from 2 test suites ran. (234 ms total)
+[  PASSED  ] 20 tests.
+[----------] 3 tests from LedStripTest (33 ms total)
+
+[----------] 1 test from ColorTest
+[       OK ] FlightPlanNavTest.YawRateModifierCapsAutopilotYawAndPersists (0 ms)
+[ RUN      ] FlightPlanNavTest.YawRateCapClearsOnDisengageAndEngage
+[----------] 1 test from MotorOutputUnittest
+[ RUN      ] LQTest.TestElementLQ_PROTOCOL_CRSF_VALUES
+[ RUN      ] MathsUnittest.TestScaleRangeNegativePositive
+[       OK ] MathsUnittest.TestScaleRangeNegativePositive (0 ms)
+running test_flight_failsafe_unittest: PASS
+[ RUN      ] ColorTest.parseColor
+[       OK ] FlightPlanNavTest.YawRateCapClearsOnDisengageAndEngage (0 ms)
+[ RUN      ] MotorOutputUnittest.TestFixMotorOutputReordering
+[       OK ] LQTest.TestElementLQ_PROTOCOL_CRSF_VALUES (0 ms)
+[ RUN      ] LQTest.TestLQAlarm
+[ RUN      ] MathsUnittest.TestScaleRangeReverse
+[       OK ] ColorTest.parseColor (0 ms)
+[----------] 1 test from ColorTest (12 ms total)
+
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] FlightPlanNavTest.InjectedPlanReplacesMissionAndRunsToTermination
+[       OK ] MotorOutputUnittest.TestFixMotorOutputReordering (0 ms)
+[       OK ] LQTest.TestLQAlarm (0 ms)
+[       OK ] MathsUnittest.TestScaleRangeReverse (0 ms)
+[----------] Global test environment tear-down
+[==========] 4 tests from 2 test suites ran. (83 ms total)
+[  PASSED  ] 4 tests.
+[----------] 6 tests from MspSerialPendingRequestTest
+[       OK ] FlightPlanNavTest.InjectedPlanReplacesMissionAndRunsToTermination (0 ms)
+[ RUN      ] FlightPlanNavTest.InjectRejectsInvalidRequests
+[----------] 1 test from MotorOutputUnittest (13 ms total)
+
+[----------] Global test environment tear-down
+[----------] 5 tests from LQTest (59 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] MathsUnittest.TestConstrain
+[ RUN      ] MspSerialPendingRequestTest.CliEntry_HashThenCR_StillEntersCli
+running test_ledstrip_unittest: PASS
+[       OK ] FlightPlanNavTest.InjectRejectsInvalidRequests (0 ms)
+[ RUN      ] FlightPlanNavTest.EngageAfterInjectRevertsToPgPlan
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+[==========] 5 tests from 1 test suite ran. (81 ms total)
+[  PASSED  ] 5 tests.
+[       OK ] MathsUnittest.TestConstrain (0 ms)
+[ RUN      ] MathsUnittest.TestConstrainNegatives
+[       OK ] MspSerialPendingRequestTest.CliEntry_HashThenCR_StillEntersCli (0 ms)
+[       OK ] FlightPlanNavTest.EngageAfterInjectRevertsToPgPlan (0 ms)
+[ RUN      ] FlightPlanNavTest.ReachedListenerSuppressedWhileInjected
+running test_motor_output_unittest: PASS
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 13 tests from 2 test suites.
+[----------] Global test environment set-up.
+[       OK ] MathsUnittest.TestConstrainNegatives (0 ms)
+running test_link_quality_unittest: PASS
+[ RUN      ] MspSerialPendingRequestTest.StrayRebootChar_BeforeMspFrame_DoesNotReboot
+[       OK ] FlightPlanNavTest.ReachedListenerSuppressedWhileInjected (0 ms)
+[ RUN      ] FlightPlanNavTest.LandWaypointDispatchesWithHoldGate
+[----------] 5 tests from OsdNavMapTest
+[ RUN      ] OsdNavMapTest.TrailRecorderGatesAppendsByDistance
+[ RUN      ] MathsUnittest.TestConstrainf
+[       OK ] MspSerialPendingRequestTest.StrayRebootChar_BeforeMspFrame_DoesNotReboot (0 ms)
+[ RUN      ] MspSerialPendingRequestTest.StrayHash_BeforeMspFrame_DoesNotEnterCli
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 23 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] FlightPlanNavTest.LandWaypointDispatchesWithHoldGate (0 ms)
+[ RUN      ] FlightPlanNavTest.LandWaypointArrivalDescendsAtTheWaypoint
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[       OK ] OsdNavMapTest.TrailRecorderGatesAppendsByDistance (0 ms)
+[ RUN      ] OsdNavMapTest.TrailCompactionDoublesSpacingWhenFull
+[       OK ] MathsUnittest.TestConstrainf (0 ms)
+[ RUN      ] MathsUnittest.TestDegreesToRadians
+[       OK ] MspSerialPendingRequestTest.StrayHash_BeforeMspFrame_DoesNotEnterCli (0 ms)
+[ RUN      ] MspSerialPendingRequestTest.LoneRebootChar_ThenQuiet_DoesReboot
+[----------] 23 tests from OsdTest
+[       OK ] FlightPlanNavTest.LandWaypointArrivalDescendsAtTheWaypoint (0 ms)
+[ RUN      ] FlightPlanNavTest.LandWaypointTouchdownDisarmsAndCompletes
+[----------] Global test environment set-up.
+[       OK ] OsdNavMapTest.TrailCompactionDoublesSpacingWhenFull (0 ms)
+[ RUN      ] OsdNavMapTest.TrailUpdateRecordsWhileArmedAndResetsOnArmEdge
+[       OK ] MathsUnittest.TestDegreesToRadians (0 ms)
+[ RUN      ] MathsUnittest.TestApplyDeadband
+[       OK ] MspSerialPendingRequestTest.LoneRebootChar_ThenQuiet_DoesReboot (0 ms)
+[ RUN      ] MspSerialPendingRequestTest.LoneHash_ThenQuiet_EntersCli
+[ RUN      ] OsdTest.TestInit
+[       OK ] FlightPlanNavTest.LandWaypointTouchdownDisarmsAndCompletes (0 ms)
+[----------] 2 tests from ParameterGroupsfTest
+[       OK ] OsdNavMapTest.TrailUpdateRecordsWhileArmedAndResetsOnArmEdge (0 ms)
+[ RUN      ] OsdNavMapTest.TrailGlitchBeyondRangeDoesNotWipeTheTrail
+[       OK ] MathsUnittest.TestApplyDeadband (0 ms)
+[ RUN      ] MathsUnittest.TestFastTrigonometrySinCos
+[       OK ] MspSerialPendingRequestTest.LoneHash_ThenQuiet_EntersCli (0 ms)
+[ RUN      ] MspSerialPendingRequestTest.CleanMspFrame_NoSideEffects
+[       OK ] OsdTest.TestInit (0 ms)
+[ RUN      ] FlightPlanNavTest.LandWaypointWithDurationLoitersThenDescends
+[ RUN      ] ParameterGroupsfTest.Test_pgResetAll
+[       OK ] ParameterGroupsfTest.Test_pgResetAll (0 ms)
+[       OK ] OsdNavMapTest.TrailGlitchBeyondRangeDoesNotWipeTheTrail (0 ms)
+[ RUN      ] OsdNavMapTest.ScaleSelectionQuantisesToDrawnSteps
+sin_approx maximum absolute error = 3.173947e-06
+cos_approx maximum absolute error = 3.241003e-06
+[       OK ] MathsUnittest.TestFastTrigonometrySinCos (0 ms)
+[ RUN      ] MathsUnittest.TestFastTrigonometryATan2
+[       OK ] MspSerialPendingRequestTest.CleanMspFrame_NoSideEffects (0 ms)
+[ RUN      ] OsdTest.TestArm
+[       OK ] FlightPlanNavTest.LandWaypointWithDurationLoitersThenDescends (0 ms)
+[ RUN      ] FlightPlanNavTest.LandLoiterExpiryWithLostTargetRedispatchesLeg
+[ RUN      ] ParameterGroupsfTest.Test_pgFind
+[       OK ] OsdNavMapTest.ScaleSelectionQuantisesToDrawnSteps (0 ms)
+[----------] 5 tests from OsdNavMapTest (12 ms total)
+
+atan2_approx maximum absolute error = 7.152557e-07 rads (4.098114e-05 degree)
+[       OK ] MathsUnittest.TestFastTrigonometryATan2 (0 ms)
+[ RUN      ] MathsUnittest.TestFastTrigonometryACos
+[----------] 6 tests from MspSerialPendingRequestTest (19 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] OsdTest.TestArm (0 ms)
+[ RUN      ] OsdTest.TestDisarm
+[       OK ] FlightPlanNavTest.LandLoiterExpiryWithLostTargetRedispatchesLeg (0 ms)
+[       OK ] ParameterGroupsfTest.Test_pgFind (0 ms)
+[----------] 8 tests from OsdNavMapRenderTest
+[ RUN      ] OsdNavMapRenderTest.NorthUpProjectionPlacesCraftEastOfHome
+acos_approx maximum absolute error = 6.759167e-05 rads (3.872717e-03 degree)
+[       OK ] MathsUnittest.TestFastTrigonometryACos (0 ms)
+[==========] 6 tests from 1 test suite ran. (34 ms total)
+[  PASSED  ] 6 tests.
+[       OK ] OsdTest.TestDisarm (0 ms)
+[ RUN      ] OsdTest.TestDisarmWithImmediateRearm
+[----------] 34 tests from FlightPlanNavTest (272 ms total)
+
+[----------] 2 tests from ParameterGroupsfTest (7 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] OsdNavMapRenderTest.NorthUpProjectionPlacesCraftEastOfHome (0 ms)
+[ RUN      ] OsdNavMapRenderTest.HeadingUpRotatesTheWorldAroundTheNose
+[----------] 12 tests from MathsUnittest (69 ms total)
+
+[----------] Global test environment tear-down
+running test_msp_serial_unittest: PASS
+[       OK ] OsdTest.TestDisarmWithImmediateRearm (0 ms)
+[ RUN      ] OsdTest.TestDisarmWithDismissStats
+[----------] 8 tests from FlightPlanNavPatternTest
+[==========] 2 tests from 1 test suite ran. (17 ms total)
+[  PASSED  ] 2 tests.
+[       OK ] OsdNavMapRenderTest.HeadingUpRotatesTheWorldAroundTheNose (0 ms)
+[==========] 12 tests from 1 test suite ran. (81 ms total)
+[  PASSED  ] 12 tests.
+[       OK ] OsdTest.TestDisarmWithDismissStats (0 ms)
+[ RUN      ] OsdTest.TestStatsTiming
+[ RUN      ] FlightPlanNavPatternTest.OrbitIssuesNonCompletingCarrotCommand
+[ RUN      ] OsdNavMapRenderTest.AutoZoomLatchesOutwardAndAppliesTheFloor
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 15 tests from 1 test suite.
+[----------] Global test environment set-up.
+running test_pg_unittest: PASS
+[       OK ] OsdTest.TestStatsTiming (0 ms)
+[ RUN      ] OsdTest.TestRtcDateTimeVariantsUseTimezoneOffset
+running test_maths_unittest: PASS
+[       OK ] FlightPlanNavPatternTest.OrbitIssuesNonCompletingCarrotCommand (0 ms)
+[ RUN      ] FlightPlanNavPatternTest.OrbitCarrotStartsAtVehicleAzimuth
+[       OK ] OsdNavMapRenderTest.AutoZoomLatchesOutwardAndAppliesTheFloor (0 ms)
+[ RUN      ] OsdNavMapRenderTest.AutoZoomFitsAllPositionalWaypoints
+[----------] 15 tests from pidControllerTest
+[ RUN      ] pidControllerTest.testInitialisation
+[       OK ] OsdTest.TestRtcDateTimeVariantsUseTimezoneOffset (0 ms)
+[ RUN      ] OsdTest.TestStatsImperial
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 43 tests from 3 test suites.
+[----------] Global test environment set-up.
+[       OK ] FlightPlanNavPatternTest.OrbitCarrotStartsAtVehicleAzimuth (0 ms)
+[       OK ] OsdNavMapRenderTest.AutoZoomFitsAllPositionalWaypoints (0 ms)
+[ RUN      ] OsdNavMapRenderTest.AutoZoomIgnoresWaypointsBeyondTheMarkerCap
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] pidControllerTest.testInitialisation (0 ms)
+[       OK ] OsdTest.TestStatsImperial (0 ms)
+[ RUN      ] OsdTest.TestStatsMetric
+[----------] 26 tests from PosHoldTest
+[ RUN      ] PosHoldTest.InvalidEstimateReturnsFalse
+[ RUN      ] FlightPlanNavPatternTest.OrbitStartDeferredUntilArrivalBrakingSettles
+[       OK ] OsdNavMapRenderTest.AutoZoomIgnoresWaypointsBeyondTheMarkerCap (0 ms)
+[ RUN      ] OsdNavMapRenderTest.OffMapHomeClampsToEdgeWithDirectionArrow
+[----------] 4 tests from PositionEstimatorTest
+[ RUN      ] PositionEstimatorTest.RangefinderPreferFallsBackAndRecovers
+[ RUN      ] pidControllerTest.testStabilisationDisabled
+[       OK ] OsdTest.TestStatsMetric (0 ms)
+[       OK ] PosHoldTest.InvalidEstimateReturnsFalse (0 ms)
+[       OK ] FlightPlanNavPatternTest.OrbitStartDeferredUntilArrivalBrakingSettles (0 ms)
+[       OK ] OsdNavMapRenderTest.OffMapHomeClampsToEdgeWithDirectionArrow (0 ms)
+[       OK ] PositionEstimatorTest.RangefinderPreferFallsBackAndRecovers (0 ms)
+[ RUN      ] PositionEstimatorTest.GPSPositionEastOfArmIsPositive
+[       OK ] pidControllerTest.testStabilisationDisabled (0 ms)
+[ RUN      ] OsdTest.TestStatsMetricDistanceUnits
+[ RUN      ] PosHoldTest.ValidEstimateReturnsTrue
+[ RUN      ] FlightPlanNavPatternTest.OrbitStartTimeoutOverridesSettleGate
+[ RUN      ] OsdNavMapRenderTest.WaypointMarkersSkipModifiersAndBlinkTheActiveOne
+[       OK ] PositionEstimatorTest.GPSPositionEastOfArmIsPositive (0 ms)
+[ RUN      ] pidControllerTest.testPidLoop
+[       OK ] OsdTest.TestStatsMetricDistanceUnits (0 ms)
+[       OK ] PosHoldTest.ValidEstimateReturnsTrue (0 ms)
+[       OK ] FlightPlanNavPatternTest.OrbitStartTimeoutOverridesSettleGate (0 ms)
+[ RUN      ] FlightPlanNavPatternTest.OrbitCarrotTracksCircleAroundHoldPoint
+[       OK ] OsdNavMapRenderTest.WaypointMarkersSkipModifiersAndBlinkTheActiveOne (0 ms)
+[ RUN      ] PositionEstimatorTest.EastThrustProducesEastAccelENU
+[       OK ] pidControllerTest.testPidLoop (0 ms)
+[ RUN      ] OsdTest.TestAlarms
+[ RUN      ] PosHoldTest.StationaryAtTargetProducesNearZeroOutput
+[       OK ] FlightPlanNavPatternTest.OrbitCarrotTracksCircleAroundHoldPoint (0 ms)
+[ RUN      ] OsdNavMapRenderTest.TrailSwitchbackKeepsBothCrossingsOfAColumn
+[       OK ] PositionEstimatorTest.EastThrustProducesEastAccelENU (0 ms)
+[ RUN      ] PositionEstimatorTest.EastThrustProducesPositiveEastVelocity
+[ RUN      ] pidControllerTest.testPidLevel
+[       OK ] OsdTest.TestAlarms (0 ms)
+[ RUN      ] OsdTest.TestElementRssi
+[       OK ] PosHoldTest.StationaryAtTargetProducesNearZeroOutput (0 ms)
+[ RUN      ] PosHoldTest.FlyawayDetectionRetriesOnceThenTriggers
+[ RUN      ] FlightPlanNavPatternTest.Figure8CarrotBoundedAndRecrossesCentre
+[       OK ] OsdNavMapRenderTest.TrailSwitchbackKeepsBothCrossingsOfAColumn (0 ms)
+[       OK ] PositionEstimatorTest.EastThrustProducesPositiveEastVelocity (0 ms)
+[       OK ] pidControllerTest.testPidLevel (0 ms)
+[ RUN      ] pidControllerTest.testPidHorizon
+[       OK ] OsdTest.TestElementRssi (0 ms)
+[ RUN      ] OsdTest.TestElementAmperage
+[       OK ] PosHoldTest.FlyawayDetectionRetriesOnceThenTriggers (0 ms)
+[ RUN      ] PosHoldTest.SingleOutlierFixIsAbsorbedHoldingLastOutput
+[       OK ] FlightPlanNavPatternTest.Figure8CarrotBoundedAndRecrossesCentre (0 ms)
+[ RUN      ] FlightPlanNavPatternTest.PatternCommandReissuedAfterWipedNavCommand
+[----------] 8 tests from OsdNavMapRenderTest (25 ms total)
+
+[----------] Global test environment tear-down
+[----------] 4 tests from PositionEstimatorTest (11 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] pidControllerTest.testPidHorizon (0 ms)
+[ RUN      ] pidControllerTest.testMixerSaturation
+[       OK ] OsdTest.TestElementAmperage (0 ms)
+[ RUN      ] OsdTest.TestElementMahDrawn
+[       OK ] PosHoldTest.SingleOutlierFixIsAbsorbedHoldingLastOutput (0 ms)
+[ RUN      ] PosHoldTest.ResumeAfterFrozenExcursionDoesNotSpikeTheOutput
+[       OK ] FlightPlanNavPatternTest.PatternCommandReissuedAfterWipedNavCommand (0 ms)
+[ RUN      ] FlightPlanNavPatternTest.PatternClearedOnAdvance
+[==========] 13 tests from 2 test suites ran. (48 ms total)
+[  PASSED  ] 13 tests.
+[==========] 4 tests from 1 test suite ran. (20 ms total)
+[  PASSED  ] 4 tests.
+[       OK ] pidControllerTest.testMixerSaturation (0 ms)
+[ RUN      ] pidControllerTest.testiTermWindup
+[       OK ] OsdTest.TestElementMahDrawn (0 ms)
+[ RUN      ] OsdTest.TestElementPower
+[       OK ] PosHoldTest.ResumeAfterFrozenExcursionDoesNotSpikeTheOutput (0 ms)
+[ RUN      ] PosHoldTest.EastDisplacementProducesNegativeRollResponse
+[       OK ] FlightPlanNavPatternTest.PatternClearedOnAdvance (0 ms)
+running test_osd_nav_map_unittest: PASS
+[       OK ] pidControllerTest.testiTermWindup (0 ms)
+[ RUN      ] pidControllerTest.testCrashRecoveryMode
+running test_position_estimator_unittest: PASS
+[       OK ] OsdTest.TestElementPower (0 ms)
+[ RUN      ] OsdTest.TestElementAltitude
+[       OK ] PosHoldTest.EastDisplacementProducesNegativeRollResponse (0 ms)
+[ RUN      ] PosHoldTest.WestDisplacementProducesPositiveRollResponse
+[----------] 8 tests from FlightPlanNavPatternTest (29 ms total)
+
+[       OK ] pidControllerTest.testCrashRecoveryMode (0 ms)
+[ RUN      ] pidControllerTest.testFeedForward
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 25 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] OsdTest.TestElementAltitude (0 ms)
+[ RUN      ] OsdTest.TestElementCoreTemperature
+[       OK ] PosHoldTest.WestDisplacementProducesPositiveRollResponse (0 ms)
+[ RUN      ] PosHoldTest.NortDisplacementProducesNegativePitchResponse
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 16 tests from FlightPlanNavSafetyTest
+[       OK ] pidControllerTest.testFeedForward (0 ms)
+[ RUN      ] pidControllerTest.testItermRelax
+[----------] 25 tests from PositionNavTest
+[ RUN      ] PositionNavTest.EastTargetProducesEastwardVelocity
+[       OK ] OsdTest.TestElementCoreTemperature (0 ms)
+[ RUN      ] OsdTest.TestElementWarningsBattery
+[       OK ] PosHoldTest.NortDisplacementProducesNegativePitchResponse (0 ms)
+[ RUN      ] PosHoldTest.SouthDisplacementProducesPositivePitchResponse
+[----------] 4 tests from PositionRescueGeometry
+[ RUN      ] FlightPlanNavSafetyTest.EstimatorInvalidAbortsMission
+[       OK ] pidControllerTest.testItermRelax (0 ms)
+[ RUN      ] pidControllerTest.testDtermFiltering
+[       OK ] PositionNavTest.EastTargetProducesEastwardVelocity (0 ms)
+[ RUN      ] PositionNavTest.NorthTargetProducesNorthwardVelocity
+[       OK ] OsdTest.TestElementWarningsBattery (0 ms)
+[ RUN      ] OsdTest.TestFormatTimeString
+[       OK ] PosHoldTest.SouthDisplacementProducesPositivePitchResponse (0 ms)
+[ RUN      ] PosHoldTest.EastwardVelocityProducesOpposingRoll
+[ RUN      ] PositionRescueGeometry.bearingSouthWhenNorthOfHome
+[       OK ] FlightPlanNavSafetyTest.EstimatorInvalidAbortsMission (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.NoProgressForStallWindowAborts
+[       OK ] pidControllerTest.testDtermFiltering (0 ms)
+[ RUN      ] pidControllerTest.testItermRotationHandling
+[       OK ] PositionNavTest.NorthTargetProducesNorthwardVelocity (0 ms)
+[ RUN      ] PositionNavTest.DiagonalTargetProducesBothAxes
+[       OK ] OsdTest.TestFormatTimeString (0 ms)
+[ RUN      ] OsdTest.TestConvertTemperatureUnits
+[       OK ] PosHoldTest.EastwardVelocityProducesOpposingRoll (0 ms)
+[ RUN      ] PosHoldTest.EastVelocityProducesNegativeRollResponse
+[       OK ] PositionRescueGeometry.bearingSouthWhenNorthOfHome (0 ms)
+[ RUN      ] PositionRescueGeometry.bearingWestWhenEastOfHome
+[       OK ] FlightPlanNavSafetyTest.NoProgressForStallWindowAborts (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.ProgressResetsStallWindow
+[       OK ] pidControllerTest.testItermRotationHandling (0 ms)
+[ RUN      ] pidControllerTest.testLaunchControl
+[       OK ] PositionNavTest.DiagonalTargetProducesBothAxes (0 ms)
+[ RUN      ] PositionNavTest.UpTargetProducesUpwardVelocityWhenIncludeAltitude
+[       OK ] OsdTest.TestConvertTemperatureUnits (0 ms)
+[ RUN      ] OsdTest.TestGpsElements
+[       OK ] PosHoldTest.EastVelocityProducesNegativeRollResponse (0 ms)
+[ RUN      ] PosHoldTest.WestVelocityProducesBrakingRollResponse
+[       OK ] PositionRescueGeometry.bearingWestWhenEastOfHome (0 ms)
+[ RUN      ] PositionRescueGeometry.bearingNorthWhenSouthOfHome
+[       OK ] FlightPlanNavSafetyTest.ProgressResetsStallWindow (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.MovingAwayPastMarginAbortsAsFlyaway
+[       OK ] pidControllerTest.testLaunchControl (0 ms)
+[ RUN      ] pidControllerTest.testTpaClassic
+[       OK ] PositionNavTest.UpTargetProducesUpwardVelocityWhenIncludeAltitude (0 ms)
+[ RUN      ] PositionNavTest.UpComponentIgnoredWhenIncludeAltitudeFalse
+[       OK ] OsdTest.TestGpsElements (0 ms)
+[ RUN      ] OsdTest.TestHdPositioning
+[       OK ] PosHoldTest.WestVelocityProducesBrakingRollResponse (0 ms)
+[ RUN      ] PosHoldTest.DynamicHeadingRotationUnderDrift
+[       OK ] PositionRescueGeometry.bearingNorthWhenSouthOfHome (0 ms)
+[ RUN      ] PositionRescueGeometry.velocityTowardHomePositiveWhenClosing
+[       OK ] FlightPlanNavSafetyTest.MovingAwayPastMarginAbortsAsFlyaway (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.HeadingFaultParksWingsLevel
+[       OK ] pidControllerTest.testTpaClassic (0 ms)
+[ RUN      ] pidControllerTest.testTpaHyperbolic
+[       OK ] PositionNavTest.UpComponentIgnoredWhenIncludeAltitudeFalse (0 ms)
+[ RUN      ] PositionNavTest.SpeedIsCappedAtCruiseSpeed
+[       OK ] OsdTest.TestHdPositioning (0 ms)
+[ RUN      ] OsdTest.TestBatteryUsageCapacityZero
+[       OK ] PosHoldTest.DynamicHeadingRotationUnderDrift (0 ms)
+[ RUN      ] PosHoldTest.HeadingSouthReversesRollSign
+[       OK ] PositionRescueGeometry.velocityTowardHomePositiveWhenClosing (0 ms)
+[       OK ] FlightPlanNavSafetyTest.HeadingFaultParksWingsLevel (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.CourseDisagreementOffCommandDoesNotTrip
+[       OK ] pidControllerTest.testTpaHyperbolic (0 ms)
+[       OK ] PositionNavTest.SpeedIsCappedAtCruiseSpeed (0 ms)
+[ RUN      ] PositionNavTest.SpeedRampsDownNearTarget
+[       OK ] OsdTest.TestBatteryUsageCapacityZero (0 ms)
+[       OK ] PosHoldTest.HeadingSouthReversesRollSign (0 ms)
+[ RUN      ] PosHoldTest.SticksActiveButCentered
+[----------] 4 tests from PositionRescueGeometry (14 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] FlightPlanNavSafetyTest.CourseDisagreementOffCommandDoesNotTrip (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.AbortReasonClearsOnReEngage
+[----------] 15 tests from pidControllerTest (49 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] PositionNavTest.SpeedRampsDownNearTarget (0 ms)
+[ RUN      ] PositionNavTest.BrakingLimitsSpeedNearTarget
+[----------] 23 tests from OsdTest (71 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] PosHoldTest.SticksActiveButCentered (0 ms)
+[ RUN      ] PosHoldTest.EstimateValidityTransitionsUnavailableAvailableUnavailable
+[==========] 4 tests from 1 test suite ran. (23 ms total)
+[  PASSED  ] 4 tests.
+[       OK ] FlightPlanNavSafetyTest.AbortReasonClearsOnReEngage (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.GeofenceBreachWithLandActionStartsLanding
+[==========] 15 tests from 1 test suite ran. (56 ms total)
+[  PASSED  ] 15 tests.
+[       OK ] PositionNavTest.BrakingLimitsSpeedNearTarget (0 ms)
+[ RUN      ] PositionNavTest.BrakingDominatesWhenVeryClose
+[==========] 23 tests from 1 test suite ran. (78 ms total)
+[  PASSED  ] 23 tests.
+[       OK ] PosHoldTest.EstimateValidityTransitionsUnavailableAvailableUnavailable (0 ms)
+[ RUN      ] PosHoldTest.VelocityTransitionSimulatesFallbackAndRecovery
+[       OK ] FlightPlanNavSafetyTest.GeofenceBreachWithLandActionStartsLanding (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.GeofenceInsideLimitDoesNothing
+running test_position_rescue_geometry_unittest: PASS
+[       OK ] PositionNavTest.BrakingDominatesWhenVeryClose (0 ms)
+[ RUN      ] PositionNavTest.ArrivalDetectedWhenWithinRadiusAndSlow
+running test_pid_unittest: PASS
+[       OK ] PosHoldTest.VelocityTransitionSimulatesFallbackAndRecovery (0 ms)
+[ RUN      ] PosHoldTest.FeedforwardProducesStickProportionalLean
+running test_osd_unittest: PASS
+[       OK ] FlightPlanNavSafetyTest.GeofenceInsideLimitDoesNothing (0 ms)
+[       OK ] PositionNavTest.ArrivalDetectedWhenWithinRadiusAndSlow (0 ms)
+[ RUN      ] PositionNavTest.NoArrivalWhenFar
+[       OK ] PosHoldTest.FeedforwardProducesStickProportionalLean (0 ms)
+[ RUN      ] PosHoldTest.FeedforwardZeroWhenSticksInactive
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] FlightPlanNavSafetyTest.GeofenceWithoutHomeFixDoesNothing
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 8 tests from 2 test suites.
+[----------] Global test environment set-up.
+[       OK ] PositionNavTest.NoArrivalWhenFar (0 ms)
+[ RUN      ] PositionNavTest.NoArrivalWhenCloseButFast
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] PosHoldTest.FeedforwardZeroWhenSticksInactive (0 ms)
+[ RUN      ] PosHoldTest.ReleaseDropsFeedforwardSoBrakingOpposesMotion
+[----------] 3 tests from PwlUnittest
+[       OK ] FlightPlanNavSafetyTest.GeofenceWithoutHomeFixDoesNothing (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.GeofenceBreachWithRthActionInjectsReturnPlan
+[----------] 4 tests from RcControlsModesTest
+[       OK ] PositionNavTest.NoArrivalWhenCloseButFast (0 ms)
+[ RUN      ] PositionNavTest.CallbackFiresExactlyOnce
+[----------] 2 tests from FpvCamAngleTest
+[       OK ] PosHoldTest.ReleaseDropsFeedforwardSoBrakingOpposesMotion (0 ms)
+[ RUN      ] PosHoldTest.ReleasingSticksBrakesThenHolds
+[ RUN      ] PwlUnittest.TestXSquared21
+[       OK ] FlightPlanNavSafetyTest.GeofenceBreachWithRthActionInjectsReturnPlan (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.GeofenceRthAboveReturnAltReturnsAtCurrentAltitude
+[ RUN      ] RcControlsModesTest.updateActivatedModesWithAllInputsAtMidde
+[       OK ] PositionNavTest.CallbackFiresExactlyOnce (0 ms)
+[ RUN      ] PositionNavTest.NoCallbackWhenNoneSet
+[ RUN      ] FpvCamAngleTest.CachedFactorsPersistAcrossCallsWithUnchangedAngle
+[       OK ] PosHoldTest.ReleasingSticksBrakesThenHolds (0 ms)
+[ RUN      ] PosHoldTest.GpsScenarioDriftAndReturn
+[       OK ] PwlUnittest.TestXSquared21 (0 ms)
+[ RUN      ] PwlUnittest.TestXSquared2
+[       OK ] FlightPlanNavSafetyTest.GeofenceRthAboveReturnAltReturnsAtCurrentAltitude (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.LandingTouchdownDisarms
+[       OK ] RcControlsModesTest.updateActivatedModesWithAllInputsAtMidde (0 ms)
+[ RUN      ] RcControlsModesTest.updateActivatedModesUsingValidAuxConfigurationAndRXValues
+[       OK ] PositionNavTest.NoCallbackWhenNoneSet (0 ms)
+[ RUN      ] PositionNavTest.ZeroDistanceProducesZeroVelocity
+[       OK ] FpvCamAngleTest.CachedFactorsPersistAcrossCallsWithUnchangedAngle (0 ms)
+[ RUN      ] FpvCamAngleTest.FactorsRecomputeWhenAngleChanges
+[       OK ] PosHoldTest.GpsScenarioDriftAndReturn (0 ms)
+[ RUN      ] PosHoldTest.OpticalFlowScenarioVelocityDamping
+[       OK ] PwlUnittest.TestXSquared2 (0 ms)
+[ RUN      ] PwlUnittest.TestXSquaredArgs
+[       OK ] FlightPlanNavSafetyTest.LandingTouchdownDisarms (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.LandingAtAltitudeWithoutDescentNeverDisarms
+[       OK ] RcControlsModesTest.updateActivatedModesUsingValidAuxConfigurationAndRXValues (0 ms)
+[ RUN      ] RcControlsModesTest.updateActivatedModesBoxParalyzeLatchesForeverOnceActivated
+[       OK ] PositionNavTest.ZeroDistanceProducesZeroVelocity (0 ms)
+[ RUN      ] PositionNavTest.HysteresisPreventsPrematureExit
+[       OK ] FpvCamAngleTest.FactorsRecomputeWhenAngleChanges (0 ms)
+[       OK ] PosHoldTest.OpticalFlowScenarioVelocityDamping (0 ms)
+[ RUN      ] PosHoldTest.OutputIsLimitedToMaxAngle
+[       OK ] PwlUnittest.TestXSquaredArgs (0 ms)
+[       OK ] FlightPlanNavSafetyTest.LandingAtAltitudeWithoutDescentNeverDisarms (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.GroundLevelLandingFallbackDisarms
+[       OK ] RcControlsModesTest.updateActivatedModesBoxParalyzeLatchesForeverOnceActivated (0 ms)
+[ RUN      ] RcControlsModesTest.updateActivatedModesBoxBlackboxEraseDoesNotLatchForever
+[       OK ] PositionNavTest.HysteresisPreventsPrematureExit (0 ms)
+[ RUN      ] PositionNavTest.AutoClearDeactivatesOnReach
+[----------] 2 tests from FpvCamAngleTest (7 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] PosHoldTest.OutputIsLimitedToMaxAngle (0 ms)
+[ RUN      ] PosHoldTest.DiagonalDisplacementProducesBothAxes
+[----------] 3 tests from PwlUnittest (9 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] FlightPlanNavSafetyTest.GroundLevelLandingFallbackDisarms (0 ms)
+[ RUN      ] FlightPlanNavSafetyTest.LandingQuietTimerResetsIfDescentResumes
+[       OK ] RcControlsModesTest.updateActivatedModesBoxBlackboxEraseDoesNotLatchForever (0 ms)
+[----------] 4 tests from RcControlsModesTest (13 ms total)
+
+[       OK ] PositionNavTest.AutoClearDeactivatesOnReach (0 ms)
+[ RUN      ] PositionNavTest.MoveTargetPreservesRampAndRedirectsVelocity
+[==========] 2 tests from 1 test suite ran. (15 ms total)
+[  PASSED  ] 2 tests.
+[       OK ] PosHoldTest.DiagonalDisplacementProducesBothAxes (0 ms)
+[----------] 26 tests from PosHoldTest (75 ms total)
+
+[==========] 3 tests from 1 test suite ran. (18 ms total)
+[  PASSED  ] 3 tests.
+[       OK ] FlightPlanNavSafetyTest.LandingQuietTimerResetsIfDescentResumes (0 ms)
+[----------] 4 tests from RcControlsAdjustmentsTest
+[       OK ] PositionNavTest.MoveTargetPreservesRampAndRedirectsVelocity (0 ms)
+[ RUN      ] PositionNavTest.MoveTargetWithoutActiveCommandIsNoOp
+running test_rc_unittest: PASS
+[----------] 11 tests from AutopilotYawTest
+[----------] 16 tests from FlightPlanNavSafetyTest (48 ms total)
+
+running test_pwl_unittest: PASS
+[ RUN      ] RcControlsAdjustmentsTest.processRcAdjustmentsSticksInMiddle
+[       OK ] PositionNavTest.MoveTargetWithoutActiveCommandIsNoOp (0 ms)
+[ RUN      ] PositionNavTest.ClearTargetDeactivates
+[ RUN      ] AutopilotYawTest.InactiveWithoutAutopilotMode
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from CrossFireTest
+[----------] 11 tests from FlightPlanNavCarrotTest
+[ RUN      ] FlightPlanNavCarrotTest.CarrotTracksLegLineNotCraftCrossTrack
+[       OK ] RcControlsAdjustmentsTest.processRcAdjustmentsSticksInMiddle (0 ms)
+[ RUN      ] RcControlsAdjustmentsTest.processRcAdjustmentsWithRcRateFunctionSwitchUp
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 9 tests from 1 test suite.
+[       OK ] PositionNavTest.ClearTargetDeactivates (0 ms)
+[ RUN      ] PositionNavTest.ClearTargetZerosVelocity
+[       OK ] AutopilotYawTest.InactiveWithoutAutopilotMode (0 ms)
+[ RUN      ] AutopilotYawTest.InactiveInFixedMode
+[ RUN      ] CrossFireTest.CRC
+[       OK ] FlightPlanNavCarrotTest.CarrotTracksLegLineNotCraftCrossTrack (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.StraightThroughFlybyAdvancesAtWideGate
+[       OK ] RcControlsAdjustmentsTest.processRcAdjustmentsWithRcRateFunctionSwitchUp (0 ms)
+[ RUN      ] RcControlsAdjustmentsTest.processRcRateProfileAdjustments
+[----------] Global test environment set-up.
+[       OK ] PositionNavTest.ClearTargetZerosVelocity (0 ms)
+[ RUN      ] PositionNavTest.CompletedTargetOutputsZeroVelocity
+[       OK ] AutopilotYawTest.InactiveInFixedMode (0 ms)
+[ RUN      ] AutopilotYawTest.InactiveWithoutNavTarget
+[       OK ] CrossFireTest.CRC (0 ms)
+[ RUN      ] CrossFireTest.TestCrsfFrameStatus
+[       OK ] FlightPlanNavCarrotTest.StraightThroughFlybyAdvancesAtWideGate (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.SharpTurnFlybyAdvancesOnlyCloseIn
+[       OK ] RcControlsAdjustmentsTest.processRcRateProfileAdjustments (0 ms)
+[ RUN      ] RcControlsAdjustmentsTest.processPIDIncreasePidController0
+[----------] 9 tests from RCDeviceTest
+[       OK ] PositionNavTest.CompletedTargetOutputsZeroVelocity (0 ms)
+[       OK ] AutopilotYawTest.InactiveWithoutNavTarget (0 ms)
+[ RUN      ] AutopilotYawTest.VelocityModeYawsTowardCourse
+[       OK ] CrossFireTest.TestCrsfFrameStatus (0 ms)
+[ RUN      ] CrossFireTest.TestCrsfCmdFrameCrc
+[       OK ] FlightPlanNavCarrotTest.SharpTurnFlybyAdvancesOnlyCloseIn (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.FlyoverUsesArrivalRadiusGate
+[       OK ] RcControlsAdjustmentsTest.processPIDIncreasePidController0 (0 ms)
+[ RUN      ] RCDeviceTest.TestRCSplitInitWithoutPortConfigurated
+[ RUN      ] PositionNavTest.AccelerationLimitingClampsVelocityChange
+[       OK ] AutopilotYawTest.VelocityModeYawsTowardCourse (0 ms)
+[       OK ] CrossFireTest.TestCrsfCmdFrameCrc (0 ms)
+[ RUN      ] CrossFireTest.TestCrsfFrameStatusUnpacking
+[       OK ] FlightPlanNavCarrotTest.FlyoverUsesArrivalRadiusGate (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.EngageNoseBackwardsRotatesOntoLeg
+[----------] 4 tests from RcControlsAdjustmentsTest (14 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] RCDeviceTest.TestRCSplitInitWithoutPortConfigurated (0 ms)
+[       OK ] PositionNavTest.AccelerationLimitingClampsVelocityChange (0 ms)
+[ RUN      ] PositionNavTest.NoActiveTargetProducesZeroVelocity
+[ RUN      ] AutopilotYawTest.VelocityModeInactiveBelowMinSpeed
+[       OK ] CrossFireTest.TestCrsfFrameStatusUnpacking (0 ms)
+[ RUN      ] CrossFireTest.TestCapturedData
+[       OK ] FlightPlanNavCarrotTest.EngageNoseBackwardsRotatesOntoLeg (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.BrakingCarrotBehindKeepsNoseForward
+[==========] 8 tests from 2 test suites ran. (37 ms total)
+[  PASSED  ] 8 tests.
+[ RUN      ] RCDeviceTest.TestRCSplitInitWithoutOpenPortConfigurated
+[       OK ] PositionNavTest.NoActiveTargetProducesZeroVelocity (0 ms)
+[ RUN      ] PositionNavTest.ActiveAndReachedFlagsAreCorrect
+[       OK ] AutopilotYawTest.VelocityModeInactiveBelowMinSpeed (0 ms)
+[ RUN      ] AutopilotYawTest.VelocityModeProportionalBelowClamp
+[       OK ] CrossFireTest.TestCapturedData (0 ms)
+[ RUN      ] CrossFireTest.TestCapturedSubsetData
+[       OK ] FlightPlanNavCarrotTest.BrakingCarrotBehindKeepsNoseForward (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.OverrunFallbackAdvancesPastWaypoint
+[       OK ] RCDeviceTest.TestRCSplitInitWithoutOpenPortConfigurated (0 ms)
+[ RUN      ] RCDeviceTest.TestInitDevice
+running test_rc_controls_unittest: PASS
+[       OK ] PositionNavTest.ActiveAndReachedFlagsAreCorrect (0 ms)
+[       OK ] AutopilotYawTest.VelocityModeProportionalBelowClamp (0 ms)
+[ RUN      ] AutopilotYawTest.BearingModeYawsTowardTarget
+[       OK ] CrossFireTest.TestCapturedSubsetData (0 ms)
+[ RUN      ] CrossFireTest.TestSubsetDataIgnoresUnsupportedChannels
+[       OK ] FlightPlanNavCarrotTest.OverrunFallbackAdvancesPastWaypoint (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.PreTurnBlendsNoseTowardNextLeg
+[       OK ] RCDeviceTest.TestInitDevice (0 ms)
+[----------] 25 tests from PositionNavTest (70 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] AutopilotYawTest.BearingModeYawsTowardTarget (0 ms)
+[ RUN      ] AutopilotYawTest.BearingModeInactiveInsideAcceptanceRadius
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 12 tests from 2 test suites.
+[----------] Global test environment set-up.
+[       OK ] CrossFireTest.TestSubsetDataIgnoresUnsupportedChannels (0 ms)
+[ RUN      ] CrossFireTest.TestSubsetDataDropsUnsupportedChannels
+[       OK ] FlightPlanNavCarrotTest.PreTurnBlendsNoseTowardNextLeg (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.CornerSkipsModifierBetweenLegs
+[ RUN      ] RCDeviceTest.TestInitDeviceWithInvalidResponse
+[==========] 25 tests from 1 test suite ran. (78 ms total)
+[  PASSED  ] 25 tests.
+[       OK ] AutopilotYawTest.BearingModeInactiveInsideAcceptanceRadius (0 ms)
+[ RUN      ] AutopilotYawTest.HybridFallsBackToBearingWhenSlow
+[----------] 2 tests from IbusRxInitUnitTest
+[       OK ] CrossFireTest.TestSubsetDataDropsUnsupportedChannels (0 ms)
+[ RUN      ] CrossFireTest.TestCrsfDataReceive
+[       OK ] FlightPlanNavCarrotTest.CornerSkipsModifierBetweenLegs (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.OverspeedGovernorHoldsCarrotWithHysteresis
+[       OK ] RCDeviceTest.TestInitDeviceWithInvalidResponse (0 ms)
+[ RUN      ] RCDeviceTest.TestWifiModeChangeWithDeviceUnready
+[       OK ] AutopilotYawTest.HybridFallsBackToBearingWhenSlow (0 ms)
+[ RUN      ] AutopilotYawTest.MissionYawRateCapApplies
+running test_position_nav_unittest: PASS
+[ RUN      ] IbusRxInitUnitTest.Test_IbusRxNotEnabled
+[       OK ] CrossFireTest.TestCrsfDataReceive (0 ms)
+[ RUN      ] CrossFireTest.TestOversizedFrameLengthIsRejected
+[       OK ] FlightPlanNavCarrotTest.OverspeedGovernorHoldsCarrotWithHysteresis (0 ms)
+[ RUN      ] FlightPlanNavCarrotTest.ChaseLagCompensationCrossesGateNearCornerSpeed
+[       OK ] RCDeviceTest.TestWifiModeChangeWithDeviceUnready (0 ms)
+[ RUN      ] RCDeviceTest.TestWifiModeChangeWithDeviceReady
+[       OK ] AutopilotYawTest.MissionYawRateCapApplies (0 ms)
+[ RUN      ] AutopilotYawTest.EngageRampsRateIn
+[       OK ] IbusRxInitUnitTest.Test_IbusRxNotEnabled (0 ms)
+[ RUN      ] IbusRxInitUnitTest.Test_IbusRxEnabled
+[       OK ] CrossFireTest.TestOversizedFrameLengthIsRejected (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] FlightPlanNavCarrotTest.ChaseLagCompensationCrossesGateNearCornerSpeed (0 ms)
+[----------] 11 tests from FlightPlanNavCarrotTest (32 ms total)
+
+[       OK ] RCDeviceTest.TestWifiModeChangeWithDeviceReady (0 ms)
+[       OK ] AutopilotYawTest.EngageRampsRateIn (0 ms)
+[       OK ] IbusRxInitUnitTest.Test_IbusRxEnabled (0 ms)
+[----------] 2 tests from IbusRxInitUnitTest (8 ms total)
+
+[ RUN      ] CrossFireTest.TestValidFrameLengthBoundsAreReceived
+[----------] 1 test from MspOverrideTest
+[----------] Global test environment tear-down
+[ RUN      ] RCDeviceTest.TestWifiModeChangeCombine
+[----------] 11 tests from AutopilotYawTest (35 ms total)
+
+[----------] 10 tests from IbusRxProtocollUnitTest
+[       OK ] CrossFireTest.TestValidFrameLengthBoundsAreReceived (0 ms)
+[ RUN      ] CrossFireTest.TestInvalidFrameLengthBoundsAreRejectedAndRecover
+[ RUN      ] MspOverrideTest.ChannelFreshness
+[==========] 69 tests from 4 test suites ran. (411 ms total)
+[  PASSED  ] 69 tests.
+[       OK ] RCDeviceTest.TestWifiModeChangeCombine (0 ms)
+[ RUN      ] RCDeviceTest.Test5KeyOSDCableSimulationProtocol
+[----------] 6 tests from NavModeTest
+[ RUN      ] IbusRxProtocollUnitTest.Test_InitialFrameState
+[       OK ] CrossFireTest.TestInvalidFrameLengthBoundsAreRejectedAndRecover (0 ms)
+[       OK ] MspOverrideTest.ChannelFreshness (0 ms)
+[       OK ] RCDeviceTest.Test5KeyOSDCableSimulationProtocol (0 ms)
+[ RUN      ] RCDeviceTest.Test5KeyOSDCableSimulationWithout5KeyFeatureSupport
+running test_flight_plan_nav_unittest: PASS
+[ RUN      ] NavModeTest.NavAnchorsToCarrotAhead
+[       OK ] IbusRxProtocollUnitTest.Test_InitialFrameState (0 ms)
+[----------] 12 tests from CrossFireTest (38 ms total)
+
+[----------] Global test environment tear-down
+[----------] 1 test from MspOverrideTest (4 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] RCDeviceTest.Test5KeyOSDCableSimulationWithout5KeyFeatureSupport (0 ms)
+[       OK ] NavModeTest.NavAnchorsToCarrotAhead (0 ms)
+[ RUN      ] NavModeTest.NavPositionErrorIsBounded
+[ RUN      ] IbusRxProtocollUnitTest.Test_IA6B_OnePacketReceived
+[==========] 12 tests from 1 test suite ran. (41 ms total)
+[  PASSED  ] 12 tests.
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[==========] 1 test from 1 test suite ran. (12 ms total)
+[  PASSED  ] 1 test.
+[----------] 9 tests from RCDeviceTest (34 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] NavModeTest.NavPositionErrorIsBounded (0 ms)
+[       OK ] IbusRxProtocollUnitTest.Test_IA6B_OnePacketReceived (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_IA6B_OnePacketReceivedWithBadCrc
+running test_rx_crsf_unittest: PASS
+[----------] 1 test from RxChannelRangeTest
+[ RUN      ] RxChannelRangeTest.TestRxChannelRanges
+running test_rx_msp_override_unittest: PASS
+[==========] 9 tests from 1 test suite ran. (45 ms total)
+[  PASSED  ] 9 tests.
+[ RUN      ] NavModeTest.NavVelocityFeedforward
+[       OK ] IbusRxProtocollUnitTest.Test_IA6B_OnePacketReceivedWithBadCrc (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_IA6B_HalfPacketReceived_then_interPacketGapReset
+[       OK ] RxChannelRangeTest.TestRxChannelRanges (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 0 tests from 0 test suites.
+running test_rcdevice_unittest: PASS
+[       OK ] NavModeTest.NavVelocityFeedforward (0 ms)
+[ RUN      ] NavModeTest.NavForcesIntegralZero
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 9 tests from 1 test suite.
+[       OK ] IbusRxProtocollUnitTest.Test_IA6B_HalfPacketReceived_then_interPacketGapReset (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_IA6_OnePacketReceived
+[----------] 1 test from RxChannelRangeTest (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 0 tests from 0 test suites ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[       OK ] NavModeTest.NavForcesIntegralZero (0 ms)
+[ RUN      ] NavModeTest.ResetOnNavReentry
+[----------] 9 tests from RxSpiExpressLrsTelemetryUnitTest
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestInit
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 8 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] IbusRxProtocollUnitTest.Test_IA6_OnePacketReceived (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_IA6_OnePacketReceivedBadCrc
+[==========] 1 test from 1 test suite ran. (10 ms total)
+[  PASSED  ] 1 test.
+running test_rx_rx_unittest: PASS
+[       OK ] NavModeTest.ResetOnNavReentry (0 ms)
+[ RUN      ] NavModeTest.PositionControlResetIsDeterministic
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestInit (0 ms)
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestGps
+[----------] 8 tests from RxSpiExpressLrsUnitTest
+[       OK ] IbusRxProtocollUnitTest.Test_IA6_OnePacketReceivedBadCrc (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_IA6B_OnePacketReceived_not_shared_port
+running test_rx_ranges_unittest: PASS
+[       OK ] NavModeTest.PositionControlResetIsDeterministic (0 ms)
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestGps (0 ms)
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestBattery
+[ RUN      ] RxSpiExpressLrsUnitTest.TestCrc14
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 8 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] IbusRxProtocollUnitTest.Test_IA6B_OnePacketReceived_not_shared_port (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_OneTelemetryPacketReceived
+[----------] 6 tests from NavModeTest (19 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestBattery (0 ms)
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestAttitude
+[       OK ] RxSpiExpressLrsUnitTest.TestCrc14 (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestFHSSTable
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 8 tests from RxSpiExpressLrsUnitTest
+[ RUN      ] RxSpiExpressLrsUnitTest.TestCrc14
+[       OK ] IbusRxProtocollUnitTest.Test_OneTelemetryPacketReceived (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_OneTelemetryIgnoreTxEchoToRx
+[==========] 43 tests from 3 test suites ran. (144 ms total)
+[  PASSED  ] 43 tests.
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestAttitude (0 ms)
+[       OK ] RxSpiExpressLrsUnitTest.TestFHSSTable (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestInitUnbound
+[----------] 6 tests from RxSpiSpektrumUnitTest
+[       OK ] RxSpiExpressLrsUnitTest.TestCrc14 (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestFHSSTable
+[       OK ] IbusRxProtocollUnitTest.Test_OneTelemetryIgnoreTxEchoToRx (0 ms)
+[ RUN      ] IbusRxProtocollUnitTest.Test_OneTelemetryShouldNotIgnoreTxEchoAfterInterFrameGap
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestFlightMode
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestFlightMode (0 ms)
+running test_poshold_unittest: PASS
+[       OK ] RxSpiExpressLrsUnitTest.TestInitUnbound (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestInitBound
+[ RUN      ] RxSpiSpektrumUnitTest.TestInitUnbound
+[       OK ] RxSpiSpektrumUnitTest.TestInitUnbound (0 ms)
+[       OK ] RxSpiExpressLrsUnitTest.TestFHSSTable (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestInitUnbound
+[       OK ] IbusRxProtocollUnitTest.Test_OneTelemetryShouldNotIgnoreTxEchoAfterInterFrameGap (0 ms)
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestMspVersionRequest
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestMspVersionRequest (0 ms)
+[       OK ] RxSpiExpressLrsUnitTest.TestInitBound (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestLQCalc
+[ RUN      ] RxSpiSpektrumUnitTest.TestInitBound
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 9 tests from 2 test suites.
+[----------] Global test environment set-up.
+[       OK ] RxSpiExpressLrsUnitTest.TestInitUnbound (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestInitBound
+[----------] 10 tests from IbusRxProtocollUnitTest (33 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestMspPidRequest
+[       OK ] RxSpiExpressLrsUnitTest.TestLQCalc (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.Test1bSwitchDecode
+[       OK ] RxSpiSpektrumUnitTest.TestInitBound (0 ms)
+[ RUN      ] RxSpiSpektrumUnitTest.TestDecodeBindPacket
+[----------] 2 tests from SumdRxInitUnitTest
+[       OK ] RxSpiExpressLrsUnitTest.TestInitBound (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.TestLQCalc
+[==========] 12 tests from 2 test suites ran. (52 ms total)
+[  PASSED  ] 12 tests.
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestMspPidRequest (0 ms)
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestMspVtxRequest
+[       OK ] RxSpiExpressLrsUnitTest.Test1bSwitchDecode (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.Test3bSwitchDecode
+[       OK ] RxSpiSpektrumUnitTest.TestDecodeBindPacket (0 ms)
+[ RUN      ] RxSpiSpektrumUnitTest.TestReceiverSyncLogic
+[ RUN      ] SumdRxInitUnitTest.Test_SumdRxNotEnabled
+[       OK ] RxSpiExpressLrsUnitTest.TestLQCalc (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.Test1bSwitchDecode
+running test_rx_ibus_unittest: PASS
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestMspVtxRequest (0 ms)
+[ RUN      ] RxSpiExpressLrsTelemetryUnitTest.TestDeviceInfoResp
+[       OK ] RxSpiExpressLrsUnitTest.Test3bSwitchDecode (0 ms)
+[       OK ] RxSpiSpektrumUnitTest.TestReceiverSyncLogic (0 ms)
+[ RUN      ] RxSpiSpektrumUnitTest.TestReceiveData
+[       OK ] SumdRxInitUnitTest.Test_SumdRxNotEnabled (0 ms)
+[ RUN      ] SumdRxInitUnitTest.Test_SumdRxEnabled
+[       OK ] RxSpiExpressLrsUnitTest.Test1bSwitchDecode (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.Test3bSwitchDecode
+[       OK ] RxSpiExpressLrsTelemetryUnitTest.TestDeviceInfoResp (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.Test4bSwitchDecode
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] RxSpiSpektrumUnitTest.TestReceiveData (0 ms)
+[       OK ] SumdRxInitUnitTest.Test_SumdRxEnabled (0 ms)
+[       OK ] RxSpiExpressLrsUnitTest.Test3bSwitchDecode (0 ms)
+[ RUN      ] RxSpiExpressLrsUnitTest.Test4bSwitchDecode
+[----------] 9 tests from RxSpiExpressLrsTelemetryUnitTest (28 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] RxSpiExpressLrsUnitTest.Test4bSwitchDecode (0 ms)
+[----------] 12 tests from SchedulerUnittest
+[ RUN      ] SchedulerUnittest.SetupTasks
+[ RUN      ] RxSpiSpektrumUnitTest.TestConvertDataPacket
+[----------] 2 tests from SumdRxInitUnitTest (8 ms total)
+
+[       OK ] RxSpiExpressLrsUnitTest.Test4bSwitchDecode (0 ms)
+[==========] 9 tests from 1 test suite ran. (36 ms total)
+[  PASSED  ] 9 tests.
+[----------] 8 tests from RxSpiExpressLrsUnitTest (28 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] SchedulerUnittest.SetupTasks (0 ms)
+[ RUN      ] SchedulerUnittest.TestPriorites
+[       OK ] RxSpiSpektrumUnitTest.TestConvertDataPacket (0 ms)
+[----------] 7 tests from SumdRxProtocollUnitTest
+[----------] 8 tests from RxSpiExpressLrsUnitTest (24 ms total)
+
+[----------] Global test environment tear-down
+running test_rx_spi_expresslrs_telemetry_unittest: PASS
+[==========] 8 tests from 1 test suite ran. (37 ms total)
+[  PASSED  ] 8 tests.
+[       OK ] SchedulerUnittest.TestPriorites (0 ms)
+[ RUN      ] SchedulerUnittest.TestQueueInit
+[----------] 6 tests from RxSpiSpektrumUnitTest (23 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] SumdRxProtocollUnitTest.Test_OnePacketReceived
+[==========] 8 tests from 1 test suite ran. (32 ms total)
+[  PASSED  ] 8 tests.
+running test_rx_spi_expresslrs_unittest: PASS
+[       OK ] SchedulerUnittest.TestQueueInit (0 ms)
+[ RUN      ] SchedulerUnittest.TestQueue
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[==========] 6 tests from 1 test suite ran. (32 ms total)
+[  PASSED  ] 6 tests.
+[       OK ] SumdRxProtocollUnitTest.Test_OnePacketReceived (0 ms)
+[ RUN      ] SumdRxProtocollUnitTest.Test_MultiplePacketsReceived
+running test_rx_spi_expresslrs_v4_unittest: PASS
+[       OK ] SchedulerUnittest.TestQueue (0 ms)
+[ RUN      ] SchedulerUnittest.TestQueueAddAndRemove
+[----------] 5 tests from SensorGyro
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] SumdRxProtocollUnitTest.Test_MultiplePacketsReceived (0 ms)
+[ RUN      ] SumdRxProtocollUnitTest.Test_Resync
+running test_rx_spi_spektrum_unittest: PASS
+[       OK ] SchedulerUnittest.TestQueueAddAndRemove (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] SensorGyro.Detect
+[----------] 3 tests from SitlGyroUnittest
+[       OK ] SumdRxProtocollUnitTest.Test_Resync (0 ms)
+[ RUN      ] SumdRxProtocollUnitTest.Test_IgnoreInvalidCRC
+[ RUN      ] SchedulerUnittest.TestQueueArray
+[----------] 4 tests from CrossFireMSPTest
+[       OK ] SensorGyro.Detect (0 ms)
+[ RUN      ] SensorGyro.Init
+[ RUN      ] SitlGyroUnittest.GazeboBridgeMapping
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] SumdRxProtocollUnitTest.Test_IgnoreInvalidCRC (0 ms)
+[ RUN      ] SumdRxProtocollUnitTest.Test_ShortPacketsReceived
+[       OK ] SchedulerUnittest.TestQueueArray (0 ms)
+[ RUN      ] SchedulerUnittest.TestSchedulerInit
+[ RUN      ] CrossFireMSPTest.RequestBufferTest
+[       OK ] SensorGyro.Init (0 ms)
+[ RUN      ] SensorGyro.Read
+[       OK ] SitlGyroUnittest.GazeboBridgeMapping (0 ms)
+[ RUN      ] SitlGyroUnittest.LegacyBridgeMapping
+[----------] 4 tests from TelemetryCrsfTest
+[ RUN      ] TelemetryCrsfTest.TestGPS
+[       OK ] SumdRxProtocollUnitTest.Test_ShortPacketsReceived (0 ms)
+[ RUN      ] SumdRxProtocollUnitTest.TestShortPacketsReceivedWithFailsafe
+[       OK ] SchedulerUnittest.TestSchedulerInit (0 ms)
+[ RUN      ] SchedulerUnittest.TestScheduleEmptyQueue
+[       OK ] CrossFireMSPTest.RequestBufferTest (0 ms)
+[ RUN      ] CrossFireMSPTest.ResponsePacketTest
+[       OK ] SensorGyro.Read (0 ms)
+[       OK ] SitlGyroUnittest.LegacyBridgeMapping (0 ms)
+[ RUN      ] SitlGyroUnittest.YawSignDiffersByBridge
+[       OK ] TelemetryCrsfTest.TestGPS (0 ms)
+[ RUN      ] TelemetryCrsfTest.TestBattery
+[       OK ] SumdRxProtocollUnitTest.TestShortPacketsReceivedWithFailsafe (0 ms)
+[ RUN      ] SumdRxProtocollUnitTest.Test_LongPacketsReceived
+[       OK ] SchedulerUnittest.TestScheduleEmptyQueue (0 ms)
+[ RUN      ] SchedulerUnittest.TestSingleTask
+[       OK ] CrossFireMSPTest.ResponsePacketTest (0 ms)
+[ RUN      ] CrossFireMSPTest.WriteResponseTest
+[ RUN      ] SensorGyro.Calibrate
+[       OK ] SitlGyroUnittest.YawSignDiffersByBridge (0 ms)
+[----------] 3 tests from SitlGyroUnittest (9 ms total)
+
+[       OK ] TelemetryCrsfTest.TestBattery (0 ms)
+[ RUN      ] TelemetryCrsfTest.TestAttitude
+[       OK ] SumdRxProtocollUnitTest.Test_LongPacketsReceived (0 ms)
+[       OK ] SchedulerUnittest.TestSingleTask (0 ms)
+[ RUN      ] SchedulerUnittest.TestTwoTasks
+[       OK ] CrossFireMSPTest.WriteResponseTest (0 ms)
+[ RUN      ] CrossFireMSPTest.SendMspReply
+[       OK ] SensorGyro.Calibrate (0 ms)
+[ RUN      ] SensorGyro.Update
+[----------] Global test environment tear-down
+[       OK ] TelemetryCrsfTest.TestAttitude (0 ms)
+[ RUN      ] TelemetryCrsfTest.TestFlightMode
+[----------] 7 tests from SumdRxProtocollUnitTest (21 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] SchedulerUnittest.TestTwoTasks (0 ms)
+[ RUN      ] SchedulerUnittest.TestPriorityBump
+[       OK ] CrossFireMSPTest.SendMspReply (0 ms)
+[       OK ] SensorGyro.Update (0 ms)
+[==========] 3 tests from 1 test suite ran. (18 ms total)
+[  PASSED  ] 3 tests.
+[       OK ] TelemetryCrsfTest.TestFlightMode (0 ms)
+[----------] 4 tests from TelemetryCrsfTest (10 ms total)
+
+[==========] 9 tests from 2 test suites ran. (44 ms total)
+[  PASSED  ] 9 tests.
+[       OK ] SchedulerUnittest.TestPriorityBump (0 ms)
+[----------] 4 tests from CrossFireMSPTest (13 ms total)
+
+[----------] Global test environment tear-down
+[----------] 5 tests from SensorGyro (17 ms total)
+
+running test_sitl_gyro_unittest: PASS
+[----------] Global test environment tear-down
+[ RUN      ] SchedulerUnittest.TestGyroTask
+running test_rx_sumd_unittest: PASS
+[==========] 4 tests from 1 test suite ran. (20 ms total)
+[  PASSED  ] 4 tests.
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (17 ms total)
+[  PASSED  ] 4 tests.
+running test_telemetry_crsf_msp_unittest: PASS
+[       OK ] SchedulerUnittest.TestGyroTask (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[==========] 5 tests from 1 test suite ran. (27 ms total)
+[  PASSED  ] 5 tests.
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 17 tests from 3 test suites.
+[----------] Global test environment set-up.
+running test_telemetry_crsf_unittest: PASS
+[----------] 12 tests from SchedulerUnittest (35 ms total)
+
+[----------] Global test environment tear-down
+[----------] Global test environment set-up.
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 9 tests from 1 test suite.
+running test_sensor_gyro_unittest: PASS
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] 3 tests from IbusTelemteryInitUnitTest
+[ RUN      ] IbusTelemteryInitUnitTest.Test_IbusInitNotEnabled
+[==========] 12 tests from 1 test suite ran. (42 ms total)
+[  PASSED  ] 12 tests.
+[----------] 3 tests from TelemetryHottTest
+[----------] Global test environment set-up.
+[----------] Global test environment set-up.
+[----------] 2 tests from transponderTest
+[       OK ] IbusTelemteryInitUnitTest.Test_IbusInitNotEnabled (0 ms)
+[ RUN      ] IbusTelemteryInitUnitTest.Test_IbusInitEnabled
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] TelemetryHottTest.UpdateGPSCoordinates1
+[       OK ] TelemetryHottTest.UpdateGPSCoordinates1 (0 ms)
+running test_scheduler_unittest: PASS
+[----------] 9 tests from MavlinkMissionTest
+[ RUN      ] transponderTest.updateTransponderDMABufferArcitimer
+[       OK ] IbusTelemteryInitUnitTest.Test_IbusInitEnabled (0 ms)
+[----------] 2 tests from VtxMspUnitTest
+[ RUN      ] TelemetryHottTest.UpdateGPSCoordinates2
+[ RUN      ] MavlinkMissionTest.UploadWritesWaypointsToConfig
+[       OK ] transponderTest.updateTransponderDMABufferArcitimer (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] IbusTelemteryInitUnitTest.Test_IbusInitSerialRxAndTelemetryEnabled
+[ RUN      ] VtxMspUnitTest.TestVtxMspPacket
+[       OK ] TelemetryHottTest.UpdateGPSCoordinates2 (0 ms)
+[       OK ] MavlinkMissionTest.UploadWritesWaypointsToConfig (0 ms)
+[ RUN      ] transponderTest.updateTransponderDMABufferIlap
+[----------] 6 tests from VtxTest
+[       OK ] IbusTelemteryInitUnitTest.Test_IbusInitSerialRxAndTelemetryEnabled (0 ms)
+[       OK ] VtxMspUnitTest.TestVtxMspPacket (0 ms)
+[ RUN      ] TelemetryHottTest.UpdateGPSCoordinates3
+[ RUN      ] MavlinkMissionTest.UploadMapsLoiterTurnsToOrbitHold
+[       OK ] transponderTest.updateTransponderDMABufferIlap (0 ms)
+[ RUN      ] VtxTest.PitMode
+[       OK ] VtxTest.PitMode (0 ms)
+[----------] 3 tests from IbusTelemteryInitUnitTest (16 ms total)
+
+[ RUN      ] VtxMspUnitTest.TestVtxMspReady
+[       OK ] TelemetryHottTest.UpdateGPSCoordinates3 (0 ms)
+[       OK ] MavlinkMissionTest.UploadMapsLoiterTurnsToOrbitHold (0 ms)
+[----------] 2 tests from transponderTest (18 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] VtxTest.ActivationConditionsAllAppliedWhenSimultaneouslyActive
+[----------] 10 tests from IbusTelemteryProtocolUnitTest
+[       OK ] VtxMspUnitTest.TestVtxMspReady (0 ms)
+[----------] 3 tests from TelemetryHottTest (24 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] MavlinkMissionTest.UploadDefaultsPatternToNone
+[==========] 2 tests from 1 test suite ran. (28 ms total)
+[  PASSED  ] 2 tests.
+[       OK ] VtxTest.ActivationConditionsAllAppliedWhenSimultaneouslyActive (0 ms)
+[ RUN      ] VtxTest.PowerOnlyConditionDoesNotResetBandAndChannel
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusNoRespondToDiscoveryCrcErr
+[----------] 2 tests from VtxMspUnitTest (24 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (38 ms total)
+[  PASSED  ] 3 tests.
+[       OK ] MavlinkMissionTest.UploadDefaultsPatternToNone (0 ms)
+[ RUN      ] MavlinkMissionTest.UploadRejectedWhileAutopilotActive
+running test_transponder_ir_unittest: PASS
+[       OK ] VtxTest.PowerOnlyConditionDoesNotResetBandAndChannel (0 ms)
+[ RUN      ] VtxTest.LastActiveConditionWinsForSameField
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusNoRespondToDiscoveryCrcErr (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToDiscovery
+[==========] 2 tests from 1 test suite ran. (37 ms total)
+[  PASSED  ] 2 tests.
+running test_telemetry_hott_unittest: PASS
+[       OK ] MavlinkMissionTest.UploadRejectedWhileAutopilotActive (0 ms)
+[ RUN      ] MavlinkMissionTest.DownloadEncodesWaypointsRoundTrip
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 19 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] VtxTest.LastActiveConditionWinsForSameField (0 ms)
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToDiscovery (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToSensorTypeQueryVbatt
+running test_vtx_msp_unittest: PASS
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 6 tests from 2 test suites.
+[       OK ] MavlinkMissionTest.DownloadEncodesWaypointsRoundTrip (0 ms)
+[ RUN      ] MavlinkMissionTest.MissionItemReachedEmitted
+[----------] 19 tests from AccgyroSpiIcm426xx
+[ RUN      ] VtxTest.InactiveConditionLeavesLastValues
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToSensorTypeQueryVbatt (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToSensorTypeQueryTemperature
+[----------] Global test environment set-up.
+[----------] Global test environment set-up.
+[       OK ] MavlinkMissionTest.MissionItemReachedEmitted (0 ms)
+[ RUN      ] MavlinkMissionTest.MissionCurrentReflectsExecutorState
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleIcm42605
+[       OK ] VtxTest.InactiveConditionLeavesLastValues (0 ms)
+[ RUN      ] VtxTest.ArmedLocksBandAndChannelButNotPower
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToSensorTypeQueryTemperature (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToSensorTypeQueryRpm
+[----------] 12 tests from AlignSensorTest
+[----------] 3 tests from AltholdUnittest
+[       OK ] MavlinkMissionTest.MissionCurrentReflectsExecutorState (0 ms)
+[ RUN      ] MavlinkMissionTest.MissionCurrentSuppressedForInjectedPlan
+[       OK ] AccgyroSpiIcm426xx.GyroScaleIcm42605 (0 ms)
+[       OK ] VtxTest.ArmedLocksBandAndChannelButNotPower (0 ms)
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToSensorTypeQueryRpm (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementVbattZero
+[ RUN      ] AlignSensorTest.ClockwiseZeroDegrees
+[ RUN      ] AltholdUnittest.altHoldTransitionsTest
+[       OK ] MavlinkMissionTest.MissionCurrentSuppressedForInjectedPlan (0 ms)
+[ RUN      ] MavlinkMissionTest.SetCurrentDispatchesAndEchoesCursor
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleIcm42622P
+[----------] 6 tests from VtxTest (51 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementVbattZero (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementVbattCellVoltage
+[       OK ] AlignSensorTest.ClockwiseZeroDegrees (0 ms)
+[       OK ] AltholdUnittest.altHoldTransitionsTest (0 ms)
+[ RUN      ] AltholdUnittest.altHoldTransitionsTestUnfinishedExitEnter
+[       OK ] MavlinkMissionTest.SetCurrentDispatchesAndEchoesCursor (0 ms)
+[       OK ] AccgyroSpiIcm426xx.GyroScaleIcm42622P (0 ms)
+[==========] 6 tests from 1 test suite ran. (68 ms total)
+[  PASSED  ] 6 tests.
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementVbattCellVoltage (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementVbattPackVoltage
+[ RUN      ] AlignSensorTest.ClockwiseNinetyDegrees
+[       OK ] AltholdUnittest.altHoldTransitionsTestUnfinishedExitEnter (0 ms)
+[ RUN      ] AltholdUnittest.altHoldCapturesHoverThrottleWhenConfigZero
+[----------] 9 tests from MavlinkMissionTest (73 ms total)
+
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleIcm42686P
+running test_vtx_unittest: PASS
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementVbattPackVoltage (0 ms)
+[       OK ] AlignSensorTest.ClockwiseNinetyDegrees (0 ms)
+[ RUN      ] AlignSensorTest.ClockwiseOneEightyDegrees
+[       OK ] AltholdUnittest.altHoldCapturesHoverThrottleWhenConfigZero (0 ms)
+[----------] Global test environment tear-down
+[       OK ] AccgyroSpiIcm426xx.GyroScaleIcm42686P (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleIcm42688P
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementTemperature
+[       OK ] AlignSensorTest.ClockwiseOneEightyDegrees (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 11 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from AltholdUnittest (22 ms total)
+
+[----------] 3 tests from AltholdControlUnittest
+[==========] 9 tests from 1 test suite ran. (90 ms total)
+[  PASSED  ] 9 tests.
+[       OK ] AccgyroSpiIcm426xx.GyroScaleIcm42688P (0 ms)
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementTemperature (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementRpm
+[ RUN      ] AlignSensorTest.ClockwiseTwoSeventyDegrees
+[----------] 11 tests from ArmingPreventionTest
+[ RUN      ] AltholdControlUnittest.AltitudeControlRaisesThrottleWhenBelowTarget
+[       OK ] AltholdControlUnittest.AltitudeControlRaisesThrottleWhenBelowTarget (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleIim42652
+running test_telemetry_mavlink_mission_unittest: PASS
+[       OK ] IbusTelemteryProtocolUnitTest.Test_IbusRespondToGetMeasurementRpm (0 ms)
+[       OK ] AlignSensorTest.ClockwiseTwoSeventyDegrees (0 ms)
+[ RUN      ] ArmingPreventionTest.CalibrationPowerOnGraceAngleThrottleArmSwitch
+[ RUN      ] AltholdControlUnittest.AltitudeControlRespectsVelocityLimit
+[       OK ] AccgyroSpiIcm426xx.GyroScaleIim42652 (0 ms)
+[----------] 10 tests from IbusTelemteryProtocolUnitTest (68 ms total)
+
+[ RUN      ] AlignSensorTest.ClockwiseZeroDegreesFlip
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] ArmingPreventionTest.CalibrationPowerOnGraceAngleThrottleArmSwitch (0 ms)
+[ RUN      ] ArmingPreventionTest.ArmingGuardRadioLeftOnAndArmed
+[       OK ] AltholdControlUnittest.AltitudeControlRespectsVelocityLimit (0 ms)
+[ RUN      ] AltholdControlUnittest.AltitudeControlCompensatesForTilt
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleIim42653
+[----------] 4 tests from IbusTelemteryProtocolUnitTestDaisyChained
+[ RUN      ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToDiscoveryBaseAddressThree
+[       OK ] AlignSensorTest.ClockwiseZeroDegreesFlip (0 ms)
+[ RUN      ] AlignSensorTest.ClockwiseNinetyDegreesFlip
+[----------] 3 tests from AtomicUnittest
+[       OK ] ArmingPreventionTest.ArmingGuardRadioLeftOnAndArmed (0 ms)
+[ RUN      ] ArmingPreventionTest.Prearm
+[       OK ] AltholdControlUnittest.AltitudeControlCompensatesForTilt (0 ms)
+[       OK ] AccgyroSpiIcm426xx.GyroScaleIim42653 (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.GyroScaleUnknownSensorRejected
+[       OK ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToDiscoveryBaseAddressThree (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToSensorTypeQueryWrongAddress
+[       OK ] AlignSensorTest.ClockwiseNinetyDegreesFlip (0 ms)
+[ RUN      ] AtomicUnittest.TestAtomicBlock
+[       OK ] ArmingPreventionTest.Prearm (0 ms)
+[----------] 3 tests from AltholdControlUnittest (21 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] AccgyroSpiIcm426xx.GyroScaleUnknownSensorRejected (0 ms)
+[       OK ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToSensorTypeQueryWrongAddress (0 ms)
+[ RUN      ] AlignSensorTest.ClockwiseOneEightyDegreesFlip
+[       OK ] AtomicUnittest.TestAtomicBlock (0 ms)
+[ RUN      ] AtomicUnittest.TestAtomicBlockNB
+[ RUN      ] ArmingPreventionTest.RadioTurnedOnAtAnyTimeArmed
+[       OK ] ArmingPreventionTest.RadioTurnedOnAtAnyTimeArmed (0 ms)
+[==========] 6 tests from 2 test suites ran. (66 ms total)
+[  PASSED  ] 6 tests.
+[ RUN      ] AccgyroSpiIcm426xx.AccOneGIcm42605
+[ RUN      ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToSensorTypeQueryVbattBaseThree
+[       OK ] AlignSensorTest.ClockwiseOneEightyDegreesFlip (0 ms)
+[       OK ] AtomicUnittest.TestAtomicBlockNB (0 ms)
+[ RUN      ] AtomicUnittest.TestAtomicBarrier
+[ RUN      ] ArmingPreventionTest.In3DModeAllowArmingWhenEnteringThrottleDeadband
+running test_althold_unittest: PASS
+[       OK ] AccgyroSpiIcm426xx.AccOneGIcm42605 (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.AccOneGIcm42622P
+[       OK ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToSensorTypeQueryVbattBaseThree (0 ms)
+[ RUN      ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToGetMeasurementsBaseThree
+[ RUN      ] AlignSensorTest.ClockwiseTwoSeventyDegreesFlip
+[       OK ] AtomicUnittest.TestAtomicBarrier (0 ms)
+[       OK ] ArmingPreventionTest.In3DModeAllowArmingWhenEnteringThrottleDeadband (0 ms)
+[ RUN      ] ArmingPreventionTest.When3DModeDisabledThenNormalThrottleArmingConditionApplies
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[       OK ] AccgyroSpiIcm426xx.AccOneGIcm42622P (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.AccOneGIcm42686P
+[       OK ] IbusTelemteryProtocolUnitTestDaisyChained.Test_IbusRespondToGetMeasurementsBaseThree (0 ms)
+[       OK ] AlignSensorTest.ClockwiseTwoSeventyDegreesFlip (0 ms)
+[ RUN      ] AlignSensorTest.AttemptBuildAlignmentWithStandardAlignment
+[----------] 3 tests from AtomicUnittest (27 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] ArmingPreventionTest.When3DModeDisabledThenNormalThrottleArmingConditionApplies (0 ms)
+[ RUN      ] ArmingPreventionTest.WhenUsingSwitched3DModeThenNormalThrottleArmingConditionApplies
+[----------] Global test environment set-up.
+[----------] 4 tests from baroBmp085Test
+[       OK ] AccgyroSpiIcm426xx.AccOneGIcm42686P (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.AccOneGIcm42688P
+[----------] 4 tests from IbusTelemteryProtocolUnitTestDaisyChained (34 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] AlignSensorTest.AttemptBuildAlignmentWithStandardAlignment (0 ms)
+[ RUN      ] AlignSensorTest.AttemptBuildAlignmentFromCustomAlignment
+[==========] 3 tests from 1 test suite ran. (46 ms total)
+[  PASSED  ] 3 tests.
+[       OK ] ArmingPreventionTest.WhenUsingSwitched3DModeThenNormalThrottleArmingConditionApplies (0 ms)
+[ RUN      ] ArmingPreventionTest.GPSRescueWithoutFixPreventsArm
+[ RUN      ] baroBmp085Test.TestBmp085CalculateOss0
+[       OK ] AccgyroSpiIcm426xx.AccOneGIcm42688P (0 ms)
+[==========] 17 tests from 3 test suites ran. (154 ms total)
+[  PASSED  ] 17 tests.
+[       OK ] AlignSensorTest.AttemptBuildAlignmentFromCustomAlignment (0 ms)
+[ RUN      ] AlignSensorTest.AttemptBuildAlignmentFromDefaultAlignment
+running test_atomic_unittest: PASS
+[       OK ] ArmingPreventionTest.GPSRescueWithoutFixPreventsArm (0 ms)
+[ RUN      ] ArmingPreventionTest.GPSRescueSwitchPreventsArm
+[       OK ] baroBmp085Test.TestBmp085CalculateOss0 (0 ms)
+[ RUN      ] baroBmp085Test.TestBmp085CalculateOss3
+[ RUN      ] AccgyroSpiIcm426xx.AccOneGIim42652
+running test_telemetry_ibus_unittest: PASS
+[       OK ] AlignSensorTest.AttemptBuildAlignmentFromDefaultAlignment (0 ms)
+[ RUN      ] AlignSensorTest.AlignmentBitmasks
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] ArmingPreventionTest.GPSRescueSwitchPreventsArm (0 ms)
+[ RUN      ] ArmingPreventionTest.ParalyzeOnAtBoot
+[       OK ] baroBmp085Test.TestBmp085CalculateOss3 (0 ms)
+[ RUN      ] baroBmp085Test.TestBmp085CalculateOss3Cold
+[       OK ] AccgyroSpiIcm426xx.AccOneGIim42652 (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.AccOneGIim42653
+[       OK ] AlignSensorTest.AlignmentBitmasks (0 ms)
+[----------] 12 tests from AlignSensorTest (105 ms total)
+
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from baroBmp280Test
+[       OK ] ArmingPreventionTest.ParalyzeOnAtBoot (0 ms)
+[ RUN      ] ArmingPreventionTest.Paralyze
+[       OK ] baroBmp085Test.TestBmp085CalculateOss3Cold (0 ms)
+[ RUN      ] baroBmp085Test.TestBmp085CalculateOss3Hot
+[       OK ] AccgyroSpiIcm426xx.AccOneGIim42653 (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.AafNormalIcm42605
+[----------] Global test environment tear-down
+[----------] 2 tests from baroBmp388Test
+[ RUN      ] baroBmp280Test.TestBmp280Calculate
+[       OK ] ArmingPreventionTest.Paralyze (0 ms)
+[       OK ] baroBmp085Test.TestBmp085CalculateOss3Hot (0 ms)
+[       OK ] AccgyroSpiIcm426xx.AafNormalIcm42605 (0 ms)
+[ RUN      ] AccgyroSpiIcm426xx.AafNormalIcm42622P
+[==========] 12 tests from 1 test suite ran. (128 ms total)
+[  PASSED  ] 12 tests.
+[ RUN      ] baroBmp388Test.TestBmp388CalculateWithZeroCalibration
+[       OK ] baroBmp280Test.TestBmp280Calculate (0 ms)
+[----------] 11 tests from ArmingPreventionTest (84 ms total)
+
+[----------] Global test environment tear-down
+[----------] 4 tests from baroBmp085Test (31 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] AccgyroSpiIcm426xx.AafNormalIcm42622P (0 ms)
+running test_alignsensor_unittest: PASS
+[       OK ] baroBmp388Test.TestBmp388CalculateWithZeroCalibration (0 ms)
+[ RUN      ] baroBmp388Test.TestBmp388CalculateWithSampleCalibration
+[ RUN      ] baroBmp280Test.TestBmp280CalculateHighP
+[==========] 11 tests from 1 test suite ran. (97 ms total)
+[  PASSED  ] 11 tests.
+[==========] 4 tests from 1 test suite ran. (51 ms total)
+[  PASSED  ] 4 tests.
+[ RUN      ] AccgyroSpiIcm426xx.AafNormalIcm42686P
+[       OK ] baroBmp388Test.TestBmp388CalculateWithSampleCalibration (0 ms)
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 7 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] baroBmp280Test.TestBmp280CalculateHighP (0 ms)
+running test_arming_prevention_unittest: PASS
+running test_baro_bmp085_unittest: PASS
+[       OK ] AccgyroSpiIcm426xx.AafNormalIcm42686P (0 ms)
+[----------] 2 tests from baroBmp388Test (14 ms total)
+
+[----------] Global test environment tear-down
+[----------] 7 tests from baroMS5611Test
+[ RUN      ] baroBmp280Test.TestBmp280CalculateZeroP
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[ RUN      ] AccgyroSpiIcm426xx.AafNormalIcm42688P
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 21 tests from 1 test suite.
+[----------] Global test environment set-up.
+[==========] 2 tests from 1 test suite ran. (36 ms total)
+[  PASSED  ] 2 tests.
+[ RUN      ] baroMS5611Test.TestValidMs5611Crc
+[       OK ] baroBmp280Test.TestBmp280CalculateZeroP (0 ms)
+[----------] 5 tests from BatteryProfileTest
+[       OK ] AccgyroSpiIcm426xx.AafNormalIcm42688P (0 ms)
+[----------] 21 tests from BeeperTest
+running test_baro_bmp388_unittest: PASS
+[       OK ] baroMS5611Test.TestValidMs5611Crc (0 ms)
+[ RUN      ] baroMS5611Test.TestInvalidMs5611Crc
+[----------] 3 tests from baroBmp280Test (34 ms total)
+
+[----------] Global test environment tear-down
+[ RUN      ] BatteryProfileTest.ProfileDefaultsAreCorrect
+[ RUN      ] AccgyroSpiIcm426xx.AafNormalIim42652
+[       OK ] AccgyroSpiIcm426xx.AafNormalIim42652 (0 ms)
+[ RUN      ] BeeperTest.BeeperUsbFlagOff_ConfiguratorActive_BeeperSounds
+[       OK ] baroMS5611Test.TestInvalidMs5611Crc (0 ms)
+[ RUN      ] baroMS5611Test.TestMs5611AllZeroProm
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 4 tests from 2 test suites.
+[----------] Global test environment set-up.
+[==========] 3 tests from 1 test suite ran. (54 ms total)
+[  PASSED  ] 3 tests.
+[       OK ] BatteryProfileTest.ProfileDefaultsAreCorrect (0 ms)
+[ RUN      ] BatteryProfileTest.ProfileSwitching
+[ RUN      ] AccgyroSpiIcm426xx.AafNormalIim42653
+[       OK ] BeeperTest.BeeperUsbFlagOff_ConfiguratorActive_BeeperSounds (0 ms)
+[       OK ] baroMS5611Test.TestMs5611AllZeroProm (0 ms)
+[ RUN      ] baroMS5611Test.TestMs5611AllOnesProm
+[----------] 1 test from BlackboxEncodingTest
+running test_baro_bmp280_unittest: PASS
+[       OK ] BatteryProfileTest.ProfileSwitching (0 ms)
+[       OK ] AccgyroSpiIcm426xx.AafNormalIim42653 (0 ms)
+[----------] 19 tests from AccgyroSpiIcm426xx (170 ms total)
+
+[ RUN      ] BeeperTest.BeeperUsbFlagOn_ConfiguratorNotActive_BeeperSounds
+[       OK ] baroMS5611Test.TestMs5611AllOnesProm (0 ms)
+[ RUN      ] baroMS5611Test.TestMs5611CalculatePressureGT20Deg
+[ RUN      ] BlackboxEncodingTest.TestWriteUnsignedVB
+[ RUN      ] BatteryProfileTest.ProfileBoundaryClamping
+[----------] Global test environment tear-down
+[==========] 19 tests from 1 test suite ran. (187 ms total)
+[  PASSED  ] 19 tests.
+[       OK ] BeeperTest.BeeperUsbFlagOn_ConfiguratorNotActive_BeeperSounds (0 ms)
+[ RUN      ] BeeperTest.BeeperUsbFlagOn_ConfiguratorActive_NoBattery_BeeperSilent
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 8 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] baroMS5611Test.TestMs5611CalculatePressureGT20Deg (0 ms)
+[ RUN      ] baroMS5611Test.TestMs5611CalculatePressureLT20Deg
+[       OK ] BlackboxEncodingTest.TestWriteUnsignedVB (0 ms)
+[       OK ] BatteryProfileTest.ProfileBoundaryClamping (0 ms)
+[ RUN      ] BatteryProfileTest.ProfileNames
+running test_accgyro_spi_icm426xx_unittest: PASS
+[       OK ] BeeperTest.BeeperUsbFlagOn_ConfiguratorActive_NoBattery_BeeperSilent (0 ms)
+[ RUN      ] BeeperTest.BeeperUsbFlagOn_ConfiguratorActive_BatteryPresent_BeeperSounds
+[----------] 8 tests from BlackboxTest
+[ RUN      ] BlackboxTest.TestInitIntervals
+[       OK ] baroMS5611Test.TestMs5611CalculatePressureLT20Deg (0 ms)
+[ RUN      ] baroMS5611Test.TestMs5611CalculatePressureLTMinus15Deg
+[----------] 1 test from BlackboxEncodingTest (5 ms total)
+
+[       OK ] BatteryProfileTest.ProfileNames (0 ms)
+[ RUN      ] BatteryProfileTest.IndependentProfileValues
+[       OK ] BeeperTest.BeeperUsbFlagOn_ConfiguratorActive_BatteryPresent_BeeperSounds (0 ms)
+[ RUN      ] BeeperTest.BeeperMute_SilencesBeeper
+[       OK ] BlackboxTest.TestInitIntervals (0 ms)
+[ RUN      ] BlackboxTest.Test_500Hz
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 20 tests from 1 test suite.
+[       OK ] baroMS5611Test.TestMs5611CalculatePressureLTMinus15Deg (0 ms)
+[----------] 3 tests from BlackboxTest
+[ RUN      ] BlackboxTest.TestWriteTag2_3SVariable_BITS2
+[       OK ] BatteryProfileTest.IndependentProfileValues (0 ms)
+[       OK ] BeeperTest.BeeperMute_SilencesBeeper (0 ms)
+[ RUN      ] BeeperTest.BeeperUsbFlagOn_UsbInserted_ConfiguratorNotActive_BeeperSilent
+[       OK ] BlackboxTest.Test_500Hz (0 ms)
+[ RUN      ] BlackboxTest.Test_1kHz
+[----------] Global test environment set-up.
+[----------] 7 tests from baroMS5611Test (36 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] BlackboxTest.TestWriteTag2_3SVariable_BITS2 (0 ms)
+[ RUN      ] BlackboxTest.TestWriteTag2_3SVariable_BITS554
+[----------] 5 tests from BatteryProfileTest (29 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] BeeperTest.BeeperUsbFlagOn_UsbInserted_ConfiguratorNotActive_BeeperSilent (0 ms)
+[ RUN      ] BeeperTest.BeeperUsbFlagOff_UsbInserted_BeeperSounds
+[       OK ] BlackboxTest.Test_1kHz (0 ms)
+[ RUN      ] BlackboxTest.Test_2kHz
+[----------] 20 tests from CLIUnittest
+[==========] 7 tests from 1 test suite ran. (50 ms total)
+[  PASSED  ] 7 tests.
+[       OK ] BlackboxTest.TestWriteTag2_3SVariable_BITS554 (0 ms)
+[ RUN      ] BlackboxTest.TestWriteTag2_3SVariable_BITS887
+[==========] 5 tests from 1 test suite ran. (43 ms total)
+[  PASSED  ] 5 tests.
+[       OK ] BeeperTest.BeeperUsbFlagOff_UsbInserted_BeeperSounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxSet_NoUsbFlag_Sounds
+[       OK ] BlackboxTest.Test_2kHz (0 ms)
+[ RUN      ] BlackboxTest.Test_8kHz
+[ RUN      ] CLIUnittest.TestCliSetArray
+running test_baro_ms5611_unittest: PASS
+[       OK ] BlackboxTest.TestWriteTag2_3SVariable_BITS887 (0 ms)
+[----------] 3 tests from BlackboxTest (7 ms total)
+
+running test_battery_profile_unittest: PASS
+[       OK ] BeeperTest.DshotBeaconRxSet_NoUsbFlag_Sounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxSet_UsbFlagOn_ConfiguratorActive_Silent
+[       OK ] BlackboxTest.Test_8kHz (0 ms)
+[ RUN      ] BlackboxTest.Test_zero_p_interval
+[       OK ] CLIUnittest.TestCliSetArray (0 ms)
+[ RUN      ] CLIUnittest.TestCliSetStringNoFlags
+[----------] Global test environment tear-down
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] BeeperTest.DshotBeaconRxSet_UsbFlagOn_ConfiguratorActive_Silent (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxSet_UsbFlagOn_ConfiguratorActive_BatteryPresent_Sounds
+[       OK ] BlackboxTest.Test_zero_p_interval (0 ms)
+[ RUN      ] BlackboxTest.Test_CalculatePDenom
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] CLIUnittest.TestCliSetStringNoFlags (0 ms)
+[ RUN      ] CLIUnittest.TestCliSetStringWriteOnce
+[==========] 4 tests from 2 test suites ran. (35 ms total)
+[  PASSED  ] 4 tests.
+[----------] 6 tests from CMSUnittest
+[       OK ] BeeperTest.DshotBeaconRxSet_UsbFlagOn_ConfiguratorActive_BatteryPresent_Sounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxSet_UsbFlagOn_ConfiguratorNotActive_Sounds
+[       OK ] BlackboxTest.Test_CalculatePDenom (0 ms)
+[ RUN      ] BlackboxTest.Test_CalculateRates
+[----------] 5 tests from FilterUnittest
+[       OK ] CLIUnittest.TestCliSetStringWriteOnce (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingByNameArray
+[ RUN      ] CMSUnittest.TestCmsDisplayPortRegister
+running test_blackbox_encoding_unittest: PASS
+[       OK ] BeeperTest.DshotBeaconRxSet_UsbFlagOn_ConfiguratorNotActive_Sounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxLost_ConfiguratorActive_Silent
+[       OK ] BlackboxTest.Test_CalculateRates (0 ms)
+[ RUN      ] FilterUnittest.TestPt1FilterInit
+[       OK ] CLIUnittest.TestGetSettingByNameArray (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingByNameString
+[       OK ] CMSUnittest.TestCmsDisplayPortRegister (0 ms)
+[       OK ] BeeperTest.DshotBeaconRxLost_ConfiguratorActive_Silent (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxLost_ConfiguratorNotActive_Sounds
+[----------] 8 tests from BlackboxTest (21 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] FilterUnittest.TestPt1FilterInit (0 ms)
+[ RUN      ] FilterUnittest.TestPt1FilterGain
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 10 tests from 2 test suites.
+[----------] Global test environment set-up.
+[       OK ] CLIUnittest.TestGetSettingByNameString (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingByNameNotFound
+[ RUN      ] CMSUnittest.TestCmsMenuOpen
+[       OK ] CMSUnittest.TestCmsMenuOpen (0 ms)
+[       OK ] BeeperTest.DshotBeaconRxLost_ConfiguratorNotActive_Sounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxLost_RxLinkUp_Silent
+[==========] 8 tests from 1 test suite ran. (28 ms total)
+[  PASSED  ] 8 tests.
+[       OK ] FilterUnittest.TestPt1FilterGain (0 ms)
+[ RUN      ] FilterUnittest.TestPt1FilterApply
+[----------] 4 tests from Ist8310DetectTest
+[ RUN      ] Ist8310DetectTest.DetectSuccess
+[       OK ] CLIUnittest.TestGetSettingByNameNotFound (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingByNameSmallBuffer
+[ RUN      ] CMSUnittest.TestCmsMenuExit0
+[       OK ] BeeperTest.DshotBeaconRxLost_RxLinkUp_Silent (0 ms)
+[       OK ] FilterUnittest.TestPt1FilterApply (0 ms)
+[ RUN      ] FilterUnittest.TestSlewFilterInit
+running test_blackbox_unittest: PASS
+[       OK ] Ist8310DetectTest.DetectSuccess (0 ms)
+[ RUN      ] Ist8310DetectTest.DetectFailWrongWAI
+[       OK ] CLIUnittest.TestGetSettingByNameSmallBuffer (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingByNameZeroBuffer
+[       OK ] CMSUnittest.TestCmsMenuExit0 (0 ms)
+[ RUN      ] CMSUnittest.TestCmsMenuExit1
+[ RUN      ] BeeperTest.DshotBeaconRxLost_FailsafeNotMonitoring_Silent
+[       OK ] FilterUnittest.TestSlewFilterInit (0 ms)
+[ RUN      ] FilterUnittest.TestSlewFilter
+[       OK ] Ist8310DetectTest.DetectFailWrongWAI (0 ms)
+[ RUN      ] Ist8310DetectTest.DetectFailBusError
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] CLIUnittest.TestGetSettingByNameZeroBuffer (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNameArray
+[       OK ] CMSUnittest.TestCmsMenuExit1 (0 ms)
+[ RUN      ] CMSUnittest.TestCmsMenuBack
+[       OK ] BeeperTest.DshotBeaconRxLost_FailsafeNotMonitoring_Silent (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxLost_BeeperMuted_StillSounds
+[       OK ] FilterUnittest.TestSlewFilter (0 ms)
+[       OK ] Ist8310DetectTest.DetectFailBusError (0 ms)
+[ RUN      ] Ist8310DetectTest.DetectPreservesExistingAddress
+[----------] 12 tests from DronecanGnssTest
+[       OK ] CLIUnittest.TestSetSettingByNameArray (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNameString
+[       OK ] CMSUnittest.TestCmsMenuBack (0 ms)
+[ RUN      ] CMSUnittest.TestCmsMenuKey
+[       OK ] BeeperTest.DshotBeaconRxLost_BeeperMuted_StillSounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxLost_UsbSuppressedPiezo_StillSounds
+[----------] 5 tests from FilterUnittest (16 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] Ist8310DetectTest.DetectPreservesExistingAddress (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2PositionVelocity
+[       OK ] CLIUnittest.TestSetSettingByNameString (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNameNoEquals
+[       OK ] CMSUnittest.TestCmsMenuKey (0 ms)
+[       OK ] BeeperTest.DshotBeaconRxLost_UsbSuppressedPiezo_StillSounds (0 ms)
+[ RUN      ] BeeperTest.DshotBeaconRxLost_UsbUnpluggedAfterSession_Sounds
+[==========] 5 tests from 1 test suite ran. (24 ms total)
+[  PASSED  ] 5 tests.
+[----------] 4 tests from Ist8310DetectTest (11 ms total)
+
+[       OK ] DronecanGnssTest.Fix2PositionVelocity (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2CovarianceToAccuracy
+[       OK ] CLIUnittest.TestSetSettingByNameNoEquals (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNameNotFound
+[----------] 6 tests from CMSUnittest (22 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] BeeperTest.DshotBeaconRxLost_UsbUnpluggedAfterSession_Sounds (0 ms)
+[ RUN      ] BeeperTest.SequencePlayback_NotSuppressed_Sounds
+[----------] 6 tests from Ist8310StateMachineTest
+running test_common_filter_unittest: PASS
+[       OK ] DronecanGnssTest.Fix2CovarianceToAccuracy (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2FullCovarianceMatrix
+[       OK ] CLIUnittest.TestSetSettingByNameNotFound (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNamePartialArray
+[==========] 6 tests from 1 test suite ran. (30 ms total)
+[  PASSED  ] 6 tests.
+[       OK ] BeeperTest.SequencePlayback_NotSuppressed_Sounds (0 ms)
+[ RUN      ] BeeperTest.SequencePlayback_SuppressedAfterQueue_StaysSilent
+[ RUN      ] Ist8310StateMachineTest.FullCycleDRDYReady
+[       OK ] DronecanGnssTest.Fix2FullCovarianceMatrix (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2UtcTimestamp
+[       OK ] CLIUnittest.TestSetSettingByNamePartialArray (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNameEmptyValue
+running test_cms_unittest: PASS
+Running main() from ../../lib/test/gtest/src/gtest_main.cc
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[       OK ] BeeperTest.SequencePlayback_SuppressedAfterQueue_StaysSilent (0 ms)
+[ RUN      ] BeeperTest.SequencePlayback_SuppressedConditionsButBatteryPresent_Sounds
+[       OK ] Ist8310StateMachineTest.FullCycleDRDYReady (0 ms)
+[       OK ] DronecanGnssTest.Fix2UtcTimestamp (0 ms)
+[       OK ] CLIUnittest.TestSetSettingByNameEmptyValue (0 ms)
+[ RUN      ] CLIUnittest.TestSetSettingByNameWhitespace
+[----------] 5 tests from DronecanMagTest
+[       OK ] BeeperTest.SequencePlayback_SuppressedConditionsButBatteryPresent_Sounds (0 ms)
+[ RUN      ] Ist8310StateMachineTest.DRDYTimeoutRetriggersMeasurement
+[ RUN      ] DronecanGnssTest.AuxiliaryDop
+[       OK ] CLIUnittest.TestSetSettingByNameWhitespace (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingInfoByNameArray
+[ RUN      ] DronecanMagTest.NoFrameYet
+[----------] 21 tests from BeeperTest (75 ms total)
+
+[----------] Global test environment tear-down
+[       OK ] Ist8310StateMachineTest.DRDYTimeoutRetriggersMeasurement (0 ms)
+[       OK ] DronecanGnssTest.AuxiliaryDop (0 ms)
+[       OK ] CLIUnittest.TestGetSettingInfoByNameArray (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingInfoByNameString
+[       OK ] DronecanMagTest.NoFrameYet (0 ms)
+[ RUN      ] DronecanMagTest.DecodesFieldToMilligauss
+[==========] 21 tests from 1 test suite ran. (89 ms total)
+[  PASSED  ] 21 tests.
+[ RUN      ] Ist8310StateMachineTest.FailedPollStartDoesNotConsumeRetry
+[       OK ] Ist8310StateMachineTest.FailedPollStartDoesNotConsumeRetry (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2PreservesAuxiliaryDop
+[       OK ] CLIUnittest.TestGetSettingInfoByNameString (0 ms)
+[       OK ] DronecanMagTest.DecodesFieldToMilligauss (0 ms)
+[ RUN      ] Ist8310StateMachineTest.TriggerWriteFailureRetries
+running test_beeper_unittest: PASS
+[       OK ] DronecanGnssTest.Fix2PreservesAuxiliaryDop (0 ms)
+[ RUN      ] CLIUnittest.TestGetSettingInfoByNameNotFound
+[ RUN      ] DronecanMagTest.DecodesLegacyMessage
+[       OK ] Ist8310StateMachineTest.TriggerWriteFailureRetries (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2TreatsTwoDFixAsNoFix
+[       OK ] CLIUnittest.TestGetSettingInfoByNameNotFound (0 ms)
+[       OK ] DronecanMagTest.DecodesLegacyMessage (0 ms)
+[ RUN      ] Ist8310StateMachineTest.NegativeMagDataConversion
+[       OK ] DronecanGnssTest.Fix2TreatsTwoDFixAsNoFix (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2ScalarCovariance
+[ RUN      ] CLIUnittest.TestGetSettingInfoByNameOffset
+[       OK ] CLIUnittest.TestGetSettingInfoByNameOffset (0 ms)
+[ RUN      ] DronecanMagTest.LatchesFirstSensorIdAndIgnoresOthers
+[       OK ] DronecanMagTest.LatchesFirstSensorIdAndIgnoresOthers (0 ms)
+[       OK ] Ist8310StateMachineTest.NegativeMagDataConversion (0 ms)
+[ RUN      ] Ist8310StateMachineTest.DataReadStartFailureStaysInCheckStatus
+[       OK ] DronecanGnssTest.Fix2ScalarCovariance (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2UpperTriangularCovariance
+[ RUN      ] CLIUnittest.TestCliHelpNullDescription
+[ RUN      ] DronecanMagTest.TimestampTracksAcceptedFrame
+[       OK ] Ist8310StateMachineTest.DataReadStartFailureStaysInCheckStatus (0 ms)
+[----------] 6 tests from Ist8310StateMachineTest (22 ms total)
+
+[       OK ] DronecanGnssTest.Fix2UpperTriangularCovariance (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2TruncatedCovarianceIsIgnored
+[       OK ] CLIUnittest.TestCliHelpNullDescription (0 ms)
+[       OK ] DronecanMagTest.TimestampTracksAcceptedFrame (0 ms)
+[----------] Global test environment tear-down
+[==========] 10 tests from 2 test suites ran. (47 ms total)
+[  PASSED  ] 10 tests.
+[       OK ] DronecanGnssTest.Fix2TruncatedCovarianceIsIgnored (0 ms)
+[ RUN      ] DronecanGnssTest.AuxiliaryDopExpires
+[----------] 20 tests from CLIUnittest (60 ms total)
+
+[----------] Global test environment tear-down
+[----------] 5 tests from DronecanMagTest (16 ms total)
+
+[----------] Global test environment tear-down
+running test_compass_ist8310_unittest: PASS
+[       OK ] DronecanGnssTest.AuxiliaryDopExpires (0 ms)
+[ RUN      ] DronecanGnssTest.Fix2NonUtcTimestampSkipsDateTime
+[==========] 20 tests from 1 test suite ran. (70 ms total)
+[  PASSED  ] 20 tests.
+[==========] 5 tests from 1 test suite ran. (24 ms total)
+[  PASSED  ] 5 tests.
+[       OK ] DronecanGnssTest.Fix2NonUtcTimestampSkipsDateTime (0 ms)
+[----------] 12 tests from DronecanGnssTest (36 ms total)
+
+[----------] Global test environment tear-down
+running test_cli_unittest: PASS
+running test_dronecan_mag_unittest: PASS
+[==========] 12 tests from 1 test suite ran. (42 ms total)
+[  PASSED  ] 12 tests.
+running test_dronecan_gnss_unittest: PASS

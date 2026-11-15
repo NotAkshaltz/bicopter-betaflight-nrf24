@@ -1,0 +1,14 @@
+%% (optimised) ./src/main/build/version.c 
+%% (optimised) ./src/main/drivers/rx/rx_nrf24l01.c 
+Linking RP2350A_BICOPTER_PICO2 
+/home/aksha/bicopter-fw/betaflight/tools/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld: warning: obj/main/betaflight_RP2350A_BICOPTER_PICO2.elf has a LOAD segment with RWX permissions
+Memory region         Used Size  Region Size  %age Used
+           FLASH:        390 KB      4032 KB      9.67%
+    FLASH_CONFIG:           0 B        64 KB      0.00%
+      FLASH_FONT:           0 B          0 B
+             RAM:      376628 B       512 KB     71.84%
+       SCRATCH_X:          4 KB         4 KB    100.00%
+       SCRATCH_Y:           0 B         4 KB      0.00%
+   text	   data	    bss	    dec	    hex	filename
+ 399360	      0	  53120	 452480	  6e780	./obj/main/betaflight_RP2350A_BICOPTER_PICO2.elf
+Creating UF2 ./obj/betaflight_2026.6.2_RP2350A_BICOPTER_PICO2.uf2 

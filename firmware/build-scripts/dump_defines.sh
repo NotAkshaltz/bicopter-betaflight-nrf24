@@ -1,0 +1,18 @@
+#!/bin/bash
+# Re-run the captured compile of rx/rx_spi.c with -dM -E to dump the final macro set.
+cd ~/bicopter-fw/betaflight
+CMD=$(sed -e 's/^[^a-zA-Z/]*//' ~/bicopter-fw/logs/cc_cmd.txt)
+CMD=$(echo "$CMD" | sed -E 's/ -o [^ ]+/ /; s/ -c / /; s/-MMD -MP -MF [^ ]+//; s/-flto[^ ]*//g; s/ -Wa,[^ ]+//g')
+eval "$CMD -dM -E -o ~/bicopter-fw/logs/BICOPTER_PICO2_defines.txt"
+echo "exit=$?"
+D=~/bicopter-fw/logs/BICOPTER_PICO2_defines.txt
+wc -l $D
+for m in USE_RX_SPI USE_RX_NRF24 USE_RX_NRF24_BICOPTER USE_RX_INAV USE_RX_CC2500 USE_RX_EXPRESSLRS USE_RX_SX1280 USE_RX_SX127X \
+         PICO_ENABLE_RX_SPI_NRF24 RX_SPI_INSTANCE RX_SPI_CS_PIN RX_NSS_PIN RX_CE_PIN RX_SPI_EXTI_PIN RX_SPI_DEFAULT_PROTOCOL DEFAULT_RX_FEATURE \
+         NRF24L01_MAX_SPI_CLK_HZ BICOPTER_NRF24_LINK_ID USE_SERVOS USE_UNCOMMON_MIXERS DEFAULT_MIXER DEFAULT_MOTOR_PROTOCOL DEFAULT_MOTOR_PWM_RATE \
+         USE_DSHOT USE_DSHOT_TELEMETRY DEFAULT_DSHOT_TELEMETRY USE_RPM_FILTER USE_DYN_IDLE USE_GYRO_SPI_MPU6500 USE_ACC_SPI_MPU6500 GYRO_1_SPI_INSTANCE \
+         GYRO_1_CS_PIN GYRO_1_EXTI_PIN GYRO_1_ALIGN USE_USB_MSC USE_BLACKBOX USE_FLASHFS USE_SDCARD PICO_FLASH_SIZE_BYTES PICO_FLASH_SPI_CLKDIV \
+         SYS_CLK_HZ CONFIG_IN_FLASH MOTOR1_PIN MOTOR2_PIN SERVO1_PIN SERVO2_PIN ADC_VBAT_PIN USE_ADC TARGET_BOARD_IDENTIFIER USE_TELEMETRY_NRF24_LTM; do
+  line=$(grep -E "^#define $m( |$)" $D)
+  echo "${line:-#undef $m   (not defined)}"
+done
