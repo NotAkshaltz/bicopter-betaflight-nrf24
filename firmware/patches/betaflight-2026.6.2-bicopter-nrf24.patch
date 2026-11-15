@@ -164,10 +164,10 @@ index 7763608..190d164 100644
 +void failsafeOnReceiverReset(void);
 diff --git a/src/main/rx/nrf24_bicopter.c b/src/main/rx/nrf24_bicopter.c
 new file mode 100644
-index 0000000..ff6a352
+index 0000000..d85c794
 --- /dev/null
 +++ b/src/main/rx/nrf24_bicopter.c
-@@ -0,0 +1,405 @@
+@@ -0,0 +1,407 @@
 +/*
 + * This file is part of Betaflight.
 + *
@@ -383,9 +383,10 @@ index 0000000..ff6a352
 +        stats.txFault++;
 +        return RX_SPI_RECEIVED_NONE;
 +    }
-+    if (control.flags & BL_FLAG_TX_INPUT_FAULT) {
-+        armInterlockReleased = false;
-+    }
++    // An input-fault packet is simply not accepted (BL_FRESH_TX_FAULT below), so a
++    // persistent fault ends in Betaflight's normal RXLOSS/failsafe handling. It does not
++    // re-engage the arm interlock: doing so would force ARM off, i.e. disarm in flight,
++    // on the first good sample after a single bad stick reading.
 +
 +    switch (blFreshnessCheck(&freshness, control.session, control.sampleSeq, control.flags)) {
 +    case BL_FRESH_ACCEPT:
@@ -429,9 +430,10 @@ index 0000000..ff6a352
 +{
 +    rx_spi_received_e ret = RX_SPI_RECEIVED_NONE;
 +    const timeUs_t nowUs = micros();
-+    if (stats.accepted && cmpTimeUs(nowUs, lastFrameTimeUs) > 150000) {
-+        armInterlockReleased = false;
-+    }
++    // RF loss is deliberately left to Betaflight's failsafe (failsafe_delay stage 1, then
++    // failsafe_procedure). The arm interlock is only engaged at init, on a new handset
++    // session and on an explicit restart announcement, never on a radio gap: forcing ARM
++    // off when the link returns would turn every dropout longer than RXLOSS into a disarm.
 +    bool service = fifoPending;
 +
 +    if (irqConfigured) {
@@ -950,7 +952,7 @@ index 0000000..4c02640
 +}
 diff --git a/src/main/rx/nrf24_bicopter_link.h b/src/main/rx/nrf24_bicopter_link.h
 new file mode 100644
-index 0000000..3d207c3
+index 0000000..72d2dfc
 --- /dev/null
 +++ b/src/main/rx/nrf24_bicopter_link.h
 @@ -0,0 +1,160 @@
@@ -1001,7 +1003,7 @@ index 0000000..3d207c3
 + *                        has been acquired (not per transmission)
 + *   [7..16]  8 channels x 10 bits, packed LSB-first; value v in 0..1000 means
 + *            (1000 + v) microseconds. Values 1001..1023 are invalid.
-+ *   [17]     flags: bit0 = input fault, bit1 = restart/interlock, bits 2..7 zero
++ *   [17]     flags: bit0 = input fault, bit1 = handset restart (boot/re-init), bits 2..7 zero
 + *   [18..19] CRC-16/CCITT (poly 0x1021, MSB first) over bytes 0..17,
 + *            initial value blCrcSeed(linkId)
 + *
@@ -1035,7 +1037,7 @@ index 0000000..3d207c3
 +#define BL_SEARCH_DWELL_US          ((BL_RF_CHANNEL_COUNT + 1) * BL_FRAME_PERIOD_US)
 +
 +#define BL_FLAG_TX_INPUT_FAULT      0x01
-+#define BL_FLAG_TX_RESTART          0x02   // startup/input recovery interlock; never a valid control sample
++#define BL_FLAG_TX_RESTART          0x02   // handset boot/re-init interlock; never a valid control sample
 +#define BL_FLAGS_DEFINED_MASK       (BL_FLAG_TX_INPUT_FAULT | BL_FLAG_TX_RESTART)
 +#define BL_ARM_CHANNEL             4
 +#define BL_THROTTLE_CHANNEL        2

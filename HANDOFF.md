@@ -38,7 +38,7 @@ Target: RP2350 **Arm** (Cortex-M33), image family `rp2350-arm-s` (confirmed with
 ## 3. Output
 
 - UF2: `firmware/output/betaflight_2026.6.2_RP2350A_BICOPTER_PICO2_NRF24_V2.uf2`
-  (sha256 `6b5a5719e07446440b395b5e95dc00e2241c55b103ddf34eb405fe46ba41c86a`).
+  (sha256 `fb8ecdb3445cf99753bb365b414a7a87b98c9c86b677957faeae8453ef63bd98`).
   The `.elf` and `.map` are in the same folder.
 - Size: FLASH 400,112 B of 4032 KB, RAM 377,384 B of 512 KB.
 - Config storage: `__config_start=0x103F0000`, `__config_end=0x10400000`, the last 64 KB of the 4 MB part.
@@ -153,10 +153,10 @@ Known packet for session `0x5A`, sequence `0x1234`, channels `1000+(i*137 mod 10
 **Restart and rearming:**
 
 1. On boot, the handset announces restart for at least one second and continues announcing until a newly acquired valid sample has ARM low (<=1250us) and throttle low (<=1050us). During this time transmitted ARM and throttle are forced to 1000us.
-2. Input acquisition faults/timeouts also re-enter this interlock. A frozen sequence without fault announcements still cannot refresh the watchdog.
+2. Only boot/re-init (`hs_init()`) enters this interlock. An input acquisition fault (stick at a rail, invalid switch, no new sample for 50 ms) only sets `TX_INPUT_FAULT` on the affected packets: the receiver drops them, and a fault that persists ends in Betaflight's normal RXLOSS/failsafe handling. A frozen sequence without fault flags still cannot refresh the watchdog.
 3. On a decoded session change or the start of a restart-announcement episode after established controls, the receiver calls Betaflight's new `failsafeOnReceiverReset()`. It immediately calls the existing disarm API with FAILSAFE reason, enters the existing failsafe recovery state, and sets FAILSAFE and ARM_SWITCH arming blocks. It does not wait for 150ms RXLOSS or Stage 1 timeout. Repeated announcements do not repeatedly invoke disarm.
 4. An explicit announcement works even if the random session byte repeats on a reboot. If no radio packets can arrive, ordinary signal-loss failsafe still applies.
-5. The receiver independently forces ARM/throttle to 1000 until it receives a fresh actual ARM-low/throttle-low sample. It relocks after a 150ms control gap. Merely transmitting ARM-high packets cannot release the guard.
+5. The receiver independently forces ARM/throttle to 1000 until it receives a fresh actual ARM-low/throttle-low sample. It is engaged only at receiver init, on a new session and on a restart announcement. It is **not** re-engaged by an RF gap or by input-fault packets: RF loss is left to Betaflight's failsafe (`failsafe_delay` stage 1, then `failsafe_procedure`), so control resumes normally if the link returns within stage 1. Merely transmitting ARM-high packets cannot release the guard.
 6. To rearm: hold ARM OFF and throttle low, wait for Betaflight's normal failsafe-recovery delay and other arming blocks to clear, then deliberately switch ARM ON. Switching ON too early can require another OFF→ON cycle.
 
 This project assigns ARM to AUX1/channel 5 and throttle to channel 3 in AETR order. Keep that convention; moving ARM to another AUX channel would require adapting the interlock too.
@@ -191,7 +191,8 @@ Earlier WSL scripts and baseline logs are retained as historical material. The a
 |---|---|
 | Betaflight `make test -j6`, Clang 18.1.3 | 67 executables PASS; 619 cases PASS, including the new immediate-reset failsafe test |
 | Packet core, ASan+UBSan, warnings as errors | 1,522,481 checks; zero failures |
-| Actual receiver adapter against radio model, ASan+UBSan | 4,761 checks; zero failures |
+| Actual receiver adapter against radio model | 5,147 checks; zero failures (4,761 under ASan+UBSan before the dropout/input-fault fix; after it, gcc `-Wall -Wextra -Werror` at -O0..-O3) |
+| Dropout and input-fault behaviour (after fix) | RF gaps of 100 ms to 3 s while armed: ARM/throttle pass through unchanged when the link returns, no reset call. A burst of input-fault packets: dropped, next good sample passes ARM/throttle unchanged. Handset: one bad ADC sample or a 100 ms acquisition stall sets only TX_INPUT_FAULT, never the restart flag. These tests fail against the code before the fix |
 | Actual portable handset, ASan+UBSan | PASS at 100Hz, 200Hz, 1kHz and 2kHz acquisition with 200Hz radio |
 | Reset safety | Short new-session reset requests disarm; ARM-high/throttle-high is clamped; low throttle alone or ARM-off alone cannot release the guard; same-session restart announcement works; repeated announcements trigger once |
 | Existing failsafe implementation | New GoogleTest case confirms disarm API is called immediately, FAILSAFE/ARM_SWITCH flags set, normal recovery used and ARM_SWITCH block retained |
@@ -328,7 +329,7 @@ run `defaults` (or a full erase) to load the board defaults.
 
 **Stage 4: stale and frozen samples**
 - Use a handset debug build that stops calling `hal_take_new_inputs()` (freeze) while still
-  transmitting. For a synthetic frozen-sequence sender with no reset flag: RXLOSS after about 150ms. The actual handset also detects stale inputs after 50ms and announces restart/fault, which requests immediate disarm on reception. Measure actual timing on hardware.
+  transmitting. For a synthetic frozen-sequence sender with no reset flag: RXLOSS after about 150ms. The actual handset also detects stale inputs after 50ms and flags TX_INPUT_FAULT, so the receiver drops those packets and the same RXLOSS path applies; it does not announce a restart. Measure actual timing on hardware.
 - With a fault-flag build, debug[3] rises.
 
 **Stage 5: handset reset**
@@ -369,3 +370,12 @@ run `defaults` (or a full erase) to load the board defaults.
 ## 16. Review fixes and archive
 
 The 1kHz acquisition failure, same-session stale rewind, missing reset interlock and absent upstream-suite evidence identified in the review are addressed in this v2 delivery. The historical review and v1 files remain useful records, not the current firmware specification. `BUILD_MANIFEST.json` records current source and artifact hashes. The handset hardware-specific HAL is still not implemented; provide the actual STM32 board, pins, toolchain and calibration to complete it.
+
+## 17. Dropout and input-fault fix (after the v2 delivery)
+
+Two v2 behaviours could disarm the craft in flight and were removed. Both were reproduced in the host tests first; the new regression tests fail against the earlier v2 code and pass now.
+
+1. **RF dropout.** The receiver re-engaged its ARM/throttle interlock after any gap longer than 150 ms, so when the link came back ARM was forced to 1000 us and Betaflight disarmed, even inside the `failsafe_delay` stage-1 window where control should resume. The time-based relock is removed (`rx/nrf24_bicopter.c`); RF loss is handled only by Betaflight's failsafe, as with any other receiver.
+2. **Input fault.** A single bad stick reading (or a sample older than 50 ms) put the handset into its restart lock for at least one second and until ARM off + throttle low; the receiver treated the restart flag as a handset reboot and disarmed immediately. The receiver also re-engaged its interlock on any input-fault packet. Now the handset only flags `TX_INPUT_FAULT` on affected packets (`handset/src/handset_app.c`), and the receiver drops them without touching the interlock.
+
+Unchanged: a real handset reboot (new session or restart announcement) still disarms immediately, and arming after boot still requires ARM off and throttle low. Upstream `make test` and the ASan/UBSan runs were not repeated after this fix (no host toolchain with sanitizers was available); `failsafe.c` and its unit test are unchanged. Not hardware-tested.

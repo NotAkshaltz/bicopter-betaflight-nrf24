@@ -14,7 +14,7 @@ Start with [HANDOFF.md](HANDOFF.md). It covers the full context, every change wi
 pinned revisions, build steps, wiring, Betaflight CLI setup, flashing, the props-off test
 checklist, and status. [HANDOFF_FULL.md](HANDOFF_FULL.md) is the same document with all code appended.
 
-Verification: **67 upstream test executables / 619 cases passed**, plus packet/adapter/handset tests under ASan and UBSan. See [VALIDATION.md](VALIDATION.md). Detected restarts now disarm through Betaflight and require safe inputs followed by deliberate rearming.
+Verification: **67 upstream test executables / 619 cases passed**, plus packet/adapter/handset tests under ASan and UBSan. See [VALIDATION.md](VALIDATION.md). Detected restarts now disarm through Betaflight and require safe inputs followed by deliberate rearming. Short RF dropouts and single bad stick readings do not disarm: RF loss is left to Betaflight failsafe (see section 17 of HANDOFF.md).
 
 ## Layout
 

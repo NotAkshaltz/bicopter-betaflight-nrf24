@@ -134,6 +134,31 @@ static void testBootWithArmHigh(void)
     CHECK(!hs_init(cal));
 }
 
+// In flight, one bad ADC sample or a late acquisition must only flag TX_INPUT_FAULT on the
+// affected packets. It must never enter the restart lock (which makes the receiver disarm).
+static void testInputFaultNoRestart(void)
+{
+    hsStickCal_t cal[4];
+    for (int i = 0; i < 4; i++) cal[i] = (hsStickCal_t){100, 2048, 4000, false};
+    frozen = false; newSample = true; armSwitch = 0; throttleAdc = 100; adcVal = 2048;
+    CHECK(hs_init(cal)); pollFor(1500000);
+    armSwitch = 2; throttleAdc = 2048; pollFor(50000);
+    blControl_t c; blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &c);
+    CHECK(c.flags == 0 && c.channelUs[4] == 2000);
+    const uint16_t flyingThrottle = c.channelUs[2];
+    adcVal = 0; pollFor(1000); adcVal = 2048;                   // one bad sample
+    pollFor(10000);
+    blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &c);
+    CHECK(!(c.flags & BL_FLAG_TX_RESTART)); CHECK(c.flags == 0);
+    CHECK(c.channelUs[4] == 2000 && c.channelUs[2] == flyingThrottle);
+    frozen = true; pollFor(100000);                              // acquisition stalls 100 ms
+    blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &c);
+    CHECK(c.flags == BL_FLAG_TX_INPUT_FAULT);
+    frozen = false; pollFor(10000);
+    blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &c);
+    CHECK(c.flags == 0 && c.channelUs[4] == 2000 && c.channelUs[2] == flyingThrottle);
+}
+
 int main(void)
 {
     runSamplingCase(10000); // 100 Hz
@@ -141,6 +166,7 @@ int main(void)
     runSamplingCase(1000);  // 1 kHz
     runSamplingCase(500);   // 2 kHz
     testBootWithArmHigh();
+    testInputFaultNoRestart();
     printf("%s (%d failures)\n", fails ? "FAIL" : "PASS", fails);
     return fails != 0;
 }

@@ -254,11 +254,56 @@ static void testRestartInterlock(void)
     nrf24BicopterSetRcDataFromPayload(rc, payload); CHECK_EQ(rc[BL_ARM_CHANNEL], 1000);
 }
 
+// Armed and flying, then an RF gap (RX task still called, no packets), then the same
+// session continues. RF loss belongs to Betaflight's failsafe: the receiver must pass the
+// pilot's ARM/throttle straight through when the link returns, whatever the gap length.
+static void dropoutCase(uint32_t gapUs)
+{
+    nowUs = 1000; CHECK(initRx(true, true));
+    uint16_t seq = 100; uint32_t t = 10000;
+    deliverControl(1, seq, 0, 1000, 1000, t);
+    for (int i = 0; i < 3; i++) { seq++; t += 5000; deliverControl(1, seq, 0, 1000, 1000, t); }
+    for (int i = 0; i < 40; i++) { seq++; t += 5000; deliverControl(1, seq, 0, 2000, 1500, t); }
+    uint16_t rc[18] = {0}; nrf24BicopterSetRcDataFromPayload(rc, payload);
+    CHECK_EQ(rc[BL_ARM_CHANNEL], 2000);
+    for (uint32_t g = 1000; g < gapUs; g += 1000) { nowUs = t + g; nrf24BicopterDataReceived(payload); }
+    seq += (uint16_t)(gapUs / 5000); t += gapUs;
+    int got = 0;
+    for (int i = 0; i < 20; i++) { seq++; t += 5000; if (deliverControl(1, seq, 0, 2000, 1500, t) == RX_SPI_RECEIVED_DATA) got++; }
+    CHECK(got >= 18);
+    nrf24BicopterSetRcDataFromPayload(rc, payload);
+    CHECK_EQ(rc[BL_ARM_CHANNEL], 2000); CHECK_EQ(rc[BL_THROTTLE_CHANNEL], 1500);
+    CHECK_EQ(receiverResetCalls, 0);
+}
+
+static void testDropoutKeepsControl(void)
+{
+    dropoutCase(100000); dropoutCase(160000); dropoutCase(300000); dropoutCase(1000000); dropoutCase(3000000);
+}
+
+// A single (or a short burst of) TX_INPUT_FAULT packet(s) in flight is dropped; the next
+// good sample is accepted with ARM/throttle untouched and no failsafe reset.
+static void testInputFaultKeepsControl(void)
+{
+    nowUs = 1000; CHECK(initRx(true, true));
+    uint16_t seq = 10; uint32_t t = 10000;
+    deliverControl(3, seq, 0, 1000, 1000, t);
+    for (int i = 0; i < 3; i++) { seq++; t += 5000; deliverControl(3, seq, 0, 1000, 1000, t); }
+    for (int i = 0; i < 10; i++) { seq++; t += 5000; CHECK_EQ(deliverControl(3, seq, 0, 2000, 1500, t), RX_SPI_RECEIVED_DATA); }
+    for (int i = 0; i < 3; i++) { seq++; t += 5000; CHECK_EQ(deliverControl(3, seq, BL_FLAG_TX_INPUT_FAULT, 2000, 1500, t), RX_SPI_RECEIVED_NONE); }
+    seq++; t += 5000; CHECK_EQ(deliverControl(3, seq, 0, 2000, 1500, t), RX_SPI_RECEIVED_DATA);
+    uint16_t rc[18] = {0}; nrf24BicopterSetRcDataFromPayload(rc, payload);
+    CHECK_EQ(rc[BL_ARM_CHANNEL], 2000); CHECK_EQ(rc[BL_THROTTLE_CHANNEL], 1500);
+    CHECK_EQ(receiverResetCalls, 0);
+}
+
 int main(void)
 {
     RUN(testInit);
     RUN(testCorruptWidthAndBacklog);
     RUN(testRestartInterlock);
+    RUN(testDropoutKeepsControl);
+    RUN(testInputFaultKeepsControl);
     scenario(true, 250, "IRQ, 4 kHz loop");
     scenario(true, 1000, "IRQ, 1 kHz loop");
     scenario(false, 250, "polled, 4 kHz loop");

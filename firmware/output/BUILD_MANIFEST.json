@@ -8,16 +8,16 @@
   "upstream_test_cases": 619,
   "host_checks": {
     "packet": 1522481,
-    "adapter": 4761,
+    "adapter": 5147,
     "handset": "PASS"
   },
-  "asan_ubsan": "PASS",
+  "asan_ubsan": "PASS for the original v2 sources; not re-run after the dropout/input-fault fix (re-checked with gcc -Wall -Wextra -Werror at -O0..-O3 instead)",
   "hardware_tested": false,
   "handset_board_hal_complete": false,
   "artifacts": {
-    "betaflight_2026.6.2_RP2350A_BICOPTER_PICO2_NRF24_V2.uf2": "6b5a5719e07446440b395b5e95dc00e2241c55b103ddf34eb405fe46ba41c86a",
-    "betaflight_RP2350A_BICOPTER_PICO2_NRF24_V2.elf": "b1d6a92fd2a5657069a14af855e4793a2d1de597b8c5faefd103a9c60ba1435c",
-    "betaflight_RP2350A_BICOPTER_PICO2_NRF24_V2.map": "e2b95663c0220c8deb43d5869f24ea57ecb7a6a5e784bfed5fc76367f3e3bd25"
+    "betaflight_2026.6.2_RP2350A_BICOPTER_PICO2_NRF24_V2.uf2": "fb8ecdb3445cf99753bb365b414a7a87b98c9c86b677957faeae8453ef63bd98",
+    "betaflight_RP2350A_BICOPTER_PICO2_NRF24_V2.elf": "bc6f79398f4090cc0249f245d849745d9e5083a1ee7c68a2798972878d8cdd0d",
+    "betaflight_RP2350A_BICOPTER_PICO2_NRF24_V2.map": "a83abb6d05b20c9fb00f09c04031735d81bbdfca8e9c199327f44e3bbbd76bdc"
   },
   "source_sha256": {
     "firmware/src-changed/mk/source.mk": "31179e974bfb3be35f70ecd4d4b13517101e2e9c2436706971d2b7c87b1b2fb5",
@@ -31,10 +31,10 @@
     "firmware/src-changed/src/main/drivers/rx/rx_nrf24l01.h": "c25623dc8a73b4f067409fe72f1fff6c7647e2305b4e6eadca2f5eacc561898c",
     "firmware/src-changed/src/main/flight/failsafe.c": "4ad332f79f0fdd20ca9d3489a3e68d2e6ed11bb14bde30f77c9eb33b55bbc5a0",
     "firmware/src-changed/src/main/flight/failsafe.h": "acb891c08875af5e95744587d478e7fa356373f0b682d1c299ef562eaa3ced6e",
-    "firmware/src-changed/src/main/rx/nrf24_bicopter.c": "02b17c3266b903651f13924b1029c68e98ae1eb3bf868ff80cec9b950ae09c0e",
+    "firmware/src-changed/src/main/rx/nrf24_bicopter.c": "2ea0062fef8b28d4886600e8568518529c94da992057483978d24e7a925d4f5a",
     "firmware/src-changed/src/main/rx/nrf24_bicopter.h": "2367f68da4236e1396775368583b9ad09d7d4bf7e1fb0f2b2725f7862a0c5f2d",
     "firmware/src-changed/src/main/rx/nrf24_bicopter_link.c": "a9e6b6be2bcf68cb4bc14eb6aaa81ea34dab833caee6587286c8f794582fca7c",
-    "firmware/src-changed/src/main/rx/nrf24_bicopter_link.h": "0046a54a07e0a3b9dce72edc95d1cefd834bce575b1c70e79987be85cced2267",
+    "firmware/src-changed/src/main/rx/nrf24_bicopter_link.h": "66e31a4fab6a55a0695cb2c4c26e6c902a8edcf2f14371a06f07a3f2b38a9ec2",
     "firmware/src-changed/src/main/rx/rx_spi.c": "cea56bc8ce57acab51f7b634cc95196a025cea8a5204dd4afa9fb11555877d21",
     "firmware/src-changed/src/main/rx/rx_spi.h": "7a8a13af137e4b8c14cc4d319d0aa54ffd3c4bdb4c9acb42d81b0d07d1a29420",
     "firmware/src-changed/src/platform/PICO/target/common/target_RP2350.h": "3a0540998f77cec68bb4ff018acbde0e6f9bf3d3ed770090bd8c82f9fbb5ef07",
@@ -42,11 +42,11 @@
     "firmware/src-changed/src/test/unit/flight_failsafe_unittest.cc": "60b049ef0083522f40b70d24500804935224b14b039e166d106f82d3f3b5252e",
     "handset/config/link_config.h": "c5bf5712884716a14e6320d5054c0bfa177e16d6d2d73ce7df5b67026a9f0409",
     "handset/shared/nrf24_bicopter_link.c": "a9e6b6be2bcf68cb4bc14eb6aaa81ea34dab833caee6587286c8f794582fca7c",
-    "handset/shared/nrf24_bicopter_link.h": "0046a54a07e0a3b9dce72edc95d1cefd834bce575b1c70e79987be85cced2267",
-    "handset/src/handset_app.c": "f32c69241d625a5d0279805c897308a4ca71cb82fca008d7c753e6a00e1e4cf1",
+    "handset/shared/nrf24_bicopter_link.h": "66e31a4fab6a55a0695cb2c4c26e6c902a8edcf2f14371a06f07a3f2b38a9ec2",
+    "handset/src/handset_app.c": "12e692a1ff9f0351f4ec5f67352c88b43c2f7a44982db9bdeaa030c57e1580c0",
     "handset/src/handset_app.h": "7a474a905c8fc1966ac4fa958697d4ea1a48791b4775f23d9acbf1e1a46ad205",
     "handset/src/handset_hal.h": "1e25260118f946f97b1eceb839f5873e6f1fc18891340d2fb0d0726b617ad8a1",
-    "handset/test/test_handset.c": "080173d265aa2b5116fcd71dbba9e2b9574190395f04236ad200b6ae31a099a8",
+    "handset/test/test_handset.c": "45428590902ced2c82cee1f7702abd13aa34c50ff1b9b529edf5886b6c0cc977",
     "tests/stubs/build/debug.h": "72202428c0c5dd28c1119ff4093bc996e1886eb012bd945dab2f7e12b2854ebf",
     "tests/stubs/common/time.h": "85563e3cab42e2ac34bcbc6d4ad64e871ecf2451f9078a6a3a662a0e73f1d495",
     "tests/stubs/common/utils.h": "1bad4e277e6c3433a1a18d3ec1b38e06b3492764958c403cf323620f3e6a7e82",
@@ -59,6 +59,11 @@
     "tests/stubs/rx/rx_spi.h": "f304ce677e54906e957372d1c4085c87193cd81db477d6435feb27053938cbbe",
     "tests/test_common.h": "4561d99eec085c2e02b779fcf4c3feacfaa13cd4cb87bac90210501f962e85a8",
     "tests/test_link.c": "ff913428815de2870be38ab07a634a1b79a3d9ea9f3b44c0923343eef7f05dea",
-    "tests/test_rx_adapter.c": "40be024210b551b1b19b73777724e73bdb117f249d8dfd9f5b33f0029004b49c"
-  }
+    "tests/test_rx_adapter.c": "80a207cd910457182098b5f8f81cf6513a6c942352acd7c7b8a0bd1250c74e9a"
+  },
+  "upstream_tests_note": "Not re-run after the dropout/input-fault fix. The fix touches only rx/nrf24_bicopter.c (not covered by upstream unit tests) and a comment in rx/nrf24_bicopter_link.h; failsafe.c and its unit test are unchanged.",
+  "fixes": [
+    "RF dropout no longer re-engages the receiver arm interlock (RF loss is left to Betaflight failsafe)",
+    "Handset input faults flag packets only; they no longer enter the restart lock or re-engage the receiver interlock"
+  ]
 }

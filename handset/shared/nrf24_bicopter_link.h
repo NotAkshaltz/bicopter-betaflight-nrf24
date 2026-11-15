@@ -45,7 +45,7 @@
  *                        has been acquired (not per transmission)
  *   [7..16]  8 channels x 10 bits, packed LSB-first; value v in 0..1000 means
  *            (1000 + v) microseconds. Values 1001..1023 are invalid.
- *   [17]     flags: bit0 = input fault, bit1 = restart/interlock, bits 2..7 zero
+ *   [17]     flags: bit0 = input fault, bit1 = handset restart (boot/re-init), bits 2..7 zero
  *   [18..19] CRC-16/CCITT (poly 0x1021, MSB first) over bytes 0..17,
  *            initial value blCrcSeed(linkId)
  *
@@ -79,7 +79,7 @@
 #define BL_SEARCH_DWELL_US          ((BL_RF_CHANNEL_COUNT + 1) * BL_FRAME_PERIOD_US)
 
 #define BL_FLAG_TX_INPUT_FAULT      0x01
-#define BL_FLAG_TX_RESTART          0x02   // startup/input recovery interlock; never a valid control sample
+#define BL_FLAG_TX_RESTART          0x02   // handset boot/re-init interlock; never a valid control sample
 #define BL_FLAGS_DEFINED_MASK       (BL_FLAG_TX_INPUT_FAULT | BL_FLAG_TX_RESTART)
 #define BL_ARM_CHANNEL             4
 #define BL_THROTTLE_CHANNEL        2

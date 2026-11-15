@@ -213,9 +213,10 @@ static rx_spi_received_e serviceRadio(uint8_t *payload, timeUs_t nowUs)
         stats.txFault++;
         return RX_SPI_RECEIVED_NONE;
     }
-    if (control.flags & BL_FLAG_TX_INPUT_FAULT) {
-        armInterlockReleased = false;
-    }
+    // An input-fault packet is simply not accepted (BL_FRESH_TX_FAULT below), so a
+    // persistent fault ends in Betaflight's normal RXLOSS/failsafe handling. It does not
+    // re-engage the arm interlock: doing so would force ARM off, i.e. disarm in flight,
+    // on the first good sample after a single bad stick reading.
 
     switch (blFreshnessCheck(&freshness, control.session, control.sampleSeq, control.flags)) {
     case BL_FRESH_ACCEPT:
@@ -259,9 +260,10 @@ rx_spi_received_e nrf24BicopterDataReceived(uint8_t *payload)
 {
     rx_spi_received_e ret = RX_SPI_RECEIVED_NONE;
     const timeUs_t nowUs = micros();
-    if (stats.accepted && cmpTimeUs(nowUs, lastFrameTimeUs) > 150000) {
-        armInterlockReleased = false;
-    }
+    // RF loss is deliberately left to Betaflight's failsafe (failsafe_delay stage 1, then
+    // failsafe_procedure). The arm interlock is only engaged at init, on a new handset
+    // session and on an explicit restart announcement, never on a radio gap: forcing ARM
+    // off when the link returns would turn every dropout longer than RXLOSS into a disarm.
     bool service = fifoPending;
 
     if (irqConfigured) {

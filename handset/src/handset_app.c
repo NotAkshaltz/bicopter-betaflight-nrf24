@@ -137,10 +137,10 @@ void hs_poll(void)
         ctl.flags = ok ? 0 : BL_FLAG_TX_INPUT_FAULT;
         lastSampleUs = now;
         haveSample = true;
-        if (!ok && !startupLocked) {
-            startupLocked = true;
-            restartStartedUs = now;
-        }
+        // The restart lock is only entered by hs_init() (boot or re-init). An input fault
+        // or a late sample flags the packet as TX_INPUT_FAULT instead: the receiver drops
+        // it and Betaflight's own failsafe handles a fault that persists. Entering the
+        // restart lock here would make the receiver disarm at once on one bad reading.
         if (startupLocked && ok && (uint32_t)(now - restartStartedUs) >= HANDSET_RESTART_ANNOUNCE_US &&
             us[BL_ARM_CHANNEL] <= BL_ARM_LOW_US && us[BL_THROTTLE_CHANNEL] <= BL_THROTTLE_LOW_US) {
             startupLocked = false;
@@ -148,10 +148,6 @@ void hs_poll(void)
     }
     if (!haveSample || (int32_t)(now - lastSampleUs) > HANDSET_SAMPLE_TIMEOUT_US) {
         ctl.flags |= BL_FLAG_TX_INPUT_FAULT;
-        if (!startupLocked) {
-            startupLocked = true;
-            restartStartedUs = now;
-        }
     }
     if (startupLocked) {
         ctl.flags |= BL_FLAG_TX_RESTART;
