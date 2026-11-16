@@ -1,0 +1,26 @@
+PASS testInit
+PASS testCorruptWidthAndBacklog
+PASS testRestartInterlock
+PASS testDropoutKeepsControl
+PASS testInputFaultKeepsControl
+  FAIL tests/test_rx_adapter.c:323: frame == nowUs (10000 != 60500)
+  FAIL tests/test_rx_adapter.c:325: (int32_t)(frame - previous) >= 0
+  FAIL tests/test_rx_adapter.c:328: (uint16_t)debug[4] >> 8 == BL_HOP_SYNCED (0 != 1)
+  FAIL tests/test_rx_adapter.c:323: frame == nowUs (4294917295 != 499)
+  FAIL tests/test_rx_adapter.c:325: (int32_t)(frame - previous) >= 0
+  FAIL tests/test_rx_adapter.c:328: (uint16_t)debug[4] >> 8 == BL_HOP_SYNCED (0 != 1)
+FAIL testQueuedPacketTimestamps
+  [IRQ, 4 kHz loop] 3 s clean: 599 fresh frames of 600 sent, max gap 5.0 ms, max SPI ops/call 5
+  [IRQ, 4 kHz loop] handset restart after 2 s loss: first fresh frame after 25.0 ms
+  [IRQ, 4 kHz loop] 25% loss: 766 fresh frames in 5 s, max gap 25.0 ms
+  [IRQ, 4 kHz loop] stats: acc 1564 malformed 30 dup 99 stale 0 pend 2 fault 60 spurious 0 flush 0
+  [IRQ, 1 kHz loop] 3 s clean: 598 fresh frames of 599 sent, max gap 5.0 ms, max SPI ops/call 5
+  [IRQ, 1 kHz loop] handset restart after 2 s loss: first fresh frame after 21.0 ms
+  [IRQ, 1 kHz loop] 25% loss: 764 fresh frames in 5 s, max gap 25.0 ms
+  [IRQ, 1 kHz loop] stats: acc 1561 malformed 30 dup 99 stale 0 pend 2 fault 60 spurious 0 flush 0
+  [polled, 4 kHz loop] 3 s clean: 599 fresh frames of 600 sent, max gap 5.0 ms, max SPI ops/call 5
+  [polled, 4 kHz loop] handset restart after 2 s loss: first fresh frame after 25.0 ms
+  [polled, 4 kHz loop] 25% loss: 747 fresh frames in 5 s, max gap 25.0 ms
+  [polled, 4 kHz loop] stats: acc 1545 malformed 30 dup 99 stale 0 pend 2 fault 60 spurious 22514 flush 0
+
+15596 checks, 6 failures

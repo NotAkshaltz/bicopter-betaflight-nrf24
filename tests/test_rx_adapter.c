@@ -61,7 +61,9 @@ timeUs_t rxSpiGetLastExtiTimeUs(void) { return R.extiTs; }
 
 static void radioDeliver(const uint8_t *d, uint8_t len, uint8_t rfch, uint32_t t)
 {
-    if (!R.ce || R.regs[NRF24L01_05_RF_CH] != rfch || (int32_t)(t - R.tunedAt) < 130) return;
+    CHECK((int32_t)(nowUs - t) >= 0); // t is packet completion, never a future event
+    // Stay on the channel for RX settling plus the entire modeled 1 ms packet.
+    if (!R.ce || R.regs[NRF24L01_05_RF_CH] != rfch || (int32_t)(t - R.tunedAt) < 1130) return;
     if (R.count == 3) return;                 // FIFO full: radio drops the packet
     R.fifo[R.count].len = len; memcpy(R.fifo[R.count].d, d, len > 32 ? 32 : len); R.count++;
     if (!R.rxDr) { R.rxDr = true; if (R.irqWired) { R.extiFlag = true; R.extiTs = t; } }
@@ -89,7 +91,7 @@ static int run(txSim_t *tx, uint32_t durationUs, uint32_t loopUs, uint32_t *k, d
     int data = 0;
     uint32_t end = nowUs + durationUs;
     for (; (int32_t)(end - nowUs) > 0; nowUs += loopUs) {
-        while (*nextTx <= nowUs) {
+        while (*nextTx + 1000 <= nowUs) {
             if (txOn && (int)(rng32() % 100) >= tx->lossPct) {
                 blControl_t c; memset(&c, 0, sizeof(c));
                 c.session = tx->session; c.sampleSeq = tx->seq; c.flags = tx->flags;
@@ -104,6 +106,7 @@ static int run(txSim_t *tx, uint32_t durationUs, uint32_t loopUs, uint32_t *k, d
         }
         R.ops = 0;
         if (nrf24BicopterDataReceived(payload) == RX_SPI_RECEIVED_DATA) {
+            CHECK((int32_t)(nowUs - nrf24BicopterFrameTimeUs()) >= 0);
             data++;
             uint32_t gap = nowUs - *lastData;
             if (*lastData && gap > *maxGapUs) *maxGapUs = gap;
@@ -297,6 +300,44 @@ static void testInputFaultKeepsControl(void)
     CHECK_EQ(receiverResetCalls, 0);
 }
 
+static void queuedTimestampCase(uint32_t base, bool irq)
+{
+    nowUs = base + 1000; CHECK(initRx(irq, true));
+    // The receiver stalls on one channel. The handset returns every 20 ms;
+    // all three packets share the first falling IRQ edge, not the last arrival.
+    for (int i = 0; i < 3; i++) {
+        blControl_t c = { .session = 1, .sampleSeq = (uint16_t)(100 + i) };
+        for (int ch = 0; ch < 8; ch++) c.channelUs[ch] = 1500;
+        c.channelUs[BL_ARM_CHANNEL] = c.channelUs[BL_THROTTLE_CHANNEL] = 1000;
+        uint8_t p[BL_PAYLOAD_LEN]; CHECK(blEncode(BICOPTER_NRF24_LINK_ID, &c, p));
+        nowUs = base + 10000 + 20000 * i;
+        radioDeliver(p, sizeof(p), R.regs[NRF24L01_05_RF_CH], nowUs);
+    }
+    CHECK_EQ(R.count, 3);
+    if (irq) CHECK_EQ(R.extiTs, base + 10000);
+    uint32_t previous = 0; int accepted = 0;
+    for (int i = 0; i < 3; i++) {
+        nowUs = base + 60000 + 250 * i;
+        if (nrf24BicopterDataReceived(payload) == RX_SPI_RECEIVED_DATA) {
+            const uint32_t frame = nrf24BicopterFrameTimeUs();
+            CHECK_EQ(frame, nowUs); // ambiguous backlog uses service time
+            CHECK((int32_t)(nowUs - frame) >= 0);
+            if (accepted) CHECK((int32_t)(frame - previous) >= 0);
+            previous = frame; accepted++;
+        }
+        CHECK_EQ((uint16_t)debug[4] >> 8, BL_HOP_SYNCED);
+    }
+    CHECK_EQ(accepted, 2); CHECK_EQ(R.count, 0);
+}
+
+static void testQueuedPacketTimestamps(void)
+{
+    queuedTimestampCase(0, true);
+    queuedTimestampCase(UINT32_MAX - 60000, true); // backlog drains across timer wrap
+    queuedTimestampCase(0, false);
+    queuedTimestampCase(UINT32_MAX - 60000, false);
+}
+
 int main(void)
 {
     RUN(testInit);
@@ -304,6 +345,7 @@ int main(void)
     RUN(testRestartInterlock);
     RUN(testDropoutKeepsControl);
     RUN(testInputFaultKeepsControl);
+    RUN(testQueuedPacketTimestamps);
     scenario(true, 250, "IRQ, 4 kHz loop");
     scenario(true, 1000, "IRQ, 1 kHz loop");
     scenario(false, 250, "polled, 4 kHz loop");

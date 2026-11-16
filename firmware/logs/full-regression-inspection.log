@@ -1,0 +1,7 @@
+PASS: upstream 67 executables / 619 cases
+PASS: zero static-analyzer diagnostics in all three runtime components
+PASS: actual preprocessed RX/IMU/output pins, protocol, PWM and 4MB configuration
+PASS: ELF contains NRF receiver/reset-disarm code and correct config-sector boundaries
+PASS: BICOPTER_PICO2 UF2 inspection; only known RWX linker warning
+PASS: PICO2_2350A UF2 inspection; only known RWX linker warning
+PASS: RASPBERRY_PI_UAVFC UF2 inspection; only known RWX linker warning

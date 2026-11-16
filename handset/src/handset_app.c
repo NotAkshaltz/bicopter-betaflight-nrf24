@@ -65,8 +65,11 @@ bool hs_inputs_to_channels(const hsRawInputs_t *in, const hsStickCal_t c[HS_ANAL
 {
     bool ok = true;
     for (int i = 0; i < HS_ANALOG_COUNT; i++) {
-        // A stick reading pinned at a rail usually means a broken wire/potentiometer
-        if (in->analog[i] <= HANDSET_ADC_RAIL_MARGIN || in->analog[i] >= HANDSET_ADC_MAX - HANDSET_ADC_RAIL_MARGIN) ok = false;
+        const uint16_t raw = in->analog[i];
+        const bool atRail = raw <= HANDSET_ADC_RAIL_MARGIN || raw >= HANDSET_ADC_MAX - HANDSET_ADC_RAIL_MARGIN;
+        // A calibrated endpoint can legitimately reach a rail. Only reject a rail
+        // outside that stick's measured range; ADC values above 12 bits are invalid.
+        if (raw > HANDSET_ADC_MAX || (atRail && (raw < c[i].min || raw > c[i].max))) ok = false;
         outUs[i] = mapStick(in->analog[i], &c[i]);
     }
     for (int i = 0; i < HS_SWITCH_COUNT; i++) {
@@ -156,13 +159,14 @@ void hs_poll(void)
     }
 
     if ((int32_t)(now - nextTxUs) < 0) return;
-    nextTxUs += BL_FRAME_PERIOD_US;
-    if ((int32_t)(now - nextTxUs) > BL_FRAME_PERIOD_US) nextTxUs = now;   // resync after a stall
-
     if (awaitingResult) {
         const uint8_t st = rreg(REG_STATUS);
+        // Never retune or flush an outstanding transmission. A radio that stops
+        // completing transactions must cause link loss, not overlapping TX attempts.
+        if (!(st & (ST_TX_DS | ST_MAX_RT))) return;
         if (st & ST_TX_DS) stats.acked++; else stats.noAck++;
         hal_led((st & ST_TX_DS) != 0);
+        awaitingResult = false;
     }
 
     uint8_t pkt[BL_PAYLOAD_LEN];
@@ -174,6 +178,9 @@ void hs_poll(void)
     wreg(REG_STATUS, 0x70);
     cmd(FLUSH_TX);
     wmulti(W_TX_PAYLOAD, pkt, BL_PAYLOAD_LEN);
+    // Schedule from this actual launch, skipping missed slots after a late loop.
+    // No catch-up burst is allowed, including after a 32-bit timer wrap.
+    nextTxUs = hal_micros() + BL_FRAME_PERIOD_US;
     hal_nrf_ce(true);
     hal_delay_us(15);                     // >10 us CE pulse starts one transmission
     hal_nrf_ce(false);

@@ -16,6 +16,8 @@ checklist, and status. [HANDOFF_FULL.md](HANDOFF_FULL.md) is the same document w
 
 Verification: **67 upstream test executables / 619 cases passed**, plus packet/adapter/handset tests under ASan and UBSan. See [VALIDATION.md](VALIDATION.md). Detected restarts now disarm through Betaflight and require safe inputs followed by deliberate rearming. Short RF dropouts and single bad stick readings do not disarm: RF loss is left to Betaflight failsafe (see section 17 of HANDOFF.md).
 
+The subsequent full audit fixes calibrated ADC endpoints, handset catch-up transmissions and queued RX timestamps, and corrects the timing models. The current UF2 includes those fixes. Read [AUDIT_FIXES.md](AUDIT_FIXES.md) for validation, the previous-image archive and the limits on moving to hardware tests. Pico-only bench checks can start with props removed; complete RC-link testing still requires the STM32F103 board HAL.
+
 ## Layout
 
 | Path | Contents |
@@ -44,3 +46,5 @@ The firmware changes modify Betaflight, which is licensed under GPL-3.0-or-later
 patches, the changed source files and the compiled firmware are distributed under the same
 licence; see <https://github.com/betaflight/betaflight/blob/master/LICENSE>. The handset code
 and tests in this repository are also released under GPL-3.0-or-later.
+
+Latest complete retest: [FULL_REGRESSION.md](FULL_REGRESSION.md), including all earlier software checks, reference-board builds, fuzzing and historical safety probes. The packaged UF2 remains unchanged; the separate hopping test model and stale full local checkout were corrected.

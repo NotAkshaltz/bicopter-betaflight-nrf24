@@ -38,7 +38,7 @@ Target: RP2350 **Arm** (Cortex-M33), image family `rp2350-arm-s` (confirmed with
 ## 3. Output
 
 - UF2: `firmware/output/betaflight_2026.6.2_RP2350A_BICOPTER_PICO2_NRF24_V2.uf2`
-  (sha256 `fb8ecdb3445cf99753bb365b414a7a87b98c9c86b677957faeae8453ef63bd98`).
+  (sha256 `17d384bd387d4d341a2d6de108935c3628f4ecd47bad3d1175d8476aad771486`).
   The `.elf` and `.map` are in the same folder.
 - Size: FLASH 400,112 B of 4032 KB, RAM 377,384 B of 512 KB.
 - Config storage: `__config_start=0x103F0000`, `__config_end=0x10400000`, the last 64 KB of the 4 MB part.
@@ -183,17 +183,17 @@ make CONFIG=BICOPTER_PICO2 uf2 -j6
 
 The verified build used Arm GNU 13.3.Rel1 and official picotool 2.3.1 with the pinned SDK/config commits above. It used an explicit `PICOTOOL=/opt/picotool/picotool/picotool` path in the disposable build container. The standard output name lacks the packaging suffix; the exported v2 file adds `_NRF24_V2` to distinguish it from v1.
 
-Earlier WSL scripts and baseline logs are retained as historical material. The active evidence is `corrected-v2-build.log`, `upstream-tests.log`, `host-sanitizers.log`, `uf2-info.log` and `firmware-symbols.log`. The baseline linker RWX warning remains; there are no new compiler errors. No flashing was performed.
+Earlier WSL scripts and baseline logs are retained as historical material. The current evidence is `audit-fixed-build.log`, `audit-fixed-upstream-tests.log`, `audit-fixed-host-sanitizers.log` and `audit-fixed-image-info.log`; see AUDIT_FIXES.md. The baseline linker RWX warning remains; there are no new compiler errors. No flashing was performed.
 
 ## 8. Executed software tests
 
 | Check | Observed result |
 |---|---|
 | Betaflight `make test -j6`, Clang 18.1.3 | 67 executables PASS; 619 cases PASS, including the new immediate-reset failsafe test |
-| Packet core, ASan+UBSan, warnings as errors | 1,522,481 checks; zero failures |
-| Actual receiver adapter against radio model | 5,147 checks; zero failures (4,761 under ASan+UBSan before the dropout/input-fault fix; after it, gcc `-Wall -Wextra -Werror` at -O0..-O3) |
+| Packet core, ASan+UBSan, warnings as errors | 1,653,716 checks; zero failures |
+| Actual receiver adapter against radio model | Expanded causal-arrival/backlog tests pass under ASan+UBSan; current check count is in VALIDATION.md and the host log |
 | Dropout and input-fault behaviour (after fix) | RF gaps of 100 ms to 3 s while armed: ARM/throttle pass through unchanged when the link returns, no reset call. A burst of input-fault packets: dropped, next good sample passes ARM/throttle unchanged. Handset: one bad ADC sample or a 100 ms acquisition stall sets only TX_INPUT_FAULT, never the restart flag. These tests fail against the code before the fix |
-| Actual portable handset, ASan+UBSan | PASS at 100Hz, 200Hz, 1kHz and 2kHz acquisition with 200Hz radio |
+| Actual portable handset, ASan+UBSan | PASS at 100Hz, 200Hz, 1kHz and 2kHz acquisition with nominal 200Hz radio; finite SPI and polling latency give about 198Hz in the model |
 | Reset safety | Short new-session reset requests disarm; ARM-high/throttle-high is clamped; low throttle alone or ARM-off alone cannot release the guard; same-session restart announcement works; repeated announcements trigger once |
 | Existing failsafe implementation | New GoogleTest case confirms disarm API is called immediately, FAILSAFE/ARM_SWITCH flags set, normal recovery used and ARM_SWITCH block retained |
 | Shared protocol copies | Byte-identical transmitter/receiver copies |
@@ -206,7 +206,7 @@ This runs the upstream default non-target-specific `make test` suite, not the ex
 
 These files exist and are tested on the host; they also compile warning-free for Cortex-M3:
 - `handset/src/handset_app.c/.h`: nRF24 TX setup, 5 ms frame scheduler, hop order, v2 restart/arming interlock, calibration validation, session,
-  sequence-per-acquisition, input fault (no sample for 50 ms, stick at rail, invalid switch),
+  sequence-per-acquisition, input fault (no sample for 50 ms, rail outside calibration, invalid ADC/switch),
   stick calibration mapping, ACK statistics.
 - `handset/config/link_config.h`: link ID, TX power, channel order (AETR + AUX1 = arm, AUX2–4).
 - `handset/shared/`: the protocol core.
@@ -378,7 +378,17 @@ Two v2 behaviours could disarm the craft in flight and were removed. Both were r
 1. **RF dropout.** The receiver re-engaged its ARM/throttle interlock after any gap longer than 150 ms, so when the link came back ARM was forced to 1000 us and Betaflight disarmed, even inside the `failsafe_delay` stage-1 window where control should resume. The time-based relock is removed (`rx/nrf24_bicopter.c`); RF loss is handled only by Betaflight's failsafe, as with any other receiver.
 2. **Input fault.** A single bad stick reading (or a sample older than 50 ms) put the handset into its restart lock for at least one second and until ARM off + throttle low; the receiver treated the restart flag as a handset reboot and disarmed immediately. The receiver also re-engaged its interlock on any input-fault packet. Now the handset only flags `TX_INPUT_FAULT` on affected packets (`handset/src/handset_app.c`), and the receiver drops them without touching the interlock.
 
-Unchanged: a real handset reboot (new session or restart announcement) still disarms immediately, and arming after boot still requires ARM off and throttle low. Upstream `make test` and the ASan/UBSan runs were not repeated after this fix (no host toolchain with sanitizers was available); `failsafe.c` and its unit test are unchanged. Not hardware-tested.
+Unchanged: a real handset reboot (new session or restart announcement) still disarms immediately, and arming after boot still requires ARM off and throttle low. At the time of that correction, upstream `make test` and ASan/UBSan were not repeated. They have now been independently rerun on the subsequent audit fixes below; `failsafe.c` and its unit test remain unchanged. Not hardware-tested.
+
+## 18. Full-audit fixes
+
+The current package fixes accepted calibration endpoints being rejected as faults, catch-up TX bursts after a delayed handset loop, and incorrect assignment of an IRQ timestamp to the tail of an RX backlog. The test models now enforce causal RX arrivals, finite handset SPI time and non-instant TX completion. Added regressions cover timer wrap, delayed TX/MAX_RT completion and valid ADC rail calibration. Ordinary RF/input faults still use normal Betaflight failsafe; actual restart protection is retained.
+
+All custom tests pass under ASan/UBSan, the upstream default suite passes (67 executables / 619 cases), portable Cortex-M3 compilation passes, and a clean Pico UF2 build passes. The earlier image is archived under `firmware/archive/protocol-v2-pre-audit-98aa346/`. See `AUDIT_FIXES.md` for the full changes, current evidence and staged hardware-testing limits. The STM32F103 board HAL is still missing, and no hardware has been tested.
+
+## 19. Complete historical regression rerun
+
+All applicable historical software checks were rerun against the current implementation, including the compiler optimization matrix, older suites, safety probes, fuzzing, static analysis, full upstream suite, three current board builds and both original baseline controls. The separate core hopping model was corrected to deliver packets only after completion. The full local checkout was synchronized with the tested exports after finding two stale files. The packaged runtime sources and UF2 did not change in this rerun. See `FULL_REGRESSION.md` for all results and expected historical failures. Current packet tests report 1,653,716 checks and receiver tests 15,596 checks, with zero failures.
 
 # Complete firmware patches
 
@@ -551,10 +561,10 @@ index 7763608..190d164 100644
 +void failsafeOnReceiverReset(void);
 diff --git a/src/main/rx/nrf24_bicopter.c b/src/main/rx/nrf24_bicopter.c
 new file mode 100644
-index 0000000..d85c794
+index 0000000..9f9e256
 --- /dev/null
 +++ b/src/main/rx/nrf24_bicopter.c
-@@ -0,0 +1,407 @@
+@@ -0,0 +1,413 @@
 +/*
 + * This file is part of Betaflight.
 + *
@@ -694,6 +704,7 @@ index 0000000..d85c794
 +
 +static rx_spi_received_e serviceRadio(uint8_t *payload, timeUs_t nowUs)
 +{
++    const bool drainingBacklog = fifoPending;
 +    const uint8_t status = NRF24L01_ReadReg(NRF24L01_07_STATUS);
 +    const uint8_t pipe = (status >> NRF24_STATUS_RX_P_NO_SHIFT) & NRF24_STATUS_RX_P_NO_MASK;
 +
@@ -727,20 +738,25 @@ index 0000000..d85c794
 +        return RX_SPI_RECEIVED_NONE;
 +    }
 +
-+    // The EXTI timestamp belongs to the most recently received packet, so it is only
-+    // attributed to the packet that empties the FIFO.
++    // RX_DR stays asserted until cleared: one edge can cover several queued packets.
++    // Do not assign that edge to the tail of a backlog (nor a new edge to an old head).
++    // A backlog uses service time and must not re-anchor an already synced hop clock.
 +    bool timeReliable = false;
 +    timeUs_t packetTimeUs = nowUs;
-+    if (!fifoPending) {
++    if (!drainingBacklog && !fifoPending) {
 +        if (irqConfigured) {
-+            timeReliable = havePendingExtiTime;
-+            if (havePendingExtiTime) {
++            timeReliable = havePendingExtiTime && cmpTimeUs(nowUs, pendingExtiTimeUs) >= 0;
++            if (timeReliable) {
 +                packetTimeUs = pendingExtiTimeUs;
 +            }
 +        } else {
 +            timeReliable = true;    // polled: error bounded by the poll interval
 +        }
-+        havePendingExtiTime = false;
++    }
++    havePendingExtiTime = false;
++    if (stats.accepted && cmpTimeUs(packetTimeUs, lastFrameTimeUs) < 0) {
++        packetTimeUs = nowUs;
++        timeReliable = false;
 +    }
 +
 +    blControl_t control;
@@ -1702,7 +1718,6 @@ index 49c84ca..27ff55f 100644
  // STUBS
  
  extern "C" {
-
 ```
 
 ## config-BICOPTER_PICO2.patch
@@ -1863,7 +1878,6 @@ index 0000000..a8d6044
 +
 +# No framebuffer OSD on this board, so no font area.
 +FONT_LENGTH = 0;
-
 ```
 
 ## handset/config/link_config.h
@@ -1887,10 +1901,238 @@ enum { HS_CH_ROLL = 0, HS_CH_PITCH, HS_CH_THROTTLE, HS_CH_YAW, HS_CH_AUX1_ARM, H
 #define HANDSET_SAMPLE_TIMEOUT_US   50000
 // Announce a reset for at least one second and until a new safe input sample.
 #define HANDSET_RESTART_ANNOUNCE_US 1000000U
-// Raw ADC readings this close to the rails are treated as a disconnected stick (12-bit ADC).
+// Rail readings outside each stick's calibrated range indicate an input fault.
+// A calibrated rail endpoint is valid; a broken wire at that endpoint cannot be
+// distinguished by ADC value alone and needs separate board-level detection.
 #define HANDSET_ADC_RAIL_MARGIN     8
 #define HANDSET_ADC_MAX             4095
+```
 
+## handset/shared/nrf24_bicopter_link.h
+
+```c
+/*
+ * This file is part of Betaflight.
+ *
+ * Betaflight is free software. You can redistribute this software
+ * and/or modify this software under the terms of the GNU General
+ * Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Betaflight is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this software.
+ *
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * NRF24_BICOPTER link protocol, version 2 - hardware independent core.
+ *
+ * This file (and nrf24_bicopter_link.c) is shared VERBATIM between the
+ * Betaflight receiver and the STM32F103 handset firmware. It has no
+ * dependency on Betaflight or on any MCU so it can also be unit tested on a PC.
+ *
+ * Radio layer (both ends):
+ *   nRF24L01+, 250 kbps, 2-byte radio CRC, 5-byte address, auto-acknowledge
+ *   on pipe 0 with dynamic payload length, no ACK payload, no retransmits.
+ *   The 5 address bytes are written to RX_ADDR_P0 / TX_ADDR in array order
+ *   (addr[0] first, i.e. addr[0] is the least significant address byte).
+ *
+ * Pairing: there is no over-the-air bind. Both ends are built with the same
+ * 32-bit link ID; it determines the radio address, the hop channels, the
+ * packet identity tag and the CRC seed.
+ *
+ * Control packet (BL_PAYLOAD_LEN = 20 bytes, multi-byte fields little-endian):
+ *   [0]      type      = BL_PKT_TYPE_CONTROL (0xB1)
+ *   [1]      version   = BL_PROTO_VERSION (2)
+ *   [2..3]   link tag  = blLinkTag(linkId)
+ *   [4]      session   = random non-zero value chosen at handset boot
+ *   [5..6]   sampleSeq = incremented ONLY when a new joystick/switch sample set
+ *                        has been acquired (not per transmission)
+ *   [7..16]  8 channels x 10 bits, packed LSB-first; value v in 0..1000 means
+ *            (1000 + v) microseconds. Values 1001..1023 are invalid.
+ *   [17]     flags: bit0 = input fault, bit1 = handset restart (boot/re-init), bits 2..7 zero
+ *   [18..19] CRC-16/CCITT (poly 0x1021, MSB first) over bytes 0..17,
+ *            initial value blCrcSeed(linkId)
+ *
+ * Timing: the handset sends one packet every BL_FRAME_PERIOD_US, packet k on
+ * hop channel (k mod BL_RF_CHANNEL_COUNT). See blHop* below for the receiver.
+ */
+
+#pragma once
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#define BL_PROTO_VERSION            2
+#define BL_PKT_TYPE_CONTROL         0xB1
+#define BL_PAYLOAD_LEN              20
+#define BL_ADDR_LEN                 5
+#define BL_CHANNEL_COUNT            8
+#define BL_CHANNEL_VALUE_MAX        1000
+#define BL_CHANNEL_US_MIN           1000
+#define BL_CHANNEL_US_MAX           (BL_CHANNEL_US_MIN + BL_CHANNEL_VALUE_MAX)
+
+#define BL_RF_CHANNEL_COUNT         4
+#define BL_RF_CHANNEL_FIRST         4      // lowest nRF24 RF_CH used (2404 MHz)
+#define BL_RF_CHANNEL_SPACING       19     // MHz between hop channels
+#define BL_RF_CHANNEL_OFFSET_SPAN   20     // per-link offset 0..19 -> highest RF_CH = 80
+
+#define BL_FRAME_PERIOD_US          5000   // 200 packets per second
+#define BL_SEQ_ACCEPT_WINDOW        32767  // forward half of the 16-bit sample counter
+#define BL_SYNC_MAX_MISSED_SLOTS    8      // consecutive empty slots before searching again (40 ms)
+#define BL_SEARCH_DWELL_US          ((BL_RF_CHANNEL_COUNT + 1) * BL_FRAME_PERIOD_US)
+
+#define BL_FLAG_TX_INPUT_FAULT      0x01
+#define BL_FLAG_TX_RESTART          0x02   // handset boot/re-init interlock; never a valid control sample
+#define BL_FLAGS_DEFINED_MASK       (BL_FLAG_TX_INPUT_FAULT | BL_FLAG_TX_RESTART)
+#define BL_ARM_CHANNEL             4
+#define BL_THROTTLE_CHANNEL        2
+#define BL_ARM_LOW_US              1250
+#define BL_THROTTLE_LOW_US         1050
+
+typedef struct blControl_s {
+    uint8_t session;
+    uint16_t sampleSeq;
+    uint8_t flags;
+    uint16_t channelUs[BL_CHANNEL_COUNT];   // 1000..2000
+} blControl_t;
+
+typedef enum {
+    BL_DECODE_OK = 0,
+    BL_DECODE_BAD_LENGTH,
+    BL_DECODE_BAD_TYPE,
+    BL_DECODE_BAD_VERSION,
+    BL_DECODE_BAD_TAG,
+    BL_DECODE_BAD_CRC,
+    BL_DECODE_BAD_FLAGS,
+    BL_DECODE_BAD_RANGE,
+    BL_DECODE_BAD_SESSION,
+} blDecodeResult_e;
+
+typedef enum {
+    BL_FRESH_ACCEPT = 0,        // new control sample: may refresh the RX watchdog
+    BL_FRESH_DUPLICATE,         // same sample as the last accepted one
+    BL_FRESH_STALE,             // older than the last accepted sample (same session)
+    BL_FRESH_RESYNC_PENDING,    // waiting for a forward-moving confirmation, not necessarily seq+1
+    BL_FRESH_TX_FAULT,          // handset reported its own input acquisition fault
+} blFreshResult_e;
+
+typedef struct blFreshness_s {
+    bool haveRef;
+    uint8_t session;
+    uint16_t lastSeq;
+    bool haveCandidate;
+    uint8_t candSession;
+    uint16_t candSeq;
+} blFreshness_t;
+
+typedef enum {
+    BL_HOP_SEARCH = 0,
+    BL_HOP_SYNCED = 1,
+} blHopState_e;
+
+typedef struct blHop_s {
+    blHopState_e state;
+    uint8_t idx;                // index into the hop channel table currently tuned
+    uint32_t nextHopUs;         // time of the next retune
+    uint32_t lastHopUs;         // time of the last retune
+    uint16_t missedSlots;       // consecutive slots without an authentic packet
+    bool heardThisSlot;
+} blHop_t;
+
+uint32_t blMix32(uint32_t x);
+uint16_t blLinkTag(uint32_t linkId);
+uint16_t blCrcSeed(uint32_t linkId);
+uint16_t blCrc16(uint16_t crc, const uint8_t *data, size_t len);
+void blDeriveAddress(uint32_t linkId, uint8_t addr[BL_ADDR_LEN]);
+void blDeriveRfChannels(uint32_t linkId, uint8_t channels[BL_RF_CHANNEL_COUNT]);
+
+// Returns false (and leaves out unspecified) if any channel is outside 1000..2000us,
+// session is zero, or undefined flag bits are set.
+bool blEncode(uint32_t linkId, const blControl_t *control, uint8_t out[BL_PAYLOAD_LEN]);
+blDecodeResult_e blDecode(uint32_t linkId, const uint8_t *buf, uint8_t len, blControl_t *out);
+
+void blFreshnessInit(blFreshness_t *f);
+blFreshResult_e blFreshnessCheck(blFreshness_t *f, uint8_t session, uint16_t seq, uint8_t flags);
+
+void blHopInit(blHop_t *h, uint32_t nowUs);
+// An authentic (decoded OK) packet was read. If timeReliable is false the
+// timestamp is only approximate (e.g. a packet left over in the RX FIFO) and the
+// slot timing is not re-anchored while synchronised.
+void blHopOnPacket(blHop_t *h, uint32_t packetTimeUs, bool timeReliable);
+// Returns true if h->idx changed and the radio must be retuned. Bounded: never loops.
+bool blHopTick(blHop_t *h, uint32_t nowUs);
+```
+
+## handset/src/handset_app.h
+
+```c
+#pragma once
+#include <stdbool.h>
+#include <stdint.h>
+#include "handset_hal.h"
+
+typedef struct {
+    uint16_t min, center, max;   // raw ADC calibration per stick
+    bool reverse;
+} hsStickCal_t;
+
+typedef struct {
+    uint32_t sent, acked, noAck, inputFaultFrames;
+} hsStats_t;
+
+// Returns false if the radio did not respond (check wiring/power).
+bool hs_init(const hsStickCal_t cal[HS_ANALOG_COUNT]);
+// Call often from the main loop. TX launches are at least BL_FRAME_PERIOD_US apart
+// (nominal 200 Hz); foreground/SPI latency can lower the actual rate. Never catches up in bursts.
+void hs_poll(void);
+const hsStats_t *hs_stats(void);
+// Exposed for tests: convert raw inputs to channel microseconds.
+bool hs_inputs_to_channels(const hsRawInputs_t *in, const hsStickCal_t cal[HS_ANALOG_COUNT], uint16_t outUs[8]);
+```
+
+## handset/src/handset_hal.h
+
+```c
+// Hardware abstraction the STM32F103 board port must implement.
+// Nothing here assumes a pin map, clock tree, HAL library or toolchain.
+#pragma once
+#include <stdbool.h>
+#include <stdint.h>
+
+#define HS_ANALOG_COUNT 4      // roll, pitch, throttle, yaw sticks
+#define HS_SWITCH_COUNT 4      // aux1 (arm) .. aux4, value 0..2 (2- or 3-position)
+
+typedef struct {
+    uint16_t analog[HS_ANALOG_COUNT];   // raw 12-bit ADC counts
+    uint8_t sw[HS_SWITCH_COUNT];        // 0 = low, 1 = mid, 2 = high
+} hsRawInputs_t;
+
+// Monotonic microsecond counter (32-bit wrap allowed).
+uint32_t hal_micros(void);
+// Returns true exactly once per COMPLETED new acquisition (e.g. from the ADC DMA
+// transfer-complete interrupt plus a switch read) and copies it out. Returns false
+// if no new acquisition finished since the previous call. Must not return true for a
+// repeated copy of old data: this is what makes frozen acquisition detectable.
+bool hal_take_new_inputs(hsRawInputs_t *out);
+// Non-zero random byte that differs on each boot (e.g. hash of unique ID + ADC noise + timer).
+uint8_t hal_boot_random_nonzero(void);
+
+// nRF24 SPI: mode 0, MSB first, <= 8 MHz. CSN is handled by hal_nrf_csn().
+uint8_t hal_spi_xfer(uint8_t byte);
+void hal_nrf_csn(bool high);
+void hal_nrf_ce(bool high);
+void hal_delay_us(uint32_t us);
+void hal_led(bool on);
 ```
 
 ## handset/shared/nrf24_bicopter_link.c
@@ -2214,173 +2456,6 @@ bool blHopTick(blHop_t *h, uint32_t nowUs)
     }
     return true;
 }
-
-```
-
-## handset/shared/nrf24_bicopter_link.h
-
-```c
-/*
- * This file is part of Betaflight.
- *
- * Betaflight is free software. You can redistribute this software
- * and/or modify this software under the terms of the GNU General
- * Public License as published by the Free Software Foundation,
- * either version 3 of the License, or (at your option) any later
- * version.
- *
- * Betaflight is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this software.
- *
- * If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * NRF24_BICOPTER link protocol, version 2 - hardware independent core.
- *
- * This file (and nrf24_bicopter_link.c) is shared VERBATIM between the
- * Betaflight receiver and the STM32F103 handset firmware. It has no
- * dependency on Betaflight or on any MCU so it can also be unit tested on a PC.
- *
- * Radio layer (both ends):
- *   nRF24L01+, 250 kbps, 2-byte radio CRC, 5-byte address, auto-acknowledge
- *   on pipe 0 with dynamic payload length, no ACK payload, no retransmits.
- *   The 5 address bytes are written to RX_ADDR_P0 / TX_ADDR in array order
- *   (addr[0] first, i.e. addr[0] is the least significant address byte).
- *
- * Pairing: there is no over-the-air bind. Both ends are built with the same
- * 32-bit link ID; it determines the radio address, the hop channels, the
- * packet identity tag and the CRC seed.
- *
- * Control packet (BL_PAYLOAD_LEN = 20 bytes, multi-byte fields little-endian):
- *   [0]      type      = BL_PKT_TYPE_CONTROL (0xB1)
- *   [1]      version   = BL_PROTO_VERSION (2)
- *   [2..3]   link tag  = blLinkTag(linkId)
- *   [4]      session   = random non-zero value chosen at handset boot
- *   [5..6]   sampleSeq = incremented ONLY when a new joystick/switch sample set
- *                        has been acquired (not per transmission)
- *   [7..16]  8 channels x 10 bits, packed LSB-first; value v in 0..1000 means
- *            (1000 + v) microseconds. Values 1001..1023 are invalid.
- *   [17]     flags: bit0 = input fault, bit1 = handset restart (boot/re-init), bits 2..7 zero
- *   [18..19] CRC-16/CCITT (poly 0x1021, MSB first) over bytes 0..17,
- *            initial value blCrcSeed(linkId)
- *
- * Timing: the handset sends one packet every BL_FRAME_PERIOD_US, packet k on
- * hop channel (k mod BL_RF_CHANNEL_COUNT). See blHop* below for the receiver.
- */
-
-#pragma once
-
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#define BL_PROTO_VERSION            2
-#define BL_PKT_TYPE_CONTROL         0xB1
-#define BL_PAYLOAD_LEN              20
-#define BL_ADDR_LEN                 5
-#define BL_CHANNEL_COUNT            8
-#define BL_CHANNEL_VALUE_MAX        1000
-#define BL_CHANNEL_US_MIN           1000
-#define BL_CHANNEL_US_MAX           (BL_CHANNEL_US_MIN + BL_CHANNEL_VALUE_MAX)
-
-#define BL_RF_CHANNEL_COUNT         4
-#define BL_RF_CHANNEL_FIRST         4      // lowest nRF24 RF_CH used (2404 MHz)
-#define BL_RF_CHANNEL_SPACING       19     // MHz between hop channels
-#define BL_RF_CHANNEL_OFFSET_SPAN   20     // per-link offset 0..19 -> highest RF_CH = 80
-
-#define BL_FRAME_PERIOD_US          5000   // 200 packets per second
-#define BL_SEQ_ACCEPT_WINDOW        32767  // forward half of the 16-bit sample counter
-#define BL_SYNC_MAX_MISSED_SLOTS    8      // consecutive empty slots before searching again (40 ms)
-#define BL_SEARCH_DWELL_US          ((BL_RF_CHANNEL_COUNT + 1) * BL_FRAME_PERIOD_US)
-
-#define BL_FLAG_TX_INPUT_FAULT      0x01
-#define BL_FLAG_TX_RESTART          0x02   // handset boot/re-init interlock; never a valid control sample
-#define BL_FLAGS_DEFINED_MASK       (BL_FLAG_TX_INPUT_FAULT | BL_FLAG_TX_RESTART)
-#define BL_ARM_CHANNEL             4
-#define BL_THROTTLE_CHANNEL        2
-#define BL_ARM_LOW_US              1250
-#define BL_THROTTLE_LOW_US         1050
-
-typedef struct blControl_s {
-    uint8_t session;
-    uint16_t sampleSeq;
-    uint8_t flags;
-    uint16_t channelUs[BL_CHANNEL_COUNT];   // 1000..2000
-} blControl_t;
-
-typedef enum {
-    BL_DECODE_OK = 0,
-    BL_DECODE_BAD_LENGTH,
-    BL_DECODE_BAD_TYPE,
-    BL_DECODE_BAD_VERSION,
-    BL_DECODE_BAD_TAG,
-    BL_DECODE_BAD_CRC,
-    BL_DECODE_BAD_FLAGS,
-    BL_DECODE_BAD_RANGE,
-    BL_DECODE_BAD_SESSION,
-} blDecodeResult_e;
-
-typedef enum {
-    BL_FRESH_ACCEPT = 0,        // new control sample: may refresh the RX watchdog
-    BL_FRESH_DUPLICATE,         // same sample as the last accepted one
-    BL_FRESH_STALE,             // older than the last accepted sample (same session)
-    BL_FRESH_RESYNC_PENDING,    // waiting for a forward-moving confirmation, not necessarily seq+1
-    BL_FRESH_TX_FAULT,          // handset reported its own input acquisition fault
-} blFreshResult_e;
-
-typedef struct blFreshness_s {
-    bool haveRef;
-    uint8_t session;
-    uint16_t lastSeq;
-    bool haveCandidate;
-    uint8_t candSession;
-    uint16_t candSeq;
-} blFreshness_t;
-
-typedef enum {
-    BL_HOP_SEARCH = 0,
-    BL_HOP_SYNCED = 1,
-} blHopState_e;
-
-typedef struct blHop_s {
-    blHopState_e state;
-    uint8_t idx;                // index into the hop channel table currently tuned
-    uint32_t nextHopUs;         // time of the next retune
-    uint32_t lastHopUs;         // time of the last retune
-    uint16_t missedSlots;       // consecutive slots without an authentic packet
-    bool heardThisSlot;
-} blHop_t;
-
-uint32_t blMix32(uint32_t x);
-uint16_t blLinkTag(uint32_t linkId);
-uint16_t blCrcSeed(uint32_t linkId);
-uint16_t blCrc16(uint16_t crc, const uint8_t *data, size_t len);
-void blDeriveAddress(uint32_t linkId, uint8_t addr[BL_ADDR_LEN]);
-void blDeriveRfChannels(uint32_t linkId, uint8_t channels[BL_RF_CHANNEL_COUNT]);
-
-// Returns false (and leaves out unspecified) if any channel is outside 1000..2000us,
-// session is zero, or undefined flag bits are set.
-bool blEncode(uint32_t linkId, const blControl_t *control, uint8_t out[BL_PAYLOAD_LEN]);
-blDecodeResult_e blDecode(uint32_t linkId, const uint8_t *buf, uint8_t len, blControl_t *out);
-
-void blFreshnessInit(blFreshness_t *f);
-blFreshResult_e blFreshnessCheck(blFreshness_t *f, uint8_t session, uint16_t seq, uint8_t flags);
-
-void blHopInit(blHop_t *h, uint32_t nowUs);
-// An authentic (decoded OK) packet was read. If timeReliable is false the
-// timestamp is only approximate (e.g. a packet left over in the RX FIFO) and the
-// slot timing is not re-anchored while synchronised.
-void blHopOnPacket(blHop_t *h, uint32_t packetTimeUs, bool timeReliable);
-// Returns true if h->idx changed and the radio must be retuned. Bounded: never loops.
-bool blHopTick(blHop_t *h, uint32_t nowUs);
-
 ```
 
 ## handset/src/handset_app.c
@@ -2453,8 +2528,11 @@ bool hs_inputs_to_channels(const hsRawInputs_t *in, const hsStickCal_t c[HS_ANAL
 {
     bool ok = true;
     for (int i = 0; i < HS_ANALOG_COUNT; i++) {
-        // A stick reading pinned at a rail usually means a broken wire/potentiometer
-        if (in->analog[i] <= HANDSET_ADC_RAIL_MARGIN || in->analog[i] >= HANDSET_ADC_MAX - HANDSET_ADC_RAIL_MARGIN) ok = false;
+        const uint16_t raw = in->analog[i];
+        const bool atRail = raw <= HANDSET_ADC_RAIL_MARGIN || raw >= HANDSET_ADC_MAX - HANDSET_ADC_RAIL_MARGIN;
+        // A calibrated endpoint can legitimately reach a rail. Only reject a rail
+        // outside that stick's measured range; ADC values above 12 bits are invalid.
+        if (raw > HANDSET_ADC_MAX || (atRail && (raw < c[i].min || raw > c[i].max))) ok = false;
         outUs[i] = mapStick(in->analog[i], &c[i]);
     }
     for (int i = 0; i < HS_SWITCH_COUNT; i++) {
@@ -2544,13 +2622,14 @@ void hs_poll(void)
     }
 
     if ((int32_t)(now - nextTxUs) < 0) return;
-    nextTxUs += BL_FRAME_PERIOD_US;
-    if ((int32_t)(now - nextTxUs) > BL_FRAME_PERIOD_US) nextTxUs = now;   // resync after a stall
-
     if (awaitingResult) {
         const uint8_t st = rreg(REG_STATUS);
+        // Never retune or flush an outstanding transmission. A radio that stops
+        // completing transactions must cause link loss, not overlapping TX attempts.
+        if (!(st & (ST_TX_DS | ST_MAX_RT))) return;
         if (st & ST_TX_DS) stats.acked++; else stats.noAck++;
         hal_led((st & ST_TX_DS) != 0);
+        awaitingResult = false;
     }
 
     uint8_t pkt[BL_PAYLOAD_LEN];
@@ -2562,6 +2641,9 @@ void hs_poll(void)
     wreg(REG_STATUS, 0x70);
     cmd(FLUSH_TX);
     wmulti(W_TX_PAYLOAD, pkt, BL_PAYLOAD_LEN);
+    // Schedule from this actual launch, skipping missed slots after a late loop.
+    // No catch-up burst is allowed, including after a 32-bit timer wrap.
+    nextTxUs = hal_micros() + BL_FRAME_PERIOD_US;
     hal_nrf_ce(true);
     hal_delay_us(15);                     // >10 us CE pulse starts one transmission
     hal_nrf_ce(false);
@@ -2571,70 +2653,6 @@ void hs_poll(void)
 }
 
 const hsStats_t *hs_stats(void) { return &stats; }
-
-```
-
-## handset/src/handset_app.h
-
-```c
-#pragma once
-#include <stdbool.h>
-#include <stdint.h>
-#include "handset_hal.h"
-
-typedef struct {
-    uint16_t min, center, max;   // raw ADC calibration per stick
-    bool reverse;
-} hsStickCal_t;
-
-typedef struct {
-    uint32_t sent, acked, noAck, inputFaultFrames;
-} hsStats_t;
-
-// Returns false if the radio did not respond (check wiring/power).
-bool hs_init(const hsStickCal_t cal[HS_ANALOG_COUNT]);
-// Call as often as possible from the main loop; transmits one packet every BL_FRAME_PERIOD_US.
-void hs_poll(void);
-const hsStats_t *hs_stats(void);
-// Exposed for tests: convert raw inputs to channel microseconds.
-bool hs_inputs_to_channels(const hsRawInputs_t *in, const hsStickCal_t cal[HS_ANALOG_COUNT], uint16_t outUs[8]);
-
-```
-
-## handset/src/handset_hal.h
-
-```c
-// Hardware abstraction the STM32F103 board port must implement.
-// Nothing here assumes a pin map, clock tree, HAL library or toolchain.
-#pragma once
-#include <stdbool.h>
-#include <stdint.h>
-
-#define HS_ANALOG_COUNT 4      // roll, pitch, throttle, yaw sticks
-#define HS_SWITCH_COUNT 4      // aux1 (arm) .. aux4, value 0..2 (2- or 3-position)
-
-typedef struct {
-    uint16_t analog[HS_ANALOG_COUNT];   // raw 12-bit ADC counts
-    uint8_t sw[HS_SWITCH_COUNT];        // 0 = low, 1 = mid, 2 = high
-} hsRawInputs_t;
-
-// Monotonic microsecond counter (32-bit wrap allowed).
-uint32_t hal_micros(void);
-// Returns true exactly once per COMPLETED new acquisition (e.g. from the ADC DMA
-// transfer-complete interrupt plus a switch read) and copies it out. Returns false
-// if no new acquisition finished since the previous call. Must not return true for a
-// repeated copy of old data: this is what makes frozen acquisition detectable.
-bool hal_take_new_inputs(hsRawInputs_t *out);
-// Non-zero random byte that differs on each boot (e.g. hash of unique ID + ADC noise + timer).
-uint8_t hal_boot_random_nonzero(void);
-
-// nRF24 SPI: mode 0, MSB first, <= 8 MHz. CSN is handled by hal_nrf_csn().
-uint8_t hal_spi_xfer(uint8_t byte);
-void hal_nrf_csn(bool high);
-void hal_nrf_ce(bool high);
-void hal_delay_us(uint32_t us);
-void hal_led(bool on);
-
 ```
 
 ## handset/test/test_handset.c
@@ -2660,9 +2678,19 @@ static bool newSample = true, frozen;
 static uint16_t adcVal = 2048;
 static uint16_t throttleAdc = 100;
 static uint8_t armSwitch;
+static bool txBusy, txWillAck = true;
+static uint32_t txCompletesAt, txStartedAt, txDurationUs = 1500;
+static bool haveTxStart;
 
-uint32_t hal_micros(void) { return now; }
-void hal_delay_us(uint32_t us) { now += us; }
+static void completeTx(void) {
+    if (txBusy && (int32_t)(now - txCompletesAt) >= 0) {
+        txBusy = false;
+        regs[7] |= txWillAck ? 0x20 : 0x10; // TX_DS or MAX_RT, not instant completion
+    }
+}
+
+uint32_t hal_micros(void) { completeTx(); return now; }
+void hal_delay_us(uint32_t us) { now += us; completeTx(); }
 void hal_led(bool on) { (void)on; }
 uint8_t hal_boot_random_nonzero(void) { return 0x77; }
 bool hal_take_new_inputs(hsRawInputs_t *o) {
@@ -2677,30 +2705,39 @@ bool hal_take_new_inputs(hsRawInputs_t *o) {
 static void endFrame(void) {
     if (flen == 0) return;
     uint8_t c = frame[0];
+    if (c == 0xE1 || c == 0xA0 || c == 0x25) CHECK(!txBusy); // no flush/load/retune while busy
     if ((c & 0xE0) == 0x20 && flen >= 2) { uint8_t r = c & 31; if (r == 0x10) memcpy(txAddr, &frame[1], 5); else if (r == 7) regs[7] &= (uint8_t)~(frame[1] & 0x70); else regs[r] = frame[1]; }
     if (c == 0xA0) { memcpy(lastPkt, &frame[1], flen - 1); }
     flen = 0;
 }
 void hal_nrf_csn(bool high) { if (high && csnLow) endFrame(); csnLow = !high; }
 uint8_t hal_spi_xfer(uint8_t b) {
+    hal_delay_us(1); // finite 8 MHz SPI bus, one microsecond per byte
     uint8_t ret = 0;
     if (flen == 1 && (frame[0] & 0xE0) == 0x00) ret = regs[frame[0] & 31];
     if (flen < 40) frame[flen++] = b;
     return ret;
 }
 void hal_nrf_ce(bool high) {
-    if (ce && !high) { // falling edge of a CE pulse after W_TX_PAYLOAD -> one transmission
+    completeTx();
+    if (!ce && high) {
+        CHECK(!txBusy);
+        if (haveTxStart) CHECK((uint32_t)(now - txStartedAt) >= BL_FRAME_PERIOD_US);
+        txStartedAt = now; haveTxStart = true;
+        txBusy = true; txCompletesAt = now + txDurationUs;
         if (txCount < 2000) lastCh[txCount] = regs[5];
-        txCount++; regs[7] |= 0x20;
+        txCount++;
         blControl_t d;
         CHECK(blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &d) == BL_DECODE_OK);
     }
+    if (ce && !high) CHECK((uint32_t)(now - txStartedAt) >= 10);
     ce = high;
 }
 
 static void runSamplingCase(uint32_t samplePeriod)
 {
     now = 0; csnLow = ce = false; flen = txCount = 0;
+    txBusy = haveTxStart = false; txDurationUs = 1500; txWillAck = true;
     memset(regs, 0, sizeof(regs)); memset(lastCh, 0, sizeof(lastCh));
     newSample = true; frozen = false; adcVal = 2048; throttleAdc = 100; armSwitch = 0;
     hsStickCal_t cal[4];
@@ -2716,10 +2753,16 @@ static void runSamplingCase(uint32_t samplePeriod)
     int accepted = 0, faultFrames = 0;
     uint8_t ch[4]; blDeriveRfChannels(HANDSET_LINK_ID, ch);
     int lastTx = 0;
-    for (uint32_t t = 0; t < 3000000; t += 100) {
-        now += 100;
-        if (t % samplePeriod == 0) newSample = true;
-        if (t == 2000000) frozen = true; // first second announces boot, second carries controls
+    const uint32_t started = now;
+    uint32_t nextSample = now;
+    while ((uint32_t)(now - started) < 3000000) {
+        hal_delay_us(100);
+        if ((int32_t)(now - nextSample) >= 0) {
+            newSample = true;
+            do { nextSample += samplePeriod; } while ((int32_t)(now - nextSample) >= 0);
+        }
+        const uint32_t t = now - started;
+        if (t >= 2000000) frozen = true; // first second announces boot, second carries controls
         hs_poll();
         if (txCount != lastTx) {
             lastTx = txCount;
@@ -2733,7 +2776,7 @@ static void runSamplingCase(uint32_t samplePeriod)
     }
     for (int i = 0; i < 400 && i < txCount; i++) CHECK(lastCh[i] == ch[i % 4]);
     printf("  acquisition period %u us: sent %d in 3 s, accepted %d, flagged %d\n", samplePeriod, txCount, accepted, faultFrames);
-    CHECK(txCount >= 598 && txCount <= 603);
+    CHECK(txCount >= 590 && txCount <= 601); // 5 ms minimum + foreground/SPI latency
     const int expected = samplePeriod > 5000 ? (int)(1000000U / samplePeriod) : 200;
     CHECK(accepted >= expected - 10 && accepted <= expected + 2);
     // Rail detection
@@ -2746,9 +2789,14 @@ static void runSamplingCase(uint32_t samplePeriod)
 
 static void pollFor(uint32_t duration)
 {
-    for (uint32_t t = 0; t < duration; t += 100) {
-        now += 100;
-        if (t % 1000 == 0) newSample = true;
+    const uint32_t started = now;
+    uint32_t nextSample = now;
+    while ((uint32_t)(now - started) < duration) {
+        hal_delay_us(100);
+        if ((int32_t)(now - nextSample) >= 0) {
+            newSample = true;
+            do { nextSample += 1000; } while ((int32_t)(now - nextSample) >= 0);
+        }
         hs_poll();
     }
 }
@@ -2801,6 +2849,81 @@ static void testInputFaultNoRestart(void)
     CHECK(c.flags == 0 && c.channelUs[4] == 2000 && c.channelUs[2] == flyingThrottle);
 }
 
+static void testCalibratedEndpoints(void)
+{
+    hsStickCal_t cal[4];
+    for (int i = 0; i < 4; i++) cal[i] = (hsStickCal_t){0, 2048, 4095, false};
+    hsRawInputs_t in = { .analog = {2048, 2048, 2048, 2048} };
+    uint16_t us[8];
+    for (int axis = 0; axis < 4; axis++) {
+        in.analog[axis] = 0;
+        CHECK(hs_inputs_to_channels(&in, cal, us)); CHECK(us[axis] == 1000);
+        in.analog[axis] = 4095;
+        CHECK(hs_inputs_to_channels(&in, cal, us)); CHECK(us[axis] == 2000);
+        cal[axis].reverse = true;
+        CHECK(hs_inputs_to_channels(&in, cal, us)); CHECK(us[axis] == 1000);
+        cal[axis].reverse = false; in.analog[axis] = 2048;
+    }
+    in.analog[0] = 4096; CHECK(!hs_inputs_to_channels(&in, cal, us));
+    in.analog[0] = 2048; cal[0].min = 5; cal[0].max = 4090;
+    in.analog[0] = 5; CHECK(hs_inputs_to_channels(&in, cal, us)); CHECK(us[0] == 1000);
+    in.analog[0] = 4090; CHECK(hs_inputs_to_channels(&in, cal, us)); CHECK(us[0] == 2000);
+    in.analog[0] = 0; CHECK(!hs_inputs_to_channels(&in, cal, us));
+    in.analog[0] = 4095; CHECK(!hs_inputs_to_channels(&in, cal, us));
+
+    // Actual application must unlock and transmit valid controls at a calibrated rail.
+    cal[0].min = 0; cal[0].max = 4095;
+    adcVal = 2048; throttleAdc = 0; armSwitch = 0; frozen = false; newSample = true;
+    CHECK(hs_init(cal)); pollFor(1500000);
+    blControl_t c; CHECK(blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &c) == BL_DECODE_OK);
+    CHECK(c.flags == 0 && c.channelUs[BL_THROTTLE_CHANNEL] == 1000);
+    armSwitch = 2; throttleAdc = 4095; pollFor(10000);
+    blDecode(HANDSET_LINK_ID, lastPkt, BL_PAYLOAD_LEN, &c);
+    CHECK(c.flags == 0 && c.channelUs[BL_ARM_CHANNEL] == 2000 && c.channelUs[BL_THROTTLE_CHANNEL] == 2000);
+}
+
+static void scheduleCase(uint32_t initialTime)
+{
+    now = initialTime; csnLow = ce = txBusy = haveTxStart = false;
+    flen = txCount = 0; memset(regs, 0, sizeof(regs));
+    txDurationUs = 1500; txWillAck = true;
+    frozen = false; newSample = true; adcVal = 2048; throttleAdc = 100; armSwitch = 0;
+    hsStickCal_t cal[4];
+    for (int i = 0; i < 4; i++) cal[i] = (hsStickCal_t){100, 2048, 4000, false};
+    CHECK(hs_init(cal)); pollFor(1500000);
+    armSwitch = 2; throttleAdc = 2048; pollFor(10000);
+    const uint32_t stalls[] = {9000, 20000, 100000};
+    for (unsigned i = 0; i < sizeof(stalls) / sizeof(stalls[0]); i++) {
+        hal_delay_us(stalls[i]); newSample = true;
+        int before = txCount; hs_poll(); CHECK(txCount == before + 1);
+        const uint32_t launch = txStartedAt;
+        hal_delay_us(100); hs_poll(); CHECK(txCount == before + 1);
+        pollFor(6000); CHECK((uint32_t)(txStartedAt - launch) >= BL_FRAME_PERIOD_US);
+    }
+    // A completion delayed past the normal slot must not be flushed or counted
+    // as a failure while still pending. MAX_RT is counted once when it completes.
+    hal_delay_us(6000); txDurationUs = 20000; txWillAck = false;
+    hs_poll(); CHECK(txBusy);
+    const int before = txCount;
+    const uint32_t noAckBefore = hs_stats()->noAck;
+    const uint8_t channel = regs[5];
+    pollFor(10000);
+    CHECK(txCount == before && txBusy && regs[5] == channel);
+    CHECK(hs_stats()->noAck == noAckBefore);
+    txDurationUs = 1500;
+    hal_delay_us(10000); hs_poll();
+    CHECK(txCount == before + 1 && hs_stats()->noAck == noAckBefore + 1);
+    uint8_t channels[4]; blDeriveRfChannels(HANDSET_LINK_ID, channels);
+    CHECK(lastCh[before] == channels[before % 4]);
+    txWillAck = true;
+}
+
+static void testLateLoopAndBusyRadio(void)
+{
+    scheduleCase(0);
+    scheduleCase(UINT32_MAX - 1630000); // normal operation and stalls cross wrap
+}
+
 int main(void)
 {
     runSamplingCase(10000); // 100 Hz
@@ -2809,10 +2932,11 @@ int main(void)
     runSamplingCase(500);   // 2 kHz
     testBootWithArmHigh();
     testInputFaultNoRestart();
+    testCalibratedEndpoints();
+    testLateLoopAndBusyRadio();
     printf("%s (%d failures)\n", fails ? "FAIL" : "PASS", fails);
     return fails != 0;
 }
-
 ```
 
 ## tests/stubs/build/debug.h
@@ -2825,7 +2949,6 @@ enum { DEBUG_NONE = 0, DEBUG_RX_NRF24_BICOPTER = 1 };
 extern int16_t debug[DEBUG16_VALUE_COUNT];
 extern uint8_t debugMode;
 #define DEBUG_SET(mode, index, value) do { if (debugMode == (mode)) { debug[(index)] = (value); } } while (0)
-
 ```
 
 ## tests/stubs/common/time.h
@@ -2836,7 +2959,6 @@ extern uint8_t debugMode;
 typedef uint32_t timeUs_t;
 typedef int32_t timeDelta_t;
 static inline timeDelta_t cmpTimeUs(timeUs_t a, timeUs_t b) { return (timeDelta_t)(a - b); }
-
 ```
 
 ## tests/stubs/common/utils.h
@@ -2846,7 +2968,6 @@ static inline timeDelta_t cmpTimeUs(timeUs_t a, timeUs_t b) { return (timeDelta_
 #define BIT(x) (1 << (x))
 #define UNUSED(x) (void)(x)
 #define STATIC_ASSERT(condition, name) _Static_assert((condition), #name)
-
 ```
 
 ## tests/stubs/drivers/io.h
@@ -2857,7 +2978,6 @@ static inline timeDelta_t cmpTimeUs(timeUs_t a, timeUs_t b) { return (timeDelta_
 typedef uint8_t ioConfig_t;
 #define IOCFG_IN_FLOATING 0
 #define IOCFG_IPU 1
-
 ```
 
 ## tests/stubs/drivers/rx/rx_spi.h
@@ -2872,7 +2992,6 @@ bool rxSpiGetExtiState(void);
 bool rxSpiPollExti(void);
 void rxSpiResetExti(void);
 timeUs_t rxSpiGetLastExtiTimeUs(void);
-
 ```
 
 ## tests/stubs/drivers/time.h
@@ -2881,7 +3000,6 @@ timeUs_t rxSpiGetLastExtiTimeUs(void);
 #pragma once
 #include "common/time.h"
 timeUs_t micros(void);
-
 ```
 
 ## tests/stubs/flight/failsafe.h
@@ -2889,7 +3007,6 @@ timeUs_t micros(void);
 ```c
 #pragma once
 void failsafeOnReceiverReset(void);
-
 ```
 
 ## tests/stubs/platform.h
@@ -2904,7 +3021,6 @@ void failsafeOnReceiverReset(void);
 #ifndef BICOPTER_NRF24_LINK_ID
 #define BICOPTER_NRF24_LINK_ID 0xBE5336DFU
 #endif
-
 ```
 
 ## tests/stubs/rx/rx.h
@@ -2916,7 +3032,6 @@ void failsafeOnReceiverReset(void);
 typedef struct rxRuntimeState_s {
     uint8_t channelCount;
 } rxRuntimeState_t;
-
 ```
 
 ## tests/stubs/rx/rx_spi.h
@@ -2947,7 +3062,6 @@ typedef struct {
     ioConfig_t ioConfig;
     extiTrigger_t trigger;
 } rxSpiExtiConfig_t;
-
 ```
 
 ## tests/test_common.h
@@ -2970,7 +3084,6 @@ static int g_checks = 0;
 // Deterministic PRNG for tests
 static unsigned long long g_rng = 0x1234567887654321ULL;
 static unsigned rng32(void) { g_rng ^= g_rng << 13; g_rng ^= g_rng >> 7; g_rng ^= g_rng << 17; return (unsigned)(g_rng >> 16); }
-
 ```
 
 ## tests/test_link.c
@@ -3213,6 +3326,12 @@ typedef struct {
     uint32_t outageFromUs, outageToUs;
 } hopSim_t;
 
+static uint32_t hopSimTxStart(const hopSim_t *s, double nominal)
+{
+    const int jitter = s->jitterUs ? (int)(rng32() % (2 * s->jitterUs + 1)) - s->jitterUs : 0;
+    return (uint32_t)nominal + (uint32_t)jitter;
+}
+
 static void runHopSim(const hopSim_t *s, uint32_t durationUs, uint32_t *firstSyncUs, double *rxRatioAfterSync, uint32_t *reacqUs)
 {
     uint8_t ch[BL_RF_CHANNEL_COUNT];
@@ -3223,6 +3342,7 @@ static void runHopSim(const hopSim_t *s, uint32_t durationUs, uint32_t *firstSyn
     uint32_t start = now;
     uint32_t k = 0;
     double nextTx = start + s->phaseUs;
+    uint32_t txStart = hopSimTxStart(s, nextTx);
     uint32_t sent = 0, heard = 0;
     *firstSyncUs = 0;
     *reacqUs = 0;
@@ -3230,23 +3350,27 @@ static void runHopSim(const hopSim_t *s, uint32_t durationUs, uint32_t *firstSyn
     uint8_t tunedIdx = h.idx;
     uint32_t lastHeard = 0;
     for (; now - start < durationUs; now += s->stepUs) {
-        while (nextTx <= now) {
-            uint32_t t = (uint32_t)nextTx + (s->jitterUs ? (uint32_t)((int)(rng32() % (2 * s->jitterUs + 1)) - s->jitterUs) : 0);
+        while ((int32_t)(now - (txStart + 1000)) >= 0) {
+            const uint32_t t = txStart;
+            const uint32_t completed = t + 1000;
+            CHECK((int32_t)(now - completed) >= 0);
             uint8_t txIdx = k % BL_RF_CHANNEL_COUNT;
             bool inOutage = (t - start) >= s->outageFromUs && (t - start) < s->outageToUs;
             bool lost = (int)(rng32() % 100) < s->lossPct;
             if (!inOutage) {
                 if (*firstSyncUs) sent++;
-                // received if tuned to this channel for >=130us before the packet ends (1ms airtime)
+                // RX must settle before the packet starts and stay tuned through
+                // completion. No future packet timestamp may steer the hop clock.
                 if (!lost && txIdx == tunedIdx && (int32_t)(t - tunedAt) >= 130) {
-                    blHopOnPacket(&h, t + 1000, true);
-                    if (!*firstSyncUs) *firstSyncUs = t - start; else heard++;
-                    if (s->outageToUs && (t - start) >= s->outageToUs && !*reacqUs) *reacqUs = (t - start) - s->outageToUs;
+                    blHopOnPacket(&h, completed, true);
+                    if (!*firstSyncUs) *firstSyncUs = completed - start; else heard++;
+                    if (s->outageToUs && (t - start) >= s->outageToUs && !*reacqUs) *reacqUs = (completed - start) - s->outageToUs;
                     lastHeard = t;
                 }
             }
             k++;
             nextTx += BL_FRAME_PERIOD_US * (1.0 + s->ppm * 1e-6);
+            txStart = hopSimTxStart(s, nextTx);
         }
         if (blHopTick(&h, now)) {
             tunedIdx = h.idx;
@@ -3349,7 +3473,6 @@ int main(void)
     RUN(testHopping);
     SUMMARY();
 }
-
 ```
 
 ## tests/test_rx_adapter.c
@@ -3418,7 +3541,9 @@ timeUs_t rxSpiGetLastExtiTimeUs(void) { return R.extiTs; }
 
 static void radioDeliver(const uint8_t *d, uint8_t len, uint8_t rfch, uint32_t t)
 {
-    if (!R.ce || R.regs[NRF24L01_05_RF_CH] != rfch || (int32_t)(t - R.tunedAt) < 130) return;
+    CHECK((int32_t)(nowUs - t) >= 0); // t is packet completion, never a future event
+    // Stay on the channel for RX settling plus the entire modeled 1 ms packet.
+    if (!R.ce || R.regs[NRF24L01_05_RF_CH] != rfch || (int32_t)(t - R.tunedAt) < 1130) return;
     if (R.count == 3) return;                 // FIFO full: radio drops the packet
     R.fifo[R.count].len = len; memcpy(R.fifo[R.count].d, d, len > 32 ? 32 : len); R.count++;
     if (!R.rxDr) { R.rxDr = true; if (R.irqWired) { R.extiFlag = true; R.extiTs = t; } }
@@ -3446,7 +3571,7 @@ static int run(txSim_t *tx, uint32_t durationUs, uint32_t loopUs, uint32_t *k, d
     int data = 0;
     uint32_t end = nowUs + durationUs;
     for (; (int32_t)(end - nowUs) > 0; nowUs += loopUs) {
-        while (*nextTx <= nowUs) {
+        while (*nextTx + 1000 <= nowUs) {
             if (txOn && (int)(rng32() % 100) >= tx->lossPct) {
                 blControl_t c; memset(&c, 0, sizeof(c));
                 c.session = tx->session; c.sampleSeq = tx->seq; c.flags = tx->flags;
@@ -3461,6 +3586,7 @@ static int run(txSim_t *tx, uint32_t durationUs, uint32_t loopUs, uint32_t *k, d
         }
         R.ops = 0;
         if (nrf24BicopterDataReceived(payload) == RX_SPI_RECEIVED_DATA) {
+            CHECK((int32_t)(nowUs - nrf24BicopterFrameTimeUs()) >= 0);
             data++;
             uint32_t gap = nowUs - *lastData;
             if (*lastData && gap > *maxGapUs) *maxGapUs = gap;
@@ -3654,6 +3780,44 @@ static void testInputFaultKeepsControl(void)
     CHECK_EQ(receiverResetCalls, 0);
 }
 
+static void queuedTimestampCase(uint32_t base, bool irq)
+{
+    nowUs = base + 1000; CHECK(initRx(irq, true));
+    // The receiver stalls on one channel. The handset returns every 20 ms;
+    // all three packets share the first falling IRQ edge, not the last arrival.
+    for (int i = 0; i < 3; i++) {
+        blControl_t c = { .session = 1, .sampleSeq = (uint16_t)(100 + i) };
+        for (int ch = 0; ch < 8; ch++) c.channelUs[ch] = 1500;
+        c.channelUs[BL_ARM_CHANNEL] = c.channelUs[BL_THROTTLE_CHANNEL] = 1000;
+        uint8_t p[BL_PAYLOAD_LEN]; CHECK(blEncode(BICOPTER_NRF24_LINK_ID, &c, p));
+        nowUs = base + 10000 + 20000 * i;
+        radioDeliver(p, sizeof(p), R.regs[NRF24L01_05_RF_CH], nowUs);
+    }
+    CHECK_EQ(R.count, 3);
+    if (irq) CHECK_EQ(R.extiTs, base + 10000);
+    uint32_t previous = 0; int accepted = 0;
+    for (int i = 0; i < 3; i++) {
+        nowUs = base + 60000 + 250 * i;
+        if (nrf24BicopterDataReceived(payload) == RX_SPI_RECEIVED_DATA) {
+            const uint32_t frame = nrf24BicopterFrameTimeUs();
+            CHECK_EQ(frame, nowUs); // ambiguous backlog uses service time
+            CHECK((int32_t)(nowUs - frame) >= 0);
+            if (accepted) CHECK((int32_t)(frame - previous) >= 0);
+            previous = frame; accepted++;
+        }
+        CHECK_EQ((uint16_t)debug[4] >> 8, BL_HOP_SYNCED);
+    }
+    CHECK_EQ(accepted, 2); CHECK_EQ(R.count, 0);
+}
+
+static void testQueuedPacketTimestamps(void)
+{
+    queuedTimestampCase(0, true);
+    queuedTimestampCase(UINT32_MAX - 60000, true); // backlog drains across timer wrap
+    queuedTimestampCase(0, false);
+    queuedTimestampCase(UINT32_MAX - 60000, false);
+}
+
 int main(void)
 {
     RUN(testInit);
@@ -3661,10 +3825,10 @@ int main(void)
     RUN(testRestartInterlock);
     RUN(testDropoutKeepsControl);
     RUN(testInputFaultKeepsControl);
+    RUN(testQueuedPacketTimestamps);
     scenario(true, 250, "IRQ, 4 kHz loop");
     scenario(true, 1000, "IRQ, 1 kHz loop");
     scenario(false, 250, "polled, 4 kHz loop");
     SUMMARY();
 }
-
 ```

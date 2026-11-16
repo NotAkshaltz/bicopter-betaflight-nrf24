@@ -137,6 +137,7 @@ static void updateDebug(void)
 
 static rx_spi_received_e serviceRadio(uint8_t *payload, timeUs_t nowUs)
 {
+    const bool drainingBacklog = fifoPending;
     const uint8_t status = NRF24L01_ReadReg(NRF24L01_07_STATUS);
     const uint8_t pipe = (status >> NRF24_STATUS_RX_P_NO_SHIFT) & NRF24_STATUS_RX_P_NO_MASK;
 
@@ -170,20 +171,25 @@ static rx_spi_received_e serviceRadio(uint8_t *payload, timeUs_t nowUs)
         return RX_SPI_RECEIVED_NONE;
     }
 
-    // The EXTI timestamp belongs to the most recently received packet, so it is only
-    // attributed to the packet that empties the FIFO.
+    // RX_DR stays asserted until cleared: one edge can cover several queued packets.
+    // Do not assign that edge to the tail of a backlog (nor a new edge to an old head).
+    // A backlog uses service time and must not re-anchor an already synced hop clock.
     bool timeReliable = false;
     timeUs_t packetTimeUs = nowUs;
-    if (!fifoPending) {
+    if (!drainingBacklog && !fifoPending) {
         if (irqConfigured) {
-            timeReliable = havePendingExtiTime;
-            if (havePendingExtiTime) {
+            timeReliable = havePendingExtiTime && cmpTimeUs(nowUs, pendingExtiTimeUs) >= 0;
+            if (timeReliable) {
                 packetTimeUs = pendingExtiTimeUs;
             }
         } else {
             timeReliable = true;    // polled: error bounded by the poll interval
         }
-        havePendingExtiTime = false;
+    }
+    havePendingExtiTime = false;
+    if (stats.accepted && cmpTimeUs(packetTimeUs, lastFrameTimeUs) < 0) {
+        packetTimeUs = nowUs;
+        timeReliable = false;
     }
 
     blControl_t control;

@@ -235,6 +235,12 @@ typedef struct {
     uint32_t outageFromUs, outageToUs;
 } hopSim_t;
 
+static uint32_t hopSimTxStart(const hopSim_t *s, double nominal)
+{
+    const int jitter = s->jitterUs ? (int)(rng32() % (2 * s->jitterUs + 1)) - s->jitterUs : 0;
+    return (uint32_t)nominal + (uint32_t)jitter;
+}
+
 static void runHopSim(const hopSim_t *s, uint32_t durationUs, uint32_t *firstSyncUs, double *rxRatioAfterSync, uint32_t *reacqUs)
 {
     uint8_t ch[BL_RF_CHANNEL_COUNT];
@@ -245,6 +251,7 @@ static void runHopSim(const hopSim_t *s, uint32_t durationUs, uint32_t *firstSyn
     uint32_t start = now;
     uint32_t k = 0;
     double nextTx = start + s->phaseUs;
+    uint32_t txStart = hopSimTxStart(s, nextTx);
     uint32_t sent = 0, heard = 0;
     *firstSyncUs = 0;
     *reacqUs = 0;
@@ -252,23 +259,27 @@ static void runHopSim(const hopSim_t *s, uint32_t durationUs, uint32_t *firstSyn
     uint8_t tunedIdx = h.idx;
     uint32_t lastHeard = 0;
     for (; now - start < durationUs; now += s->stepUs) {
-        while (nextTx <= now) {
-            uint32_t t = (uint32_t)nextTx + (s->jitterUs ? (uint32_t)((int)(rng32() % (2 * s->jitterUs + 1)) - s->jitterUs) : 0);
+        while ((int32_t)(now - (txStart + 1000)) >= 0) {
+            const uint32_t t = txStart;
+            const uint32_t completed = t + 1000;
+            CHECK((int32_t)(now - completed) >= 0);
             uint8_t txIdx = k % BL_RF_CHANNEL_COUNT;
             bool inOutage = (t - start) >= s->outageFromUs && (t - start) < s->outageToUs;
             bool lost = (int)(rng32() % 100) < s->lossPct;
             if (!inOutage) {
                 if (*firstSyncUs) sent++;
-                // received if tuned to this channel for >=130us before the packet ends (1ms airtime)
+                // RX must settle before the packet starts and stay tuned through
+                // completion. No future packet timestamp may steer the hop clock.
                 if (!lost && txIdx == tunedIdx && (int32_t)(t - tunedAt) >= 130) {
-                    blHopOnPacket(&h, t + 1000, true);
-                    if (!*firstSyncUs) *firstSyncUs = t - start; else heard++;
-                    if (s->outageToUs && (t - start) >= s->outageToUs && !*reacqUs) *reacqUs = (t - start) - s->outageToUs;
+                    blHopOnPacket(&h, completed, true);
+                    if (!*firstSyncUs) *firstSyncUs = completed - start; else heard++;
+                    if (s->outageToUs && (t - start) >= s->outageToUs && !*reacqUs) *reacqUs = (completed - start) - s->outageToUs;
                     lastHeard = t;
                 }
             }
             k++;
             nextTx += BL_FRAME_PERIOD_US * (1.0 + s->ppm * 1e-6);
+            txStart = hopSimTxStart(s, nextTx);
         }
         if (blHopTick(&h, now)) {
             tunedIdx = h.idx;

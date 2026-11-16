@@ -16,6 +16,8 @@ enum { HS_CH_ROLL = 0, HS_CH_PITCH, HS_CH_THROTTLE, HS_CH_YAW, HS_CH_AUX1_ARM, H
 #define HANDSET_SAMPLE_TIMEOUT_US   50000
 // Announce a reset for at least one second and until a new safe input sample.
 #define HANDSET_RESTART_ANNOUNCE_US 1000000U
-// Raw ADC readings this close to the rails are treated as a disconnected stick (12-bit ADC).
+// Rail readings outside each stick's calibrated range indicate an input fault.
+// A calibrated rail endpoint is valid; a broken wire at that endpoint cannot be
+// distinguished by ADC value alone and needs separate board-level detection.
 #define HANDSET_ADC_RAIL_MARGIN     8
 #define HANDSET_ADC_MAX             4095

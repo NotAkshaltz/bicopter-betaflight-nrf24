@@ -1,0 +1,46 @@
+PASS testRoundTrip
+  vector(link=0xBE5336DF): B10234095A3412002422D16624B66AF3EF002A89
+PASS testKnownVector
+PASS testEncodeRejects
+  random multi-byte corruptions accepted: 1 / 200000
+PASS testDecodeRejects
+  link 0xBE5336DF: address 3C 41 58 CB F7, RF_CH 20 39 58 77, tag 0x0934, crcSeed 0xFEFA
+PASS testDerivation
+PASS testFreshness
+PASS testHopLateFifoPacket
+  worst initial acquisition: 21.0 ms
+  ppm  -500, 1 kHz loop: received 1.0000
+  ppm  -200, 1 kHz loop: received 1.0000
+  ppm  +200, 1 kHz loop: received 1.0000
+  ppm  +500, 1 kHz loop: received 1.0000
+  30% loss: received 0.6830
+  2 s outage: reacquired 17.8 ms after the handset is audible again
+PASS testHopping
+
+1653716 checks, 0 failures
+PASS testInit
+PASS testCorruptWidthAndBacklog
+PASS testRestartInterlock
+PASS testDropoutKeepsControl
+PASS testInputFaultKeepsControl
+PASS testQueuedPacketTimestamps
+  [IRQ, 4 kHz loop] 3 s clean: 599 fresh frames of 600 sent, max gap 5.0 ms, max SPI ops/call 5
+  [IRQ, 4 kHz loop] handset restart after 2 s loss: first fresh frame after 25.0 ms
+  [IRQ, 4 kHz loop] 25% loss: 766 fresh frames in 5 s, max gap 25.0 ms
+  [IRQ, 4 kHz loop] stats: acc 1564 malformed 30 dup 99 stale 0 pend 2 fault 60 spurious 0 flush 0
+  [IRQ, 1 kHz loop] 3 s clean: 598 fresh frames of 599 sent, max gap 5.0 ms, max SPI ops/call 5
+  [IRQ, 1 kHz loop] handset restart after 2 s loss: first fresh frame after 21.0 ms
+  [IRQ, 1 kHz loop] 25% loss: 764 fresh frames in 5 s, max gap 25.0 ms
+  [IRQ, 1 kHz loop] stats: acc 1561 malformed 30 dup 99 stale 0 pend 2 fault 60 spurious 0 flush 0
+  [polled, 4 kHz loop] 3 s clean: 599 fresh frames of 600 sent, max gap 5.0 ms, max SPI ops/call 5
+  [polled, 4 kHz loop] handset restart after 2 s loss: first fresh frame after 25.0 ms
+  [polled, 4 kHz loop] 25% loss: 747 fresh frames in 5 s, max gap 25.0 ms
+  [polled, 4 kHz loop] stats: acc 1545 malformed 30 dup 99 stale 0 pend 2 fault 60 spurious 22514 flush 0
+
+15596 checks, 0 failures
+  acquisition period 10000 us: sent 595 in 3 s, accepted 99, flagged 389
+  acquisition period 5000 us: sent 595 in 3 s, accepted 197, flagged 388
+  acquisition period 1000 us: sent 595 in 3 s, accepted 198, flagged 387
+  acquisition period 500 us: sent 595 in 3 s, accepted 198, flagged 387
+PASS (0 failures)
+PASS: shared protocol copies identical; host tests clean under ASan/UBSan.

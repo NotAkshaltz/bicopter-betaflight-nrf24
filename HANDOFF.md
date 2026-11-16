@@ -38,7 +38,7 @@ Target: RP2350 **Arm** (Cortex-M33), image family `rp2350-arm-s` (confirmed with
 ## 3. Output
 
 - UF2: `firmware/output/betaflight_2026.6.2_RP2350A_BICOPTER_PICO2_NRF24_V2.uf2`
-  (sha256 `fb8ecdb3445cf99753bb365b414a7a87b98c9c86b677957faeae8453ef63bd98`).
+  (sha256 `17d384bd387d4d341a2d6de108935c3628f4ecd47bad3d1175d8476aad771486`).
   The `.elf` and `.map` are in the same folder.
 - Size: FLASH 400,112 B of 4032 KB, RAM 377,384 B of 512 KB.
 - Config storage: `__config_start=0x103F0000`, `__config_end=0x10400000`, the last 64 KB of the 4 MB part.
@@ -183,17 +183,17 @@ make CONFIG=BICOPTER_PICO2 uf2 -j6
 
 The verified build used Arm GNU 13.3.Rel1 and official picotool 2.3.1 with the pinned SDK/config commits above. It used an explicit `PICOTOOL=/opt/picotool/picotool/picotool` path in the disposable build container. The standard output name lacks the packaging suffix; the exported v2 file adds `_NRF24_V2` to distinguish it from v1.
 
-Earlier WSL scripts and baseline logs are retained as historical material. The active evidence is `corrected-v2-build.log`, `upstream-tests.log`, `host-sanitizers.log`, `uf2-info.log` and `firmware-symbols.log`. The baseline linker RWX warning remains; there are no new compiler errors. No flashing was performed.
+Earlier WSL scripts and baseline logs are retained as historical material. The current evidence is `audit-fixed-build.log`, `audit-fixed-upstream-tests.log`, `audit-fixed-host-sanitizers.log` and `audit-fixed-image-info.log`; see AUDIT_FIXES.md. The baseline linker RWX warning remains; there are no new compiler errors. No flashing was performed.
 
 ## 8. Executed software tests
 
 | Check | Observed result |
 |---|---|
 | Betaflight `make test -j6`, Clang 18.1.3 | 67 executables PASS; 619 cases PASS, including the new immediate-reset failsafe test |
-| Packet core, ASan+UBSan, warnings as errors | 1,522,481 checks; zero failures |
-| Actual receiver adapter against radio model | 5,147 checks; zero failures (4,761 under ASan+UBSan before the dropout/input-fault fix; after it, gcc `-Wall -Wextra -Werror` at -O0..-O3) |
+| Packet core, ASan+UBSan, warnings as errors | 1,653,716 checks; zero failures |
+| Actual receiver adapter against radio model | Expanded causal-arrival/backlog tests pass under ASan+UBSan; current check count is in VALIDATION.md and the host log |
 | Dropout and input-fault behaviour (after fix) | RF gaps of 100 ms to 3 s while armed: ARM/throttle pass through unchanged when the link returns, no reset call. A burst of input-fault packets: dropped, next good sample passes ARM/throttle unchanged. Handset: one bad ADC sample or a 100 ms acquisition stall sets only TX_INPUT_FAULT, never the restart flag. These tests fail against the code before the fix |
-| Actual portable handset, ASan+UBSan | PASS at 100Hz, 200Hz, 1kHz and 2kHz acquisition with 200Hz radio |
+| Actual portable handset, ASan+UBSan | PASS at 100Hz, 200Hz, 1kHz and 2kHz acquisition with nominal 200Hz radio; finite SPI and polling latency give about 198Hz in the model |
 | Reset safety | Short new-session reset requests disarm; ARM-high/throttle-high is clamped; low throttle alone or ARM-off alone cannot release the guard; same-session restart announcement works; repeated announcements trigger once |
 | Existing failsafe implementation | New GoogleTest case confirms disarm API is called immediately, FAILSAFE/ARM_SWITCH flags set, normal recovery used and ARM_SWITCH block retained |
 | Shared protocol copies | Byte-identical transmitter/receiver copies |
@@ -206,7 +206,7 @@ This runs the upstream default non-target-specific `make test` suite, not the ex
 
 These files exist and are tested on the host; they also compile warning-free for Cortex-M3:
 - `handset/src/handset_app.c/.h`: nRF24 TX setup, 5 ms frame scheduler, hop order, v2 restart/arming interlock, calibration validation, session,
-  sequence-per-acquisition, input fault (no sample for 50 ms, stick at rail, invalid switch),
+  sequence-per-acquisition, input fault (no sample for 50 ms, rail outside calibration, invalid ADC/switch),
   stick calibration mapping, ACK statistics.
 - `handset/config/link_config.h`: link ID, TX power, channel order (AETR + AUX1 = arm, AUX2–4).
 - `handset/shared/`: the protocol core.
@@ -378,4 +378,14 @@ Two v2 behaviours could disarm the craft in flight and were removed. Both were r
 1. **RF dropout.** The receiver re-engaged its ARM/throttle interlock after any gap longer than 150 ms, so when the link came back ARM was forced to 1000 us and Betaflight disarmed, even inside the `failsafe_delay` stage-1 window where control should resume. The time-based relock is removed (`rx/nrf24_bicopter.c`); RF loss is handled only by Betaflight's failsafe, as with any other receiver.
 2. **Input fault.** A single bad stick reading (or a sample older than 50 ms) put the handset into its restart lock for at least one second and until ARM off + throttle low; the receiver treated the restart flag as a handset reboot and disarmed immediately. The receiver also re-engaged its interlock on any input-fault packet. Now the handset only flags `TX_INPUT_FAULT` on affected packets (`handset/src/handset_app.c`), and the receiver drops them without touching the interlock.
 
-Unchanged: a real handset reboot (new session or restart announcement) still disarms immediately, and arming after boot still requires ARM off and throttle low. Upstream `make test` and the ASan/UBSan runs were not repeated after this fix (no host toolchain with sanitizers was available); `failsafe.c` and its unit test are unchanged. Not hardware-tested.
+Unchanged: a real handset reboot (new session or restart announcement) still disarms immediately, and arming after boot still requires ARM off and throttle low. At the time of that correction, upstream `make test` and ASan/UBSan were not repeated. They have now been independently rerun on the subsequent audit fixes below; `failsafe.c` and its unit test remain unchanged. Not hardware-tested.
+
+## 18. Full-audit fixes
+
+The current package fixes accepted calibration endpoints being rejected as faults, catch-up TX bursts after a delayed handset loop, and incorrect assignment of an IRQ timestamp to the tail of an RX backlog. The test models now enforce causal RX arrivals, finite handset SPI time and non-instant TX completion. Added regressions cover timer wrap, delayed TX/MAX_RT completion and valid ADC rail calibration. Ordinary RF/input faults still use normal Betaflight failsafe; actual restart protection is retained.
+
+All custom tests pass under ASan/UBSan, the upstream default suite passes (67 executables / 619 cases), portable Cortex-M3 compilation passes, and a clean Pico UF2 build passes. The earlier image is archived under `firmware/archive/protocol-v2-pre-audit-98aa346/`. See `AUDIT_FIXES.md` for the full changes, current evidence and staged hardware-testing limits. The STM32F103 board HAL is still missing, and no hardware has been tested.
+
+## 19. Complete historical regression rerun
+
+All applicable historical software checks were rerun against the current implementation, including the compiler optimization matrix, older suites, safety probes, fuzzing, static analysis, full upstream suite, three current board builds and both original baseline controls. The separate core hopping model was corrected to deliver packets only after completion. The full local checkout was synchronized with the tested exports after finding two stale files. The packaged runtime sources and UF2 did not change in this rerun. See `FULL_REGRESSION.md` for all results and expected historical failures. Current packet tests report 1,653,716 checks and receiver tests 15,596 checks, with zero failures.
