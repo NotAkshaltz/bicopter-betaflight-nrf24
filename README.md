@@ -29,6 +29,7 @@ The subsequent full audit fixes calibrated ADC endpoints, handset catch-up trans
 | `firmware/logs/` | Baseline and final build logs, preprocessed define dump |
 | `handset/` | Portable handset code: protocol core (shared verbatim with the receiver), TX app, HAL interface, host test |
 | `tests/` | Host tests for the protocol core and for the real receiver adapter against an nRF24 model |
+| `simulator/` | Browser simulator: firmware settings and CLI, thrust vectoring, weight balance, structure, power and overcurrent checks, fault injection and flight tests. Open `simulator/index.html`; see [simulator/README.md](simulator/README.md) |
 
 ## Quick test run (host)
 

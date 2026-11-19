@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bicopter Simulator</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <strong>Bicopter Simulator</strong>
+      <span class="sub">BICOPTER_PICO2 · Betaflight 2026.6.2 + NRF24_BICOPTER v2</span>
+    </div>
+    <div class="runbar">
+      <button id="btnRun" class="primary" title="Run / pause (P)">Run</button>
+      <button id="btnReset" title="Reset the world and reboot the FC (R)">Reset</button>
+      <label class="inline">Speed
+        <select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+      </label>
+      <span id="pending" class="pending" hidden>Changes pending — <button id="btnApply" class="primary small">Apply &amp; reboot</button></span>
+    </div>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <main class="layout">
+    <section class="viewport card">
+      <canvas id="view" aria-label="3D view of the aircraft"></canvas>
+      <div class="hud" id="hud"></div>
+      <div class="viewopts">
+        <label><input type="checkbox" id="optFollow" checked> follow</label>
+        <label><input type="checkbox" id="optVectors" checked> thrust</label>
+        <label><input type="checkbox" id="optCG" checked> CG</label>
+      </div>
+      <div class="replaybar" id="replaybar" hidden>
+        <span id="replayName"></span>
+        <input type="range" id="replaySlider" min="0" max="1000" value="0">
+        <button id="replayPlay" class="small">Play</button>
+        <button id="replayExit" class="small">Back to live</button>
+      </div>
+    </section>
+
+    <section class="controls card">
+      <div class="sticks">
+        <div class="stickwrap"><canvas class="stick" id="stickL"></canvas><div class="sticklabel">Throttle / Yaw<br><kbd>W</kbd><kbd>S</kbd> <kbd>A</kbd><kbd>D</kbd></div></div>
+        <div class="switches">
+          <button id="swArm" class="switch">ARM <small>AUX1</small></button>
+          <button id="swMode" class="switch on">ANGLE <small>AUX2</small></button>
+          <label class="inline"><input type="checkbox" id="assistAlt"> altitude assist</label>
+          <label class="inline"><input type="checkbox" id="assistPos"> position assist</label>
+          <div class="muted tiny" id="gamepadInfo">Keyboard, mouse/touch or gamepad</div>
+        </div>
+        <div class="stickwrap"><canvas class="stick" id="stickR"></canvas><div class="sticklabel">Pitch / Roll<br><kbd>↑</kbd><kbd>↓</kbd> <kbd>←</kbd><kbd>→</kbd></div></div>
+      </div>
+      <div class="faults">
+        <div class="faultgroup"><span class="flabel">Radio</span>
+          <button data-fault="drop100">Dropout 0.1 s</button><button data-fault="drop400">Dropout 0.4 s</button><button data-fault="drop3000">Dropout 3 s</button>
+          <button data-fault="hsToggle">Handset off/on</button><button data-fault="reboot">Handset reboot</button><button data-fault="inputFault">Input fault</button>
+          <label class="inline">Loss <input type="range" id="lossSlider" min="0" max="90" value="0"><span id="lossVal">0 %</span></label>
+        </div>
+        <div class="faultgroup"><span class="flabel">Hardware</span>
+          <button data-fault="servoL">Left servo fails</button><button data-fault="motorR">Right ESC dies</button><button data-fault="brownout">Pico brown-out</button><button data-fault="clearHw">Clear faults</button>
+          <label class="inline">Wind <input type="range" id="windSlider" min="0" max="10" value="0" step="0.5"><span id="windVal">0 m/s</span></label>
+          <label class="inline">Gust <input type="range" id="gustSlider" min="0" max="5" value="0" step="0.5"><span id="gustVal">0</span></label>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel card">
+      <nav class="tabs" role="tablist">
+        <button data-tab="telemetry" class="active">Telemetry</button>
+        <button data-tab="firmware">Firmware</button>
+        <button data-tab="hardware">Hardware</button>
+        <button data-tab="checks">Checks <span class="badge" id="checksBadge"></span></button>
+        <button data-tab="tests">Tests <span class="badge" id="testsBadge"></span></button>
+        <button data-tab="help">Help</button>
+      </nav>
+
+      <div class="tab active" id="tab-telemetry">
+        <div class="numgrid" id="numgrid"></div>
+        <div class="charts" id="charts"></div>
+        <h3>Events</h3>
+        <div class="log" id="log"></div>
+      </div>
+
+      <div class="tab" id="tab-firmware">
+        <div class="row wrap">
+          <button id="presetProject" title="Betaflight defaults plus the CLI block from HANDOFF.md section 11">Project config</button>
+          <button id="presetTune" title="Lower rates and yaw gains that pass the simulated flight tests">Suggested bicopter tune</button>
+          <button id="btnDiff">Download diff</button>
+          <button id="btnDump">Show dump</button>
+        </div>
+        <p class="muted tiny">Betaflight CLI. Paste whole <code>diff</code> blocks; <code>help</code> lists commands. On the BI mixer the tilt servos are <code>servo 4</code> (left) and <code>servo 5</code> (right). Changes take effect on <code>save</code> or <b>Apply &amp; reboot</b>.</p>
+        <pre class="cli" id="cliOut"></pre>
+        <div class="cliin">
+          <textarea id="cliIn" rows="2" spellcheck="false" placeholder="set p_yaw = 15     (Enter runs, Shift+Enter for a new line)"></textarea>
+          <button id="cliRun" class="primary">Send</button>
+        </div>
+        <h3>Parameters</h3>
+        <div id="paramForm"></div>
+        <h3>Custom firmware hook</h3>
+        <p class="muted tiny">JavaScript that runs every PID loop after the mixer. Prototype logic here before porting it to C. It can never spin motors while disarmed.</p>
+        <label class="inline"><input type="checkbox" id="customEnabled"> enabled</label>
+        <textarea id="customCode" class="code" rows="14" spellcheck="false"></textarea>
+        <div class="muted tiny" id="customStatus"></div>
+      </div>
+
+      <div class="tab" id="tab-hardware">
+        <div class="row wrap">
+          <button id="btnExport">Export project (.json)</button>
+          <label class="button">Import project<input type="file" id="fileImport" accept=".json" hidden></label>
+          <button id="btnHwDefaults">Hardware defaults</button>
+        </div>
+        <div class="massSummary" id="massSummary"></div>
+        <canvas id="cgView" class="cgview" aria-label="Top and side view with centre of gravity"></canvas>
+        <div id="hwForm"></div>
+      </div>
+
+      <div class="tab" id="tab-checks">
+        <div class="summary" id="checksSummary"></div>
+        <div id="checksList"></div>
+      </div>
+
+      <div class="tab" id="tab-tests">
+        <div class="row wrap">
+          <button id="btnRunTests" class="primary">Run all tests</button>
+          <button id="btnReport">Download report</button>
+          <span class="muted tiny" id="testsProgress"></span>
+        </div>
+        <p class="muted tiny">Each test flies the whole chain — handset, radio, receiver adapter, flight controller, ESCs, servos, airframe — with a virtual pilot, then scores the result. Click <b>Replay</b> to watch any run in the 3D view.</p>
+        <div id="testsList"></div>
+      </div>
+
+      <div class="tab" id="tab-help">
+        <div id="helpText"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="js/util.js"></script>
+  <script src="js/protocol.js"></script>
+  <script src="js/hardware.js"></script>
+  <script src="js/firmware.js"></script>
+  <script src="js/link.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/analysis.js"></script>
+  <script src="js/tests.js"></script>
+  <script src="js/render3d.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
